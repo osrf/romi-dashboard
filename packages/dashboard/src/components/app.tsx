@@ -3,7 +3,7 @@ import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import 'typeface-roboto';
 import appConfig from '../app-config';
-import { BASE_PATH, LOGIN_ROUTE } from '../util/url';
+import { DASHBOARD_ROUTE, GRID_ROUTE, LOGIN_ROUTE } from '../util/url';
 import './app.css';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import Login from './auth/login';
@@ -11,6 +11,7 @@ import PrivateRoute from './auth/private-route';
 import { User } from './auth/user';
 import Dashboard from './dashboard';
 import NotFoundPage from './error-pages/page-not-found';
+import Grid from './grid';
 
 const theme = createMuiTheme({
   palette: {
@@ -45,8 +46,11 @@ export default function App(): React.ReactElement {
               <Route exact={true} path={LOGIN_ROUTE}>
                 <Login />
               </Route>
-              <PrivateRoute exact={true} path={BASE_PATH}>
+              <PrivateRoute exact={true} path={DASHBOARD_ROUTE}>
                 <Dashboard />
+              </PrivateRoute>
+              <PrivateRoute exact={true} path={GRID_ROUTE}>
+                <Grid />
               </PrivateRoute>
               <Route component={NotFoundPage} />
             </Switch>
