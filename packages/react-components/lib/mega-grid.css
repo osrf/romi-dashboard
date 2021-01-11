@@ -1,0 +1,49 @@
+div.container {
+  width: '100vw';
+  height: '100vh';
+  position: 'absolute';
+  left: 0;
+  top: 0;
+  display: 'flex';
+}
+.react-grid-layout {
+  background: #eee;
+  margin-top: 10px;
+  height: 100%;
+}
+.react-grid-item {
+  box-sizing: border-box;
+}
+.react-grid-item:not(.react-grid-placeholder) {
+  background: #ccc;
+  border: 1px solid black;
+}
+.react-grid-item.resizing {
+  opacity: 0.9;
+}
+.react-grid-item.static {
+  background: #cce;
+}
+.react-grid-item .text {
+  font-size: 12px;
+  text-align: left;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 5px;
+  height: 24px;
+}
+.react-grid-item .minMax {
+  font-size: 12px;
+}
+.react-grid-item .add {
+  cursor: pointer;
+}
+.react-grid-dragHandleExample {
+  cursor: move; /* fallback if grab cursor is unsupported */
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
