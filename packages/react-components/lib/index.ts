@@ -11,6 +11,7 @@ export * from './mega-grid';
 export * from './omni-panel';
 export * from './omni-panel-view';
 export * from './robots';
+export * from './robot-roster';
 export * from './simple-info';
 export * from './spotlight-accordion';
 export * from './stack-navigator';
