@@ -3,7 +3,7 @@ import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import 'typeface-roboto';
 import appConfig from '../app-config';
-import { DASHBOARD_ROUTE, GRID_ROUTE, LOGIN_ROUTE } from '../util/url';
+import { BASE_PATH, GRID_ROUTE, LOGIN_ROUTE } from '../util/url';
 import './app.css';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import Login from './auth/login';
@@ -46,7 +46,7 @@ export default function App(): React.ReactElement {
               <Route exact={true} path={LOGIN_ROUTE}>
                 <Login />
               </Route>
-              <PrivateRoute exact={true} path={DASHBOARD_ROUTE}>
+              <PrivateRoute exact={true} path={BASE_PATH}>
                 <Dashboard />
               </PrivateRoute>
               <PrivateRoute exact={true} path={GRID_ROUTE}>
