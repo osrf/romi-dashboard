@@ -36,16 +36,8 @@ scope.forEach((pkg) => {
 });
 targets.forEach((pkg) => {
   const cwd = `${__dirname}/../${pkg}`;
-  try {
-    fs.accessSync(`${cwd}/node_modules`);
-  } catch (e) {
-    if (e.code === 'ENOENT') {
-      const result = child_process.spawnSync('npm', [verb], { stdio: 'inherit', cwd });
-      if (result.status !== 0) {
-        process.exit(result.status);
-      }
-    } else {
-      throw e;
-    }
+  const result = child_process.spawnSync('npm', [verb], { stdio: 'inherit', cwd });
+  if (result.status !== 0) {
+    process.exit(result.status);
   }
 });

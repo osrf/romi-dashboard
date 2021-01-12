@@ -19,9 +19,8 @@ describe('WebSocketConnect', () => {
   });
 
   test('calls each middleware', (done) => {
-    const mock1: WebSocketMiddleware = jest.fn((_, _1, next) => next());
-    const mock2: WebSocketMiddleware = jest.fn((_, data, next) => {
-      expect(data).toBe('test');
+    const mock1: WebSocketMiddleware = jest.fn((_socket, _req, next) => next());
+    const mock2: WebSocketMiddleware = jest.fn((_socket, _req, _next) => {
       done();
     });
     app.use(mock1);

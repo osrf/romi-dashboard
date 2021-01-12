@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as jwt from 'jsonwebtoken';
 import WebSocket from 'ws';
 import { WebSocketMiddleware } from './websocket-connect';
+import baseLogger from './logger';
 
 export interface Options {
   type: 'secret' | 'publicKey';
@@ -17,19 +18,23 @@ export default function authenticator(options: Options): WebSocketMiddleware {
     }
   })();
 
-  return (socket: WebSocket & { authorized?: boolean }, data, next) => {
-    if (socket.authorized) {
+  return (socket, req, next) => {
+    socket.once('message', (data) => {
+      if (typeof data !== 'string') {
+        baseLogger.error('expected token', { label: req.connection.remoteAddress });
+        socket.close(undefined, 'unauthorized');
+        return;
+      }
+
+      try {
+        jwt.verify(data, secretOrPublicKey); // will throw if invalid
+      } catch (e) {
+        baseLogger.error(e, { label: req.connection.remoteAddress });
+        socket.close(undefined, 'unauthorized');
+        return;
+      }
+      socket.send('ok');
       next();
-      return;
-    }
-
-    if (typeof data !== 'string') {
-      throw new Error('expected token');
-    }
-
-    jwt.verify(data, secretOrPublicKey); // will throw if invalid
-    socket.authorized = true;
-    socket.send('ok');
-    // don't call `next()`, authentication message should not be chained to downstream middlewares.
+    });
   };
 }

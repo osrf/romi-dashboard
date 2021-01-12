@@ -1,7 +1,6 @@
 import * as msgpack from '@msgpack/msgpack';
-import * as assert from 'assert';
 import WebSocket from 'ws';
-import logger, { Logger as _Logger } from './logger';
+import baseLogger, { Logger as _Logger } from './logger';
 import { WebSocketMiddleware } from './websocket-connect';
 
 export type Logger = _Logger;
@@ -38,32 +37,56 @@ export type RpcHandler<Param = any, Result = unknown> = (
   sender: Sender<Result>,
 ) => Promise<Result | void> | Result | void;
 
+export enum ErrorCodes {
+  NoSuchMethod = 1,
+  FunctionError = 100,
+}
+
 export default class RpcMiddleware {
-  middleware: WebSocketMiddleware = (socket, data, next) => {
-    this._onMessage(socket, data, next);
+  middleware: WebSocketMiddleware = (socket, req, next) => {
+    socket.on('message', (data) =>
+      this._onMessage(
+        baseLogger.child({ label: req.connection.remoteAddress }),
+        socket,
+        data,
+        next,
+      ),
+    );
   };
 
   registerHandler(method: string, cb: RpcHandler): void {
     this._rpcHandlers[method] = cb;
-    logger.info(`registered handler for "${method}"`);
+    baseLogger.info(`registered handler for "${method}"`);
   }
 
   getLogger(name: string): Logger {
-    return logger.child({ tag: name });
+    return baseLogger.child({ label: name });
   }
 
   private _rpcHandlers: Record<string, RpcHandler> = {};
 
   private async _onMessage(
+    logger: Logger,
     socket: WebSocket,
     data: WebSocket.Data,
     next: () => void,
   ): Promise<void> {
-    assert.ok(data instanceof Buffer);
-    // Casting data as a Buffer because if not we got an error that says: 'string' is not
-    // assignable to type 'ArrayBuffer | ArrayLike <number> '
-    const req = msgpack.decode(data as Buffer) as RpcRequest;
-    assert.strictEqual('0', req.version);
+    let req: RpcRequest;
+    try {
+      req = msgpack.decode(data as Buffer) as RpcRequest;
+    } catch (e) {
+      logger.error(`decode error: ${e.message}`);
+      socket.close(1007, 'malformed data');
+      return;
+    }
+
+    if (req.version !== '0') {
+      logger.error('"version" must be "0"');
+      socket.close(1003, 'wrong version');
+      return;
+    }
+
+    logger.info('received request', req);
 
     const buildResponse = (response: Partial<RpcResponse>) => {
       return {
@@ -73,34 +96,63 @@ export default class RpcMiddleware {
       };
     };
 
+    const isNotification = (req: RpcRequest) =>
+      typeof req.id !== 'string' && typeof req.id !== 'number';
+
     const sender: Sender = {
       socket,
-      send: (data) =>
-        req.id !== undefined &&
-        req.id !== null &&
-        socket.send(msgpack.encode(buildResponse({ result: data, more: true }))),
-      end: (data) =>
-        req.id !== undefined &&
-        req.id !== null &&
-        socket.send(msgpack.encode(buildResponse({ result: data }))),
-      error: (error) =>
-        req.id !== undefined &&
-        req.id !== null &&
-        socket.send(msgpack.encode(buildResponse({ error }))),
+      send: (data) => {
+        if (isNotification(req)) {
+          logger.warn('not sending response for notification request');
+          return;
+        }
+        const payload = msgpack.encode(buildResponse({ result: data, more: true }));
+        socket.send(payload);
+        logger.verbose('sent response chunk', {
+          id: req.id,
+          method: req.method,
+          payloadLength: payload.length,
+        });
+      },
+      end: (data) => {
+        if (isNotification(req)) {
+          logger.warn('not sending response for notification request');
+          return;
+        }
+        const payload = msgpack.encode(buildResponse({ result: data }));
+        socket.send(payload);
+        logger.info('sent response', {
+          id: req.id,
+          method: req.method,
+          payloadLength: payload.length,
+        });
+      },
+      error: (error) => {
+        if (isNotification(req)) {
+          logger.warn('not sending response for notification request');
+          return;
+        }
+        socket.send(msgpack.encode(buildResponse({ error })));
+        logger.info('sent error', { id: req.id, method: req.method, error });
+      },
     };
 
     try {
-      const handler = this._rpcHandlers[req.method];
-      if (!handler) {
-        logger.warn(`no handler for method "${req.method}"`);
+      if (!this._rpcHandlers.hasOwnProperty(req.method)) {
+        logger.error('no handler for method', req);
         sender.error({
-          code: 1,
+          code: ErrorCodes.NoSuchMethod,
           message: 'no such method',
         });
         return;
       }
 
+      const handler = this._rpcHandlers[req.method];
+      if (handler.length > 1) {
+        logger.info('start streaming response chunks', { id: req.id, method: req.method });
+      }
       const handlerRet = await handler(req.params, sender);
+
       /**
        * handler is "req -> resp" if it only has 1 argument, else it is a "stream" with messages
        * sent in chunks.
@@ -116,18 +168,18 @@ export default class RpcMiddleware {
        *     handler should take care of sending the rest of the chunks.
        */
       if (handlerRet === undefined) {
-        if (this._rpcHandlers[req.method].length === 1) {
+        if (handler.length === 1) {
           sender.end(null);
         }
       } else {
-        if (this._rpcHandlers[req.method].length === 1) {
+        if (handler.length === 1) {
           sender.end(handlerRet);
         } else {
           sender.send(handlerRet);
         }
       }
     } catch (e) {
-      sender.error({ code: 1, message: e.message });
+      sender.error({ code: ErrorCodes.FunctionError, message: e.message });
     }
     next();
   }

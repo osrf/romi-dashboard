@@ -109,10 +109,7 @@ export default class Ros2Plugin {
     const id = this._idCounter++;
 
     sender.socket.once('close', () => {
-      delete this._subscriptions[id].callbacks[id];
-      this._logger.info(`removed inner handler for subscription ${id}`);
-      delete this._subscriptions[id];
-      this._logger.info(`removed subscription ${id}`);
+      this._removeInnerHandler(id);
     });
 
     const found = this._innerSubscriptions.find((record) => deepEqual(record.topic, params.topic));
@@ -124,29 +121,35 @@ export default class Ros2Plugin {
         callbacks: {
           [id]: (msg) => sender.send({ message: msg }),
         },
-        subscription: this.transport.subscribe(this.toRomiTopic(params.topic), (msg) =>
-          Object.values(newRecord.callbacks).forEach((cb) => cb(msg)),
-        ),
+        subscription: this.transport.subscribe(this.toRomiTopic(params.topic), (msg) => {
+          const record = this._subscriptions[id];
+          if (!record) {
+            return;
+          }
+          const cbs = Object.values(record.callbacks);
+          if (cbs.length > 0) {
+            cbs.forEach((cb) => cb(msg));
+            this._logger.verbose('sent subscription update', {
+              topic: params.topic.topic,
+              numOfClients: cbs.length,
+            });
+          }
+        }),
         topic: params.topic,
       };
-      this._logger.info(`created inner subscription for "${params.topic.topic}"`);
+      this._logger.info('created inner subscription', { topic: params.topic.topic });
       this._innerSubscriptions.push(newRecord);
       record = newRecord;
     }
     record.callbacks[id] = (msg) => sender.send({ message: msg });
     this._subscriptions[id] = record;
+    this._logger.info('added subscription', { id, topic: params.topic.topic });
     return { id: id };
   }
 
   unsubscribe(params: UnsubscribeParams): void {
-    const record = this._subscriptions[params.id];
     const { id } = params;
-    if (record) {
-      delete this._subscriptions[id].callbacks[id];
-      this._logger.info(`removed inner handler for subscription ${id}`);
-      delete this._subscriptions[id];
-      this._logger.info(`removed subscription ${id}`);
-    }
+    this._removeInnerHandler(id);
   }
 
   createPublisher(params: CreatePublisherParams, sender: Sender<never>): number {
@@ -154,7 +157,7 @@ export default class Ros2Plugin {
 
     sender.socket.once('close', () => {
       delete this._publishers[id];
-      this._logger.info(`removed publisher ${id}`);
+      this._logger.info('removed publisher', { id, topic: params.topic.topic });
     });
 
     const found = this._innerPublishers.find((record) => deepEqual(record.topic, params.topic));
@@ -166,17 +169,19 @@ export default class Ros2Plugin {
         publisher: this.transport.createPublisher(this.toRomiTopic(params.topic)),
         topic: params.topic,
       };
-      this._logger.info(`created inner publisher for "${params.topic.topic}"`);
+      this._logger.info('created inner publisher', { topic: params.topic.topic });
       record = newRecord;
       this._innerPublishers.push(record);
     }
     this._publishers[id] = record;
+    this._logger.info('added publisher', { id, topic: params.topic.topic });
     return id;
   }
 
   publish(params: PublishParams): void {
     const record = this._publishers[params.id];
     record && record.publisher.publish(params.message);
+    this._logger.info('publish message', { id: params.id, topic: record.topic.topic });
   }
 
   async serviceCall(params: ServiceCallParams): Promise<unknown> {
@@ -205,4 +210,14 @@ export default class Ros2Plugin {
   private _publishers: Record<number, PublisherRecord> = {};
   private _innerPublishers: PublisherRecord[] = [];
   private _idCounter = 0;
+
+  private _removeInnerHandler(id: number) {
+    const record = this._subscriptions[id];
+    if (record) {
+      delete record.callbacks[id];
+      this._logger.info('removed inner subscription handler', { id, topic: record.topic.topic });
+      delete this._subscriptions[id];
+      this._logger.info('removed subscription', { id, topic: record.topic.topic });
+    }
+  }
 }

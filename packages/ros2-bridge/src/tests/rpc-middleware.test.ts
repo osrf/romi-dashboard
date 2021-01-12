@@ -1,6 +1,6 @@
 import * as msgpack from '@msgpack/msgpack';
 import WebSocket from 'ws';
-import RpcMiddleware, { RpcRequest, RpcResponse } from '../rpc-middleware';
+import RpcMiddleware, { ErrorCodes, RpcRequest, RpcResponse, Sender } from '../rpc-middleware';
 import WebSocketConnect from '../websocket-connect';
 
 function echo(params: any) {
@@ -94,7 +94,7 @@ test('request using string id results in a response with string id', (done) => {
 });
 
 [undefined, null].forEach((id) => {
-  test(`request with ${id} does not return any results`, (done) => {
+  test(`request with id = "${id}" does not return any results`, (done) => {
     rpc.registerHandler('test', echo);
 
     const client = new WebSocket(url);
@@ -107,7 +107,7 @@ test('request using string id results in a response with string id', (done) => {
   }, 1000);
 });
 
-test('rpc error', (done) => {
+test('returns error message when rpc handler throws error', (done) => {
   rpc.registerHandler('test', () => {
     throw new Error('test error');
   });
@@ -116,59 +116,117 @@ test('rpc error', (done) => {
   client.on('message', (data: Buffer) => {
     const resp = msgpack.decode(data) as RpcResponse;
     expect(resp.result).toBeUndefined();
-    expect(resp.error?.code).toBe(1);
+    expect(resp.error?.code).toBe(ErrorCodes.FunctionError);
     expect(resp.error?.message).toBe('test error');
     done();
   });
   client.once('open', () => client.send(makeRpcRequest('test', 'hello', 0)));
 });
 
-test('async rpc streaming responses', (done) => {
-  let even = 0;
-  rpc.registerHandler('testEven', (_, sender) => {
-    const t = setInterval(() => {
-      if (even >= 10) {
-        clearInterval(t);
-        sender.end(even);
+/**
+ * streaming responses should be interleaved, i.e.
+ *
+ * odd: 1
+ * even: 2
+ * odd: 3
+ * even: 4
+ * ...
+ *
+ * and not back-to-back, i.e.
+ *
+ * odd: 1,
+ * odd: 3,
+ * even: 2,
+ * even: 4
+ * ...
+ */
+test('streaming endpoints are interleaved', (done) => {
+  const senders: Record<string, Sender> = {};
+
+  const sendResponses = () => {
+    if (!senders['even'] || !senders['odd']) {
+      fail();
+    }
+    for (let i = 1; i <= 8; ++i) {
+      if (i % 2 === 0) {
+        senders['even'].send(i);
       } else {
-        sender.send(even);
+        senders['odd'].send(i);
       }
-      even += 2;
-    }, 100);
+    }
+    senders['odd'].end(9);
+    senders['even'].end(10);
+  };
+
+  rpc.registerHandler('testEven', (_, sender) => {
+    senders['even'] = sender;
+    if (senders['odd']) {
+      sendResponses();
+    }
   });
 
-  let odd = 1;
   rpc.registerHandler('testOdd', (_, sender) => {
-    const t = setInterval(() => {
-      if (odd >= 9) {
-        clearInterval(t);
-        sender.end(odd);
-      } else {
-        sender.send(odd);
-      }
-      odd += 2;
-    }, 100);
+    senders['odd'] = sender;
+    if (senders['even']) {
+      sendResponses();
+    }
   });
 
   const received: number[] = [];
   const client = new WebSocket(url);
   client.on('message', (data: Buffer) => {
     const resp = msgpack.decode(data) as RpcResponse<number>;
-    if (resp.result === 9 || resp.result === 10) {
-      expect(resp.more).toBeUndefined();
-    } else {
-      expect(resp.more).toBe(true);
-    }
     received.push(resp.result!);
-    if (received.length >= 11) {
-      for (let i = 0; i <= 10; i++) {
-        expect(received[i]).toBe(i);
+    if (received.length === 10) {
+      for (let i = 0; i < 10; ++i) {
+        expect(received[i]).toBe(i + 1);
       }
       done();
     }
   });
   client.once('open', () => {
     client.send(makeRpcRequest('testEven', undefined, 0));
-    setTimeout(() => client.send(makeRpcRequest('testOdd', undefined, 1)), 50);
+    client.send(makeRpcRequest('testOdd', undefined, 1));
   });
 }, 10000);
+
+test('sending string payload results in websocket error 1007', (done) => {
+  const client = new WebSocket(url);
+  client.on('close', (code) => {
+    expect(code).toBe(1007);
+    done();
+  });
+  client.once('open', () => client.send('hello!'));
+});
+
+test('sending invalid binary payload results in websocket error 1007', (done) => {
+  const client = new WebSocket(url);
+  client.on('close', (code) => {
+    expect(code).toBe(1007);
+    done();
+  });
+  const payload = Buffer.alloc(4, 0xdeadbeef);
+  client.once('open', () => client.send(payload));
+});
+
+test('request with unregistered method return no such method error', (done) => {
+  const client = new WebSocket(url);
+  client.on('message', (data) => {
+    const resp = msgpack.decode(data as Buffer) as RpcResponse;
+    expect(resp.error?.code).toBe(ErrorCodes.NoSuchMethod);
+    expect(resp.error?.message).toBe('no such method');
+    done();
+  });
+  client.once('open', () => client.send(makeRpcRequest('test', 'hello', 0)));
+});
+
+test('request for js internal methods returns no such method error', (done) => {
+  const client = new WebSocket(url);
+  client.on('message', (data) => {
+    const resp = msgpack.decode(data as Buffer) as RpcResponse;
+    expect(resp.error?.code).toBe(ErrorCodes.NoSuchMethod);
+    expect(resp.error?.message).toBe('no such method');
+    done();
+  });
+  client.once('open', () => client.send(makeRpcRequest('__proto__', undefined, 0)));
+});

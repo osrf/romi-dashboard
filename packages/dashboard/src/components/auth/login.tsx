@@ -2,6 +2,7 @@ import { Button } from '@material-ui/core';
 import React from 'react';
 import { LoginPage } from 'react-components';
 import { Redirect } from 'react-router';
+import { BASE_PATH } from '../../util/url';
 import { AuthenticatorContext, UserContext } from '../auth/contexts';
 
 export default function Login(): React.ReactElement {
@@ -13,7 +14,7 @@ export default function Login(): React.ReactElement {
   }
 
   return user ? (
-    <Redirect to="/" />
+    <Redirect to={BASE_PATH} />
   ) : (
     <LoginPage title="RoMi Dashboard" logo="assets/ros-health.png">
       <Button id="login-button" onClick={handleRmfLogin} variant="contained">

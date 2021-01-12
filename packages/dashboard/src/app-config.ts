@@ -9,7 +9,6 @@ import ResourceManager from './resource-manager';
 import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajectory-manager';
 import Ros2Transport from './ros2-transport';
 import RpcClient from './rpc-client';
-import { BASE_PATH } from './util/url';
 
 export interface AppConfig {
   authenticator: Authenticator;
@@ -32,7 +31,7 @@ export const appConfig: AppConfig = (() => {
       }
       return JSON.parse(process.env.REACT_APP_AUTH_CONFIG);
     })();
-    const authenticator = new DefaultAuthenticator(authConfig, BASE_PATH);
+    const authenticator = new DefaultAuthenticator(authConfig);
 
     if (!process.env.REACT_APP_ROS2_BRIDGE_SERVER) {
       throw new Error('REACT_APP_ROS2_BRIDGE_SERVER env variable is needed but not defined');
