@@ -1,0 +1,621 @@
+/*
+ * Copyright 2015-present Palantir Technologies, Inc. All rights reserved.
+ */
+@black: #10161a;
+
+@dark-gray1: #182026;
+@dark-gray2: #202b33;
+@dark-gray3: #293742;
+@dark-gray4: #30404d;
+@dark-gray5: #394b59;
+
+@gray1: #5c7080;
+@gray2: #738694;
+@gray3: #8a9ba8;
+@gray4: #a7b6c2;
+@gray5: #bfccd6;
+
+@light-gray1: #ced9e0;
+@light-gray2: #d8e1e8;
+@light-gray3: #e1e8ed;
+@light-gray4: #ebf1f5;
+@light-gray5: #f5f8fa;
+
+@white: #ffffff;
+
+@blue1: #0e5a8a;
+@blue2: #106ba3;
+@blue3: #137cbd;
+@blue4: #2b95d6;
+@blue5: #48aff0;
+
+@green1: #0a6640;
+@green2: #0d8050;
+@green3: #0f9960;
+@green4: #15b371;
+@green5: #3dcc91;
+
+@orange1: #a66321;
+@orange2: #bf7326;
+@orange3: #d9822b;
+@orange4: #f29d49;
+@orange5: #ffb366;
+
+@red1: #a82a2a;
+@red2: #c23030;
+@red3: #db3737;
+@red4: #f55656;
+@red5: #ff7373;
+
+@vermilion1: #9e2b0e;
+@vermilion2: #b83211;
+@vermilion3: #d13913;
+@vermilion4: #eb532d;
+@vermilion5: #ff6e4a;
+
+@rose1: #a82255;
+@rose2: #c22762;
+@rose3: #db2c6f;
+@rose4: #f5498b;
+@rose5: #ff66a1;
+
+@violet1: #5c255c;
+@violet2: #752f75;
+@violet3: #8f398f;
+@violet4: #a854a8;
+@violet5: #c274c2;
+
+@indigo1: #5642a6;
+@indigo2: #634dbf;
+@indigo3: #7157d9;
+@indigo4: #9179f2;
+@indigo5: #ad99ff;
+
+@cobalt1: #1f4b99;
+@cobalt2: #2458b3;
+@cobalt3: #2965cc;
+@cobalt4: #4580e6;
+@cobalt5: #669eff;
+
+@turquoise1: #008075;
+@turquoise2: #00998c;
+@turquoise3: #00b3a4;
+@turquoise4: #14ccbd;
+@turquoise5: #2ee6d6;
+
+@forest1: #1d7324;
+@forest2: #238c2c;
+@forest3: #29a634;
+@forest4: #43bf4d;
+@forest5: #62d96b;
+
+@lime1: #728c23;
+@lime2: #87a629;
+@lime3: #9bbf30;
+@lime4: #b6d94c;
+@lime5: #d1f26d;
+
+@gold1: #a67908;
+@gold2: #bf8c0a;
+@gold3: #d99e0b;
+@gold4: #f2b824;
+@gold5: #ffc940;
+
+@sepia1: #63411e;
+@sepia2: #7d5125;
+@sepia3: #96622d;
+@sepia4: #b07b46;
+@sepia5: #c99765;
+
+@pt-intent-primary: @blue3;
+@pt-intent-success: @green3;
+@pt-intent-warning: @orange3;
+@pt-intent-danger: @red3;
+
+@pt-app-background-color: @light-gray5;
+@pt-dark-app-background-color: @dark-gray3;
+
+@pt-text-color: @dark-gray1;
+@pt-text-color-muted: @gray1;
+@pt-text-color-disabled: fade(@pt-text-color-muted, 50%);
+@pt-heading-color: @pt-text-color;
+@pt-link-color: @blue2;
+@pt-dark-text-color: @light-gray5;
+@pt-dark-text-color-muted: @gray5;
+@pt-dark-text-color-disabled: fade(@pt-dark-text-color-muted, 50%);
+@pt-dark-heading-color: @pt-dark-text-color;
+@pt-dark-link-color: @blue4;
+@pt-text-selection-color: rgba(125, 188, 255, 0.6);
+
+@pt-icon-color: @pt-text-color-muted;
+@pt-icon-color-hover: @pt-text-color;
+@pt-icon-color-disabled: @pt-text-color-disabled;
+@pt-icon-color-selected: @pt-intent-primary;
+@pt-dark-icon-color: @pt-dark-text-color-muted;
+@pt-dark-icon-color-hover: @pt-dark-text-color;
+@pt-dark-icon-color-disabled: @pt-dark-text-color-disabled;
+@pt-dark-icon-color-selected: @pt-intent-primary;
+
+@pt-divider-black: fade(@black, 15%);
+@pt-dark-divider-black: fade(@black, 40%);
+@pt-dark-divider-white: fade(@white, 15%);
+
+@pt-code-text-color: @pt-text-color-muted;
+@pt-dark-code-text-color: @pt-dark-text-color-muted;
+@pt-code-background-color: fade(@white, 70%);
+@pt-dark-code-background-color: fade(@black, 30%);
+
+@pt-grid-size: 10px;
+
+@pt-font-family: -apple-system,
+                 "BlinkMacSystemFont",
+                 "Segoe UI",
+                 "Roboto",
+                 "Oxygen",
+                 "Ubuntu",
+                 "Cantarell",
+                 "Open Sans",
+                 "Helvetica Neue",
+                 sans-serif,
+                 "Icons16"; @pt-font-family-monospace: monospace;
+
+@pt-font-size: @pt-grid-size * 1.4;
+@pt-font-size-large: @pt-grid-size * 1.6;
+@pt-font-size-small: @pt-grid-size * 1.2;
+
+@pt-line-height: (((@pt-grid-size * 1.8) / @pt-font-size) + 0.0001);
+
+@icons16-family: "Icons16";
+@icons20-family: "Icons20";
+
+@pt-icon-size-standard: 16px;
+@pt-icon-size-large: 20px;
+
+@pt-border-radius: floor((@pt-grid-size / 3));
+
+@pt-button-height: @pt-grid-size * 3;
+@pt-button-height-large: @pt-grid-size * 4;
+
+@pt-input-height: @pt-grid-size * 3;
+@pt-input-height-large: @pt-grid-size * 4;
+
+@pt-navbar-height: @pt-grid-size * 5;
+
+@pt-z-index-base: 0;
+@pt-z-index-content: @pt-z-index-base + 10;
+@pt-z-index-overlay: @pt-z-index-content + 10;
+
+@pt-border-shadow-opacity: 0.1;
+@pt-drop-shadow-opacity: 0.2;
+@pt-dark-border-shadow-opacity: @pt-border-shadow-opacity * 2;
+@pt-dark-drop-shadow-opacity: @pt-drop-shadow-opacity * 2;
+
+@pt-elevation-shadow-0: 0 0 0 1px @pt-divider-black;
+@pt-elevation-shadow-1: 0 0 0 1px fade(@black, @pt-border-shadow-opacity * 100%),
+                        0 1px 1px fade(@black, @pt-drop-shadow-opacity * 100%);
+@pt-elevation-shadow-2: 0 0 0 1px fade(@black, @pt-border-shadow-opacity * 100%),
+                        0 1px 1px fade(@black, @pt-drop-shadow-opacity * 100%),
+                        0 2px 6px fade(@black, @pt-drop-shadow-opacity * 100%);
+@pt-elevation-shadow-3: 0 0 0 1px fade(@black, @pt-border-shadow-opacity * 100%),
+                        0 2px 4px fade(@black, @pt-drop-shadow-opacity * 100%),
+                        0 8px 24px fade(@black, @pt-drop-shadow-opacity * 100%);
+@pt-elevation-shadow-4: 0 0 0 1px fade(@black, @pt-border-shadow-opacity * 100%),
+                        0 4px 8px fade(@black, @pt-drop-shadow-opacity * 100%),
+                        0 18px 46px 6px fade(@black, @pt-drop-shadow-opacity * 100%);
+
+@pt-dark-elevation-shadow-0: 0 0 0 1px @pt-dark-divider-black;
+@pt-dark-elevation-shadow-1: 0 0 0 1px fade(@black, @pt-dark-border-shadow-opacity * 100%),
+                             0 1px 1px fade(@black, @pt-dark-drop-shadow-opacity * 100%);
+@pt-dark-elevation-shadow-2: 0 0 0 1px fade(@black, @pt-dark-border-shadow-opacity * 100%),
+                             0 1px 1px fade(@black, @pt-dark-drop-shadow-opacity * 100%),
+                             0 2px 6px fade(@black, @pt-dark-drop-shadow-opacity * 100%);
+@pt-dark-elevation-shadow-3: 0 0 0 1px fade(@black, @pt-dark-border-shadow-opacity * 100%),
+                             0 2px 4px fade(@black, @pt-dark-drop-shadow-opacity * 100%),
+                             0 8px 24px fade(@black, @pt-dark-drop-shadow-opacity * 100%);
+@pt-dark-elevation-shadow-4: 0 0 0 1px fade(@black, @pt-dark-border-shadow-opacity * 100%),
+                             0 4px 8px fade(@black, @pt-dark-drop-shadow-opacity * 100%),
+                             0 18px 46px 6px fade(@black, @pt-dark-drop-shadow-opacity * 100%);
+
+@pt-transition-ease: cubic-bezier(0.4, 1, 0.75, 0.9);
+@pt-transition-ease-bounce: cubic-bezier(0.54, 1.12, 0.38, 1.11);
+@pt-transition-duration: 100ms;
+
+@pt-input-box-shadow: inset 0 0 0 1px fade(@black, 15%),
+                      inset 0 1px 1px fade(@black, @pt-drop-shadow-opacity * 100%);
+
+@pt-dialog-box-shadow: @pt-elevation-shadow-4;
+@pt-popover-box-shadow: @pt-elevation-shadow-3;
+@pt-tooltip-box-shadow: @pt-popover-box-shadow;
+
+@pt-dark-input-box-shadow: inset 0 0 0 1px fade(@black, 30%),
+                           inset 0 1px 1px fade(@black, @pt-dark-drop-shadow-opacity * 100%);
+
+@pt-dark-dialog-box-shadow: @pt-dark-elevation-shadow-4;
+@pt-dark-popover-box-shadow: @pt-dark-elevation-shadow-3;
+@pt-dark-tooltip-box-shadow: @pt-dark-popover-box-shadow;
+
+@pt-icon-blank: "\e900";
+@pt-icon-style: "\e601";
+@pt-icon-align-left: "\e602";
+@pt-icon-align-center: "\e603";
+@pt-icon-align-right: "\e604";
+@pt-icon-align-justify: "\e605";
+@pt-icon-bold: "\e606";
+@pt-icon-italic: "\e607";
+@pt-icon-underline: "\2381";
+@pt-icon-search-around: "\e608";
+@pt-icon-graph-remove: "\e609";
+@pt-icon-group-objects: "\e60a";
+@pt-icon-merge-links: "\e60b";
+@pt-icon-layout: "\e60c";
+@pt-icon-layout-auto: "\e60d";
+@pt-icon-layout-circle: "\e60e";
+@pt-icon-layout-hierarchy: "\e60f";
+@pt-icon-layout-grid: "\e610";
+@pt-icon-layout-group-by: "\e611";
+@pt-icon-layout-skew-grid: "\e612";
+@pt-icon-geosearch: "\e613";
+@pt-icon-heatmap: "\e614";
+@pt-icon-drive-time: "\e615";
+@pt-icon-select: "\e616";
+@pt-icon-predictive-analysis: "\e617";
+@pt-icon-layers: "\e618";
+@pt-icon-locate: "\e619";
+@pt-icon-bookmark: "\e61a";
+@pt-icon-citation: "\e61b";
+@pt-icon-tag: "\e61c";
+@pt-icon-clipboard: "\e61d";
+@pt-icon-selection: "\29bf";
+@pt-icon-timeline-events: "\e61e";
+@pt-icon-timeline-line-chart: "\e61f";
+@pt-icon-timeline-bar-chart: "\e620";
+@pt-icon-applications: "\e621";
+@pt-icon-projects: "\e622";
+@pt-icon-changes: "\e623";
+@pt-icon-notifications: "\e624";
+@pt-icon-lock: "\e625";
+@pt-icon-unlock: "\e626";
+@pt-icon-user: "\e627";
+@pt-icon-search-template: "\e628";
+@pt-icon-inbox: "\e629";
+@pt-icon-more: "\e62a";
+@pt-icon-help: "\003F";
+@pt-icon-calendar: "\e62b";
+@pt-icon-media: "\e62c";
+@pt-icon-link: "\e62d";
+@pt-icon-share: "\e62e";
+@pt-icon-download: "\e62f";
+@pt-icon-document: "\e630";
+@pt-icon-properties: "\e631";
+@pt-icon-import: "\e632";
+@pt-icon-export: "\e633";
+@pt-icon-minimize: "\e634";
+@pt-icon-maximize: "\e635";
+@pt-icon-tick: "\2713";
+@pt-icon-cross: "\2717";
+@pt-icon-plus: "\002b";
+@pt-icon-minus: "\2212";
+@pt-icon-arrow-left: "\2190";
+@pt-icon-arrow-right: "\2192";
+@pt-icon-exchange: "\e636";
+@pt-icon-comparison: "\e637";
+@pt-icon-list: "\2630";
+@pt-icon-filter: "\e638";
+@pt-icon-confirm: "\e639";
+@pt-icon-fork: "\e63a";
+@pt-icon-trash: "\e63b";
+@pt-icon-person: "\e63c";
+@pt-icon-people: "\e63d";
+@pt-icon-add: "\e63e";
+@pt-icon-remove: "\e63f";
+@pt-icon-geolocation: "\e640";
+@pt-icon-zoom-in: "\e641";
+@pt-icon-zoom-out: "\e642";
+@pt-icon-refresh: "\e643";
+@pt-icon-delete: "\e644";
+@pt-icon-cog: "\e645";
+@pt-icon-flag: "\2691";
+@pt-icon-pin: "\e646";
+@pt-icon-warning-sign: "\e647";
+@pt-icon-error: "\e648";
+@pt-icon-info-sign: "\2139";
+@pt-icon-credit-card: "\e649";
+@pt-icon-edit: "\270E";
+@pt-icon-history: "\e64a";
+@pt-icon-search: "\e64b";
+@pt-icon-log-out: "\e64c";
+@pt-icon-star: "\2605";
+@pt-icon-star-empty: "\2606";
+@pt-icon-sort-alphabetical: "\e64d";
+@pt-icon-sort-numerical: "\e64e";
+@pt-icon-sort: "\e64f";
+@pt-icon-folder-open: "\e651";
+@pt-icon-folder-close: "\e652";
+@pt-icon-folder-shared: "\e653";
+@pt-icon-caret-up: "\2303";
+@pt-icon-caret-right: "\232A";
+@pt-icon-caret-down: "\2304";
+@pt-icon-caret-left: "\2329";
+@pt-icon-menu-open: "\e654";
+@pt-icon-menu-closed: "\e655";
+@pt-icon-feed: "\e656";
+@pt-icon-two-columns: "\e657";
+@pt-icon-one-column: "\e658";
+@pt-icon-dot: "\2022";
+@pt-icon-property: "\e65a";
+@pt-icon-time: "\23F2";
+@pt-icon-disable: "\e600";
+@pt-icon-unpin: "\e650";
+@pt-icon-flows: "\e659";
+@pt-icon-new-text-box: "\e65b";
+@pt-icon-new-link: "\e65c";
+@pt-icon-new-object: "\e65d";
+@pt-icon-path-search: "\e65e";
+@pt-icon-automatic-updates: "\e65f";
+@pt-icon-page-layout: "\e660";
+@pt-icon-code: "\e661";
+@pt-icon-map: "\e662";
+@pt-icon-search-text: "\e663";
+@pt-icon-envelope: "\2709";
+@pt-icon-paperclip: "\e664";
+@pt-icon-label: "\e665";
+@pt-icon-globe: "\e666";
+@pt-icon-home: "\2302";
+@pt-icon-th: "\e667";
+@pt-icon-th-list: "\e668";
+@pt-icon-th-derived: "\e669";
+@pt-icon-circle: "\e66a";
+@pt-icon-draw: "\e66b";
+@pt-icon-insert: "\e66c";
+@pt-icon-helper-management: "\e66d";
+@pt-icon-send-to: "\e66e";
+@pt-icon-eye-open: "\e66f";
+@pt-icon-folder-shared-open: "\e670";
+@pt-icon-social-media: "\e671";
+@pt-icon-arrow-up: "\2191 ";
+@pt-icon-arrow-down: "\2193 ";
+@pt-icon-arrows-horizontal: "\2194 ";
+@pt-icon-arrows-vertical: "\2195 ";
+@pt-icon-resolve: "\e672";
+@pt-icon-graph: "\e673";
+@pt-icon-briefcase: "\e674";
+@pt-icon-dollar: "\0024";
+@pt-icon-ninja: "\e675";
+@pt-icon-delta: "\0394";
+@pt-icon-barcode: "\e676";
+@pt-icon-torch: "\e677";
+@pt-icon-widget: "\e678";
+@pt-icon-unresolve: "\e679";
+@pt-icon-offline: "\e67a";
+@pt-icon-zoom-to-fit: "\e67b";
+@pt-icon-add-to-artifact: "\e67c";
+@pt-icon-map-marker: "\e67d";
+@pt-icon-chart: "\e67e";
+@pt-icon-control: "\e67f";
+@pt-icon-multi-select: "\e680";
+@pt-icon-direction-left: "\e681";
+@pt-icon-direction-right: "\e682";
+@pt-icon-database: "\e683";
+@pt-icon-pie-chart: "\e684";
+@pt-icon-full-circle: "\e685";
+@pt-icon-square: "\e686";
+@pt-icon-print: "\2399";
+@pt-icon-presentation: "\e687";
+@pt-icon-ungroup-objects: "\e688";
+@pt-icon-chat: "\e689";
+@pt-icon-comment: "\e68a";
+@pt-icon-circle-arrow-right: "\e68b";
+@pt-icon-circle-arrow-left: "\e68c";
+@pt-icon-circle-arrow-up: "\e68d";
+@pt-icon-circle-arrow-down: "\e68e";
+@pt-icon-upload: "\e68f";
+@pt-icon-asterisk: "\002a";
+@pt-icon-cloud: "\2601";
+@pt-icon-cloud-download: "\e690";
+@pt-icon-cloud-upload: "\e691";
+@pt-icon-repeat: "\e692";
+@pt-icon-move: "\e693";
+@pt-icon-chevron-left: "\e694";
+@pt-icon-chevron-right: "\e695";
+@pt-icon-chevron-up: "\e696";
+@pt-icon-chevron-down: "\e697";
+@pt-icon-random: "\e698";
+@pt-icon-fullscreen: "\e699";
+@pt-icon-log-in: "\e69a";
+@pt-icon-heart: "\2665";
+@pt-icon-office: "\e69b";
+@pt-icon-duplicate: "\e69c";
+@pt-icon-ban-circle: "\e69d";
+@pt-icon-camera: "\e69e";
+@pt-icon-mobile-video: "\e69f";
+@pt-icon-video: "\e6a0";
+@pt-icon-film: "\e6a1";
+@pt-icon-settings: "\e6a2";
+@pt-icon-volume-off: "\e6a3";
+@pt-icon-volume-down: "\e6a4";
+@pt-icon-volume-up: "\e6a5";
+@pt-icon-music: "\e6a6";
+@pt-icon-step-backward: "\e6a7";
+@pt-icon-fast-backward: "\e6a8";
+@pt-icon-pause: "\e6a9";
+@pt-icon-stop: "\e6aa";
+@pt-icon-play: "\e6ab";
+@pt-icon-fast-forward: "\e6ac";
+@pt-icon-step-forward: "\e6ad";
+@pt-icon-eject: "\23cf";
+@pt-icon-record: "\e6ae";
+@pt-icon-desktop: "\e6af";
+@pt-icon-phone: "\260e";
+@pt-icon-lightbulb: "\e6b0";
+@pt-icon-glass: "\e6b1";
+@pt-icon-tint: "\e6b2";
+@pt-icon-flash: "\e6b3";
+@pt-icon-font: "\e6b4";
+@pt-icon-header: "\e6b5";
+@pt-icon-saved: "\e6b6";
+@pt-icon-floppy-disk: "\e6b7";
+@pt-icon-book: "\e6b8";
+@pt-icon-hand-right: "\e6b9";
+@pt-icon-hand-up: "\e6ba";
+@pt-icon-hand-down: "\e6bb";
+@pt-icon-hand-left: "\e6bc";
+@pt-icon-thumbs-up: "\e6bd";
+@pt-icon-thumbs-down: "\e6be";
+@pt-icon-box: "\e6bf";
+@pt-icon-compressed: "\e6c0";
+@pt-icon-shopping-cart: "\e6c1";
+@pt-icon-shop: "\e6c2";
+@pt-icon-layout-linear: "\e6c3";
+@pt-icon-undo: "\238c";
+@pt-icon-redo: "\e6c4";
+@pt-icon-code-block: "\e6c5";
+@pt-icon-double-caret-vertical: "\e6c6";
+@pt-icon-double-caret-horizontal: "\e6c7";
+@pt-icon-sort-alphabetical-desc: "\e6c8";
+@pt-icon-sort-numerical-desc: "\e6c9";
+@pt-icon-take-action: "\e6ca";
+@pt-icon-contrast: "\e6cb";
+@pt-icon-eye-off: "\e6cc";
+@pt-icon-timeline-area-chart: "\e6cd";
+@pt-icon-doughnut-chart: "\e6ce";
+@pt-icon-layer: "\e6cf";
+@pt-icon-grid: "\e6d0";
+@pt-icon-polygon-filter: "\e6d1";
+@pt-icon-add-to-folder: "\e6d2";
+@pt-icon-layout-balloon: "\e6d3";
+@pt-icon-layout-sorted-clusters: "\e6d4";
+@pt-icon-sort-asc: "\e6d5";
+@pt-icon-sort-desc: "\e6d6";
+@pt-icon-small-cross: "\e6d7";
+@pt-icon-small-tick: "\e6d8";
+@pt-icon-power: "\e6d9";
+@pt-icon-column-layout: "\e6da";
+@pt-icon-arrow-top-left: "\2196";
+@pt-icon-arrow-top-right: "\2197";
+@pt-icon-arrow-bottom-right: "\2198";
+@pt-icon-arrow-bottom-left: "\2199";
+@pt-icon-mugshot: "\e6db";
+@pt-icon-headset: "\e6dc";
+@pt-icon-text-highlight: "\e6dd";
+@pt-icon-hand: "\e6de";
+@pt-icon-chevron-backward: "\e6df";
+@pt-icon-chevron-forward: "\e6e0";
+@pt-icon-rotate-document: "\e6e1";
+@pt-icon-rotate-page: "\e6e2";
+@pt-icon-badge: "\e6e3";
+@pt-icon-grid-view: "\e6e4";
+@pt-icon-function: "\e6e5";
+@pt-icon-waterfall-chart: "\e6e6";
+@pt-icon-stacked-chart: "\e6e7";
+@pt-icon-pulse: "\e6e8";
+@pt-icon-new-person: "\e6e9";
+@pt-icon-exclude-row: "\e6ea";
+@pt-icon-pivot-table: "\e6eb";
+@pt-icon-segmented-control: "\e6ec";
+@pt-icon-highlight: "\e6ed";
+@pt-icon-filter-list: "\e6ee";
+@pt-icon-cut: "\e6ef";
+@pt-icon-annotation: "\e6f0";
+@pt-icon-pivot: "\e6f1";
+@pt-icon-ring: "\e6f2";
+@pt-icon-heat-grid: "\e6f3";
+@pt-icon-gantt-chart: "\e6f4";
+@pt-icon-variable: "\e6f5";
+@pt-icon-manual: "\e6f6";
+@pt-icon-add-row-top: "\e6f7";
+@pt-icon-add-row-bottom: "\e6f8";
+@pt-icon-add-column-left: "\e6f9";
+@pt-icon-add-column-right: "\e6fa";
+@pt-icon-remove-row-top: "\e6fb";
+@pt-icon-remove-row-bottom: "\e6fc";
+@pt-icon-remove-column-left: "\e6fd";
+@pt-icon-remove-column-right: "\e6fe";
+@pt-icon-double-chevron-left: "\e6ff";
+@pt-icon-double-chevron-right: "\e701";
+@pt-icon-double-chevron-up: "\e702";
+@pt-icon-double-chevron-down: "\e703";
+@pt-icon-key-control: "\e704";
+@pt-icon-key-command: "\e705";
+@pt-icon-key-shift: "\e706";
+@pt-icon-key-backspace: "\e707";
+@pt-icon-key-delete: "\e708";
+@pt-icon-key-escape: "\e709";
+@pt-icon-key-enter: "\e70a";
+@pt-icon-calculator: "\e70b";
+@pt-icon-horizontal-bar-chart: "\e70c";
+@pt-icon-small-plus: "\e70d";
+@pt-icon-small-minus: "\e70e";
+@pt-icon-step-chart: "\e70f";
+@pt-icon-euro: "\20ac";
+@pt-icon-drag-handle-vertical: "\e715";
+@pt-icon-drag-handle-horizontal: "\e716";
+@pt-icon-mobile-phone: "\e717";
+@pt-icon-sim-card: "\e718";
+@pt-icon-trending-up: "\e719";
+@pt-icon-trending-down: "\e71a";
+@pt-icon-curved-range-chart: "\e71b";
+@pt-icon-vertical-bar-chart-desc: "\e71c";
+@pt-icon-horizontal-bar-chart-desc: "\e71d";
+@pt-icon-document-open: "\e71e";
+@pt-icon-document-share: "\e71f";
+@pt-icon-horizontal-distribution: "\e720";
+@pt-icon-vertical-distribution: "\e721";
+@pt-icon-alignment-left: "\e722";
+@pt-icon-alignment-vertical-center: "\e723";
+@pt-icon-alignment-right: "\e724";
+@pt-icon-alignment-top: "\e725";
+@pt-icon-alignment-horizontal-center: "\e726";
+@pt-icon-alignment-bottom: "\e727";
+@pt-icon-git-pull: "\e728";
+@pt-icon-git-merge: "\e729";
+@pt-icon-git-branch: "\e72a";
+@pt-icon-git-commit: "\e72b";
+@pt-icon-git-push: "\e72c";
+@pt-icon-build: "\e72d";
+@pt-icon-symbol-circle: "\e72e";
+@pt-icon-symbol-square: "\e72f";
+@pt-icon-symbol-diamond: "\e730";
+@pt-icon-symbol-cross: "\e731";
+@pt-icon-symbol-triangle-up: "\e732";
+@pt-icon-symbol-triangle-down: "\e733";
+@pt-icon-wrench: "\e734";
+@pt-icon-application: "\e735";
+@pt-icon-send-to-graph: "\e736";
+@pt-icon-send-to-map: "\e737";
+@pt-icon-join-table: "\e738";
+@pt-icon-derive-column: "\e739";
+@pt-icon-image-rotate-left: "\e73a";
+@pt-icon-image-rotate-right: "\e73b";
+@pt-icon-known-vehicle: "\e73c";
+@pt-icon-unknown-vehicle: "\e73d";
+@pt-icon-scatter-plot: "\e73e";
+@pt-icon-oil-field: "\e73f";
+@pt-icon-rig: "\e740";
+@pt-icon-map-create: "\e741";
+@pt-icon-key-option: "\e742";
+@pt-icon-list-detail-view: "\e743";
+@pt-icon-swap-vertical: "\e744";
+@pt-icon-swap-horizontal: "\e745";
+@pt-icon-numbered-list: "\e746";
+@pt-icon-new-grid-item: "\e747";
+@pt-icon-git-repo: "\e748";
+@pt-icon-git-new-branch: "\e749";
+@pt-icon-manually-entered-data: "\e74a";
+@pt-icon-airplane: "\e74b";
+@pt-icon-merge-columns: "\e74f";
+@pt-icon-split-columns: "\e750";
+@pt-icon-dashboard: "\e751";
+@pt-icon-publish-function: "\e752";
+@pt-icon-path: "\e753";
+@pt-icon-moon: "\e754";
+@pt-icon-remove-column: "\e755";
+@pt-icon-numerical: "\e756";
+@pt-icon-key-tab: "\e757";
+@pt-icon-regression-chart: "\e758";
+@pt-icon-translate: "\e759";
+@pt-icon-eye-on: "\e75a";
+@pt-icon-vertical-bar-chart-asc: "\e75b";
+@pt-icon-horizontal-bar-chart-asc: "\e75c";
+@pt-icon-grouped-bar-chart: "\e75d";
+@pt-icon-full-stacked-chart: "\e75e";
+@pt-icon-endorsed: "\e75f";

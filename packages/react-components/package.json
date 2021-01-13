@@ -7,6 +7,7 @@
     "start": "../../node_modules/.bin/start-storybook -p 6006 -s stories",
     "prepare": "npm run build",
     "build": "npm run lint && tsc --build",
+    "build:less": "lessc --autoprefix=defaults --source-map lib/layout-manager/index.less lib/layout-manager.css",
     "build:watch": "tsc --build --watch",
     "build:storybook": "tsc --build stories && ../../node_modules/.bin/build-storybook -s stories",
     "clean": "tsc --build --clean",
@@ -19,8 +20,10 @@
   "dependencies": {
     "@osrf/romi-js-core-interfaces": "^0.1.4",
     "debug": "^4.2.0",
+    "less": "^4.1.0",
+    "less-plugin-autoprefix": "^2.0.0",
     "node-vibrant": "^3.1.6",
-    "react-grid-layout": "^1.2.0"
+    "react-mosaic-component": "^4.1.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.4",
