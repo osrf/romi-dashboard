@@ -8,12 +8,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
-
-const useStyles = makeStyles({
-  table: {
-    backgroundColor: '#eee',
-  },
-});
+import { TableStyles } from './table-styles';
 
 function robotModeToString(robotMode: RomiCore.RobotMode): string {
   switch (robotMode.mode) {
@@ -38,24 +33,28 @@ function robotModeToString(robotMode: RomiCore.RobotMode): string {
   }
 }
 
-interface RobotInfoProps {
+export interface RobotInfo {
   fleetName: string;
   robot: RomiCore.RobotState;
 }
 
-export function RobotRoster(props: Array<RobotInfoProps>) {
-  const classes = useStyles();
+export interface RobotRosterProps extends React.HTMLProps<HTMLDivElement> {
+  robots: RobotInfo[];
+}
+
+export const RobotRoster = (props: RobotRosterProps): JSX.Element => {
+  const classes = TableStyles();
 
   return (
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
-          <TableRow>
-            <TableCell>Fleet</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Model</TableCell>
-            <TableCell>Mode</TableCell>
-            <TableCell>Battery</TableCell>
+          <TableRow className={classes.tableHeadRow}>
+            <TableCell className={classes.tableHeadCell}>Fleet</TableCell>
+            <TableCell className={classes.tableHeadCell}>Name</TableCell>
+            <TableCell className={classes.tableHeadCell}>Model</TableCell>
+            <TableCell className={classes.tableHeadCell}>Mode</TableCell>
+            <TableCell className={classes.tableHeadCell}>Battery</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -72,4 +71,4 @@ export function RobotRoster(props: Array<RobotInfoProps>) {
       </Table>
     </TableContainer>
   );
-}
+};
