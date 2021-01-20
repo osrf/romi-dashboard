@@ -29,4 +29,4 @@ export function getFullPath(path: string, basePath = BASE_PATH): string {
 }
 
 export const LOGIN_ROUTE = getFullPath('login');
-export const GRID_ROUTE = getFullPath('grid');
+export const MOSAIC_ROUTE = getFullPath('mosaic');

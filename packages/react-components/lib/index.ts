@@ -7,7 +7,6 @@ export * from './dispensers';
 export * from './doors';
 export * from './door-list';
 export * from './geometry-utils';
-export * from './layout-manager';
 export * from './lifts';
 export * from './lift-table';
 export * from './omni-panel';

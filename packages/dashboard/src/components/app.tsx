@@ -12,7 +12,7 @@ import PrivateRoute from './auth/private-route';
 import { User } from './auth/user';
 import Dashboard from './dashboard/dashboard';
 import NotFoundPage from './error-pages/page-not-found';
-import LayoutManager from './layout-manager';
+import LayoutManager from './layout-manager/layout-manager';
 import { RmfApp } from './rmf-app';
 
 const theme = createMuiTheme({

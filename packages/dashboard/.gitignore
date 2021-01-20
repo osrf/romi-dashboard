@@ -12,6 +12,7 @@
 
 # production
 /build
+/src/components/layout-manager/layout-manager.css.map
 
 # misc
 .DS_Store

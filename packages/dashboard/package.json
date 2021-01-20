@@ -13,6 +13,8 @@
     "start:rmf": "ts-node -P e2e/tsconfig.json e2e/startBackend.ts",
     "start:ros2-bridge": "ros2-bridge --port 50002 --trajectoryServerUrl ws://localhost:8006 --publicKey e2e/certs/keycloak.pub",
     "build": "react-scripts build",
+    "build:less": "lessc --autoprefix=defaults --source-map src/components/layout-manager/index.less src/components/layout-manager/layout-manager.css",
+    "clean": "tsc --build --clean",
     "test": "react-scripts test",
     "test:coverage": "npm run test -- --coverage --watchAll=false",
     "test:e2e": "cd e2e && npm test",
@@ -21,8 +23,10 @@
     "eject": "react-scripts eject",
     "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\"",
     "setup": "node ./scripts/setup/setup.js && node ./scripts/setup/get-icons.js",
-    "storybook": "start-storybook -p 9009 -s public -s src/stories/static",
-    "build:storybook": "build-storybook -s public -s src/stories/static"
+    "storybook": "REACT_APP_MOCK=1 ../../node_modules/.bin/start-storybook -p 9009 -s public -s src/stories",
+    "storybook_old": "start-storybook -p 9009 -s public -s src/stories/static",
+    "build:storybook": "tsc --build src/stories && ../../../node_modules/.bin/build-storybook -s src/stories",
+    "build:storybook_old": "build-storybook -s public -s src/stories/static"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -66,12 +70,15 @@
     "eventemitter3": "^4.0.7",
     "keycloak-js": "^11.0.2",
     "leaflet": "^1.7.1",
+    "less": "^4.1.0",
+    "less-plugin-autoprefix": "^2.0.0",
     "node-vibrant": "^3.1.5",
     "react-async": "^10.0.0",
     "react-components": "file:../react-components",
     "react-hotkeys": "^2.0.0",
     "react-leaflet": "^2.7.0",
     "react-leaflet-control": "^2.1.1",
+    "react-mosaic-component": "^4.1.1",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.1",
