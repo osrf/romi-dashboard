@@ -3,7 +3,7 @@ import Debug from 'debug';
 import React, { useContext } from 'react';
 import { LiftMarker as LiftMarker_, LiftMarkerProps, useLiftMarkerStyles } from 'react-components';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
-import { LiftStateContext } from '../rmf-contexts';
+import { LiftStateContext } from '../rmf-app';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 const debug = Debug('ScheduleVisualizer:LiftsOverlay');

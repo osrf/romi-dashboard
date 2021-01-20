@@ -1,18 +1,18 @@
 import {
   Checkbox,
+  Divider,
   Drawer,
   DrawerProps,
-  makeStyles,
-  useMediaQuery,
-  Typography,
-  Divider,
   IconButton,
+  makeStyles,
+  Typography,
+  useMediaQuery,
 } from '@material-ui/core';
-import React from 'react';
-import DrawerHeader from './drawer-header';
-import DirectionsIcon from '@material-ui/icons/Directions';
 import BugReportIcon from '@material-ui/icons/BugReport';
-import { TooltipContext } from '../app-contexts';
+import DirectionsIcon from '@material-ui/icons/Directions';
+import React from 'react';
+import { AppControllerContext, TooltipsContext } from '../app-contexts';
+import DrawerHeader from './drawer-header';
 
 export interface HotKeysDrawerProps extends DrawerProps {
   handleCloseButton(): void;
@@ -27,7 +27,8 @@ export default function HelpDrawer(props: HotKeysDrawerProps): React.ReactElemen
   const modalProp = {
     disableEnforceFocus: true,
   };
-  const { showTooltips, toggleTooltips } = React.useContext(TooltipContext);
+  const { showTooltips } = React.useContext(TooltipsContext);
+  const { toggleTooltips } = React.useContext(AppControllerContext);
 
   return (
     <Drawer
@@ -45,7 +46,7 @@ export default function HelpDrawer(props: HotKeysDrawerProps): React.ReactElemen
             handleCloseButton();
           }}
         >
-          <IconButton id="show-hotkeys-btn" color="inherit">
+          <IconButton id="show-hotkeys-btn" aria-label="close-help" color="inherit">
             <DirectionsIcon />
           </IconButton>
           <Typography variant="h5"> Hotkeys </Typography>

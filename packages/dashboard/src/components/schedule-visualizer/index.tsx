@@ -5,16 +5,16 @@ import * as L from 'leaflet';
 import React from 'react';
 import { ColorContext, robotHash } from 'react-components';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
-import { NegotiationTrajectoryResponse } from '../../negotiation-status-manager';
 import {
   Conflict,
   DefaultTrajectoryManager,
   RobotTrajectoryManager,
   Trajectory,
   TrajectoryResponse,
-} from '../../robot-trajectory-manager';
+} from '../../managers/robot-trajectory-manager';
+import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { toBlobUrl } from '../../util';
-import { NotificationBarContext } from '../notification-bar';
+import { AppControllerContext } from '../app-contexts';
 import DispensersOverlay from './dispensers-overlay';
 import DoorsOverlay from './doors-overlay';
 import LiftsOverlay from './lift-overlay';
@@ -40,12 +40,12 @@ export interface MapFloorLayer {
   bounds: L.LatLngBounds;
 }
 
-export interface ScheduleVisualizerProps {
-  buildingMap: Readonly<RomiCore.BuildingMap>;
-  fleets: Readonly<RomiCore.FleetState[]>;
-  trajManager?: Readonly<RobotTrajectoryManager>;
+export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
+  buildingMap: RomiCore.BuildingMap;
+  fleets: RomiCore.FleetState[];
+  trajManager?: RobotTrajectoryManager;
   negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
-  mapFloorLayerSorted: Readonly<string[]>;
+  mapFloorSort?(levels: RomiCore.Level[]): string[];
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
   onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
@@ -65,8 +65,16 @@ export function calcMaxBounds(
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
-  const { negotiationTrajStore, mapFloorLayerSorted } = props;
+  const { buildingMap, negotiationTrajStore, mapFloorSort } = props;
   const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
+
+  const mapFloorLayerSorted = React.useMemo(
+    () =>
+      mapFloorSort
+        ? mapFloorSort(buildingMap.levels)
+        : buildingMap.levels.map((level) => level.name),
+    [mapFloorSort, buildingMap.levels],
+  );
 
   const classes = useStyles();
 
@@ -199,7 +207,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
 
   // Show notification when a conflict happens.
-  const notificationDispatch = React.useContext(NotificationBarContext);
+  const { showNotification: notificationDispatch } = React.useContext(AppControllerContext);
   React.useEffect(() => {
     function getConflictRobotMessage(): string {
       let message = '';
@@ -400,6 +408,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           )}
         </LayersControl.Overlay>
       </LayersControl>
+      {props.children}
     </LMap>
   );
 }

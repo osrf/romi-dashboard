@@ -1,4 +1,4 @@
-import { RobotResourceManager, RobotResource } from '../resource-manager-robots';
+import { RobotResource, RobotResourceManager } from '../managers/resource-manager-robots';
 import fakeResources from '../mock/data/resources';
 
 describe('The correct operation of the getAvailablePlacesPerFleet method of the RobotResourceManager class', () => {

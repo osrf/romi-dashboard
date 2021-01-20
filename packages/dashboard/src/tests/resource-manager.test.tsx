@@ -1,4 +1,4 @@
-import ResourceManager from '../resource-manager';
+import ResourceManager from '../managers/resource-manager';
 import fakeResources from '../mock/data/resources';
 
 describe('Correct instantiation', () => {

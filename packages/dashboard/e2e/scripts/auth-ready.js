@@ -15,7 +15,7 @@ async function authReady(timeout = 30000) {
     let retryTimer;
     const waitAuthReady = () => {
       const authIpAddress = process.env.AUTH_GATEWAY_IP;
-      req = http.request(`http://${authIpAddress ? authIpAddress : 'localhost'}:8080/auth/`, () => {
+      req = http.request(`http://${authIpAddress ? authIpAddress : 'localhost'}:8088/auth/`, () => {
         clearTimeout(timer);
         clearTimeout(retryTimer);
         res(true);

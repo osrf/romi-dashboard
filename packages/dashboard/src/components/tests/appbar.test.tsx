@@ -1,64 +1,65 @@
-import { act, HookResult, renderHook } from '@testing-library/react-hooks';
-import React from 'react';
-import { render, RenderResult } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import { act } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 import FakeAuthenticator from '../../mock/fake-authenticator';
+import { AppController, AppControllerContext } from '../app-contexts';
 import AppBar from '../appbar';
 import { AuthenticatorContext, UserContext } from '../auth/contexts';
-import { ReducerMainMenuProps, useMainMenuReducer } from '../reducers/main-menu-reducer';
-import { mainMenuInitialValues } from '../dashboard';
+import { makeMockAppController } from './mock-app-controller';
 
 describe('AppBar', () => {
-  /**
-   * Since we do not have visual elements to test in this component (change of button color, etc).
-   * We test the correct change of state through events. Because it is a unit test we cannot test
-   * the connection with other components here (e.g. omnipanel).
-   */
-  let result: HookResult<ReducerMainMenuProps>;
-  let root: RenderResult;
+  let appController: AppController;
+  const Base = (props: React.PropsWithChildren<{}>) => {
+    return (
+      <AppControllerContext.Provider value={appController}>
+        {props.children}
+      </AppControllerContext.Provider>
+    );
+  };
 
   beforeEach(() => {
-    const hookResult = renderHook(() => useMainMenuReducer(mainMenuInitialValues));
-    result = hookResult.result;
-    root = render(<AppBar reducerMainMenuDispatch={result.current.dispatch} alarmState={null} />);
-  });
-
-  test('hides omnipanel when dashboard button is clicked', () => {
-    act(() => {
-      const elements = root.getAllByTestId('omnipanel-tooltip-tooltip');
-      for (let element in elements) {
-        userEvent.click(elements[element]);
-      }
-    });
-    expect(result.current.state.showOmniPanel).toBe(false);
+    appController = makeMockAppController();
   });
 
   test('show settings when settings button is clicked', () => {
+    const root = render(
+      <Base>
+        <AppBar />
+      </Base>,
+    );
     act(() => {
       const elements = root.getAllByTestId('setting-tooltip-tooltip');
       for (let element in elements) {
         userEvent.click(elements[element]);
       }
     });
-    expect(result.current.state.showSettings).toBe(true);
+    expect(appController.showSettings).toBeCalledTimes(1);
   });
 
   test('shows help when help button is clicked', () => {
+    const root = render(
+      <Base>
+        <AppBar />
+      </Base>,
+    );
     act(() => {
       const elements = root.getAllByTestId('help-tooltip-tooltip');
       for (let element in elements) {
         userEvent.click(elements[element]);
       }
     });
-    expect(result.current.state.showHelp).toBe(true);
+    expect(appController.showHelp).toBeCalledTimes(1);
   });
 
   test('renders tooltips when it is enabled', async () => {
+    const root = render(
+      <Base>
+        <AppBar />
+      </Base>,
+    );
     userEvent.hover(root.getByTestId('help-tooltip-tooltip'));
     expect(await root.findByText('Help tools and resources')).toBeTruthy();
-
-    userEvent.hover(root.getByTestId('omnipanel-tooltip-tooltip'));
-    expect(await root.findByText('View all available panel options')).toBeTruthy();
 
     userEvent.hover(root.getByTestId('setting-tooltip-tooltip'));
     expect(await root.findByText('Define dashboard trajectory settings')).toBeTruthy();
@@ -66,9 +67,11 @@ describe('AppBar', () => {
 
   test('user button is shown when there is an authenticated user', () => {
     const root = render(
-      <UserContext.Provider value={{ username: 'test' }}>
-        <AppBar reducerMainMenuDispatch={result.current.dispatch} alarmState={null} />
-      </UserContext.Provider>,
+      <Base>
+        <UserContext.Provider value={{ username: 'test' }}>
+          <AppBar />
+        </UserContext.Provider>
+      </Base>,
     );
     expect(root.getByLabelText('user-btn')).toBeTruthy();
   });
@@ -77,11 +80,13 @@ describe('AppBar', () => {
     const authenticator = new FakeAuthenticator();
     const spy = jest.spyOn(authenticator, 'logout').mockImplementation(() => undefined as any);
     const root = render(
-      <AuthenticatorContext.Provider value={authenticator}>
-        <UserContext.Provider value={{ username: 'test' }}>
-          <AppBar reducerMainMenuDispatch={result.current.dispatch} alarmState={null} />
-        </UserContext.Provider>
-      </AuthenticatorContext.Provider>,
+      <Base>
+        <AuthenticatorContext.Provider value={authenticator}>
+          <UserContext.Provider value={{ username: 'test' }}>
+            <AppBar />
+          </UserContext.Provider>
+        </AuthenticatorContext.Provider>
+      </Base>,
     );
     userEvent.click(root.getByLabelText('user-btn'));
     userEvent.click(root.getByText('Logout'));

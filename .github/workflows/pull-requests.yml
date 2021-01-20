@@ -36,7 +36,7 @@ jobs:
           npm run bootstrap -- packages/dashboard
         working-directory: .
       - name: unit test
-        run: . /opt/rmf/setup.bash && npm test
+        run: . /opt/rmf/setup.bash && npm run test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:

@@ -1,7 +1,7 @@
 import Debug from 'debug';
 import React from 'react';
 import { DispenserMarker as DispenserMarker_ } from 'react-components';
-import { DispenserResource } from '../../resource-manager-dispensers';
+import { DispenserResource } from '../../managers/resource-manager-dispensers';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import { ResourcesContext } from '../app-contexts';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';

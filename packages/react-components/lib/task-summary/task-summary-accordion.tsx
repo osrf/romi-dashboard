@@ -2,7 +2,12 @@ import React from 'react';
 import Debug from 'debug';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { IconButton, makeStyles, Typography } from '@material-ui/core';
-import { TreeItem, TreeView } from '@material-ui/lab';
+import {
+  MultiSelectTreeViewProps,
+  SingleSelectTreeViewProps,
+  TreeItem,
+  TreeView,
+} from '@material-ui/lab';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
@@ -52,11 +57,11 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
   const [expanded, setExpanded] = React.useState<string[]>([]);
   const [selected, setSelected] = React.useState<string>('');
 
-  const handleToggle = (event: React.ChangeEvent<Record<string, unknown>>, nodeIds: string[]) => {
+  const handleToggle: MultiSelectTreeViewProps['onNodeSelect'] = (event, nodeIds) => {
     setExpanded(nodeIds);
   };
 
-  const handleSelect = (event: React.ChangeEvent<Record<string, unknown>>, nodeIds: string) => {
+  const handleSelect: SingleSelectTreeViewProps['onNodeSelect'] = (event, nodeIds) => {
     setSelected(nodeIds);
   };
 

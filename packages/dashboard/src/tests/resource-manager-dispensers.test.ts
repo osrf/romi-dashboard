@@ -1,5 +1,8 @@
+import {
+  DispenserResource,
+  DispenserResourceManager,
+} from '../managers/resource-manager-dispensers';
 import fakeResources from '../mock/data/resources';
-import { DispenserResource, DispenserResourceManager } from '../resource-manager-dispensers';
 
 describe('The correct operation of the getIconPath method of the DispenserResourceManager class', () => {
   let manager: DispenserResourceManager;

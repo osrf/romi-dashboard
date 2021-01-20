@@ -3,7 +3,7 @@ import RclnodejsTransport from '@osrf/romi-js-rclnodejs-transport';
 import * as events from 'events';
 import winston from 'winston';
 import Ros2Plugin, { MessageResult, Ros2Service, Ros2Topic } from '..';
-import { Sender } from '../../../rpc-middleware';
+import { RpcResponse, Sender } from '../../../rpc-middleware';
 
 type TestMessage = { data: string };
 type TestServiceRequest = { data: boolean };
@@ -195,8 +195,11 @@ test('can publish', (done) => {
     done();
   });
 
-  const publisher = plugin.createPublisher({ topic: testTopic }, mockSender);
-  timer = setInterval(() => plugin.publish({ id: publisher, message: { data: 'test' } }), 10);
+  let publisher: number | undefined = undefined;
+  mockSender.end = (resp: number) => (publisher = resp);
+  plugin.createPublisher({ topic: testTopic }, mockSender);
+  expect(typeof publisher).toBe('number');
+  timer = setInterval(() => plugin.publish({ id: publisher!, message: { data: 'test' } }), 10);
 });
 
 test('reuse publisher for same topic, type and options', () => {

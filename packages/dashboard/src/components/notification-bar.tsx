@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
-import Alert, { AlertProps } from '@material-ui/lab/Alert';
 import { Snackbar } from '@material-ui/core';
+import Alert, { AlertProps } from '@material-ui/lab/Alert';
+import React, { useEffect, useState } from 'react';
 
 export interface NotificationBarProps {
   message: string | undefined | null;
@@ -11,7 +11,6 @@ export interface NotificationBarProps {
 const NotificationBar = (props: NotificationBarProps) => {
   const [showAlert, setShowAlert] = useState(false);
   const { message, type } = props;
-  const notificationDispatch = useContext(NotificationBarContext);
 
   useEffect(() => {
     if (!!message) {
@@ -21,11 +20,6 @@ const NotificationBar = (props: NotificationBarProps) => {
 
   const onMessageClose = () => {
     setShowAlert(false);
-    notificationDispatch &&
-      notificationDispatch({
-        message: undefined,
-        type: undefined,
-      });
   };
 
   return (
@@ -38,7 +32,3 @@ const NotificationBar = (props: NotificationBarProps) => {
 };
 
 export default NotificationBar;
-
-export const NotificationBarContext = React.createContext<React.Dispatch<
-  React.SetStateAction<NotificationBarProps | null>
-> | null>(null);

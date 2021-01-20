@@ -117,7 +117,12 @@ async function main() {
   }
   app.use(rpc.middleware);
 
-  process.on('SIGINT', () => server.close());
+  process.on('SIGINT', () => {
+    // `server.close` does not automatically close sockets so it would cause the app to continue
+    // running. Properly closing all sockets would require managing server events and the server
+    // does not track the ongoing connections.
+    process.exit();
+  });
   server.listen(config.port, config.host);
 }
 

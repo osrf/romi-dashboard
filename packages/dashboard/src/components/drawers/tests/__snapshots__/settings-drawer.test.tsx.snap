@@ -33,6 +33,7 @@ exports[`Settings Drawer should render correctly 1`] = `
       item={true}
     >
       <WithStyles(ForwardRef(IconButton))
+        aria-label="close-settings"
         className="makeStyles-button-6"
         id="closeDrawerButton"
         onClick={[Function]}

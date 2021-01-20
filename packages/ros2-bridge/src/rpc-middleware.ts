@@ -169,7 +169,7 @@ export default class RpcMiddleware {
        */
       if (handlerRet === undefined) {
         if (handler.length === 1) {
-          sender.end(null);
+          !isNotification(req) && sender.end(null);
         }
       } else {
         if (handler.length === 1) {

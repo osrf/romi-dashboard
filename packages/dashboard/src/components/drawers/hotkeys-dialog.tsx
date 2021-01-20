@@ -31,10 +31,12 @@ export default function HotKeysDialog(props: HotKeysDialogProps): React.ReactEle
       maxWidth={'sm'}
     >
       <DialogTitle id="customized-dialog-title">
-        <Typography variant="h6">Hotkeys</Typography>
-        <IconButton aria-label="close" className={classes.closeButton} onClick={handleClose}>
-          <CloseIcon />
-        </IconButton>
+        <div>
+          <Typography variant="h6">Hotkeys</Typography>
+          <IconButton aria-label="close" className={classes.closeButton} onClick={handleClose}>
+            <CloseIcon />
+          </IconButton>
+        </div>
       </DialogTitle>
       <DialogContent className={classes.dialogContent} dividers>
         <div className={classes.detail}>

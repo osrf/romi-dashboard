@@ -1,12 +1,15 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { KeycloakConfig } from 'keycloak-js';
 import Authenticator, { DefaultAuthenticator } from './components/auth/authenticator';
+import ResourceManager from './managers/resource-manager';
 import fakeResources from './mock/data/resources';
 import FakeAuthenticator from './mock/fake-authenticator';
 import FakeTrajectoryManager from './mock/fake-traj-manager';
 import { FakeTransport } from './mock/fake-transport';
-import ResourceManager from './resource-manager';
-import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajectory-manager';
+import {
+  DefaultTrajectoryManager,
+  RobotTrajectoryManager,
+} from './managers/robot-trajectory-manager';
 import Ros2Transport from './ros2-transport';
 import RpcClient from './rpc-client';
 

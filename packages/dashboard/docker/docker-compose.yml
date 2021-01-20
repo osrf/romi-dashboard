@@ -8,7 +8,7 @@ services:
     networks:
       - romi_dashboard_e2e_network
     ports:
-      - 8080:8080
+      - 8088:8080
   unit-test:
     image: docker.pkg.github.com/osrf/rmf-web/e2e
     volumes:

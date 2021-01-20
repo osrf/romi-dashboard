@@ -1,4 +1,4 @@
-import { ResourceConfigurationsType } from '../../resource-manager';
+import { ResourceConfigurationsType } from '../../managers/resource-manager';
 
 export default function fakeResources(): ResourceConfigurationsType {
   return {

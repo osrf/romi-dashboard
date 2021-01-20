@@ -8,7 +8,7 @@ import {
   TrajectoryMarker as TrajectoryMarker_,
   TrajectoryMarkerProps,
 } from 'react-components';
-import { Conflict, Trajectory } from '../../robot-trajectory-manager';
+import { Conflict, Trajectory } from '../../managers/robot-trajectory-manager';
 import { TrajectoryAnimation } from '../../settings';
 import { SettingsContext } from '../app-contexts';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';

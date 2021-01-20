@@ -1,4 +1,10 @@
-import { Accordion, AccordionProps, makeStyles, Divider } from '@material-ui/core';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionProps,
+  Divider,
+  makeStyles,
+} from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
@@ -96,14 +102,14 @@ export const DispenserAccordion = React.forwardRef(
             <DispenserInfo dispenser={dispenserState} />
           </ItemAccordionDetails>
         ) : (
-          <React.Fragment>
+          <AccordionDetails>
             <Divider />
             <Typography className={classes.typography} variant="body1">
               The state of <b>{dispenser}</b> dispenser is unknown. Please check if{' '}
               <b>{dispenser} </b>
               is working properly.
             </Typography>
-          </React.Fragment>
+          </AccordionDetails>
         )}
       </Accordion>
     );

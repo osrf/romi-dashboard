@@ -3,8 +3,8 @@ import L from 'leaflet';
 import React from 'react';
 import { DispenserMarker } from 'react-components';
 import { Map as LMap } from 'react-leaflet';
+import ResourceManager from '../../../managers/resource-manager';
 import fakeResources from '../../../mock/data/resources';
-import ResourceManager from '../../../resource-manager';
 import { ResourcesContext } from '../../app-contexts';
 import DispensersOverlay from '../dispensers-overlay';
 

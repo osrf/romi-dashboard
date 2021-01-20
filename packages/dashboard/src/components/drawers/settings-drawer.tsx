@@ -58,6 +58,7 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
         <Grid item>
           <IconButton
             id="closeDrawerButton"
+            aria-label="close-settings"
             className={classes.button}
             onClick={() => handleCloseButton(false)}
           >

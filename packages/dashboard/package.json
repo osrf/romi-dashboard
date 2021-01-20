@@ -101,6 +101,7 @@
       "!src/app-config.ts",
       "!src/leaflet/**",
       "!src/components/auth/authenticator.ts",
+      "!src/managers/**",
       "!**/stories/**",
       "!**/mock/**"
     ],

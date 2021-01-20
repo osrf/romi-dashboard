@@ -6,14 +6,12 @@ type Events = {
 };
 
 export default class TaskManager extends EventEmitter<Events> {
-  tasks(): RomiCore.TaskSummary[] {
-    return Array.from(Object.values(this._tasks));
-  }
+  tasks: Record<string, RomiCore.TaskSummary> = {};
 
   startSubscription(transport: RomiCore.Transport) {
     this._subscriptions.push(
       transport.subscribe(RomiCore.taskSummaries, (taskSummary) => {
-        this._tasks[taskSummary.task_id] = taskSummary;
+        this.tasks[taskSummary.task_id] = taskSummary;
         this.emit('updated');
       }),
     );
@@ -23,6 +21,5 @@ export default class TaskManager extends EventEmitter<Events> {
     this._subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
-  private _tasks: Record<string, RomiCore.TaskSummary> = {};
   private _subscriptions: RomiCore.Subscription[] = [];
 }

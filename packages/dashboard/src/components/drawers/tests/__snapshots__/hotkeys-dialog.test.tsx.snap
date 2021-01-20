@@ -11,18 +11,20 @@ exports[`Hotkeys Dialog Component renders correctly 1`] = `
   <WithStyles(ForwardRef(DialogTitle))
     id="customized-dialog-title"
   >
-    <WithStyles(ForwardRef(Typography))
-      variant="h6"
-    >
-      Hotkeys
-    </WithStyles(ForwardRef(Typography))>
-    <WithStyles(ForwardRef(IconButton))
-      aria-label="close"
-      className="makeStyles-closeButton-1"
-      onClick={[Function]}
-    >
-      <CloseIcon />
-    </WithStyles(ForwardRef(IconButton))>
+    <div>
+      <WithStyles(ForwardRef(Typography))
+        variant="h6"
+      >
+        Hotkeys
+      </WithStyles(ForwardRef(Typography))>
+      <WithStyles(ForwardRef(IconButton))
+        aria-label="close"
+        className="makeStyles-closeButton-1"
+        onClick={[Function]}
+      >
+        <CloseIcon />
+      </WithStyles(ForwardRef(IconButton))>
+    </div>
   </WithStyles(ForwardRef(DialogTitle))>
   <WithStyles(ForwardRef(DialogContent))
     className="makeStyles-dialogContent-2"

@@ -3,7 +3,7 @@ import Debug from 'debug';
 import React, { useContext } from 'react';
 import { DoorMarker as DoorMarker_, DoorMarkerProps } from 'react-components';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
-import { DoorStateContext } from '../rmf-contexts';
+import { DoorStateContext } from '../rmf-app';
 import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 
 const debug = Debug('ScheduleVisualizer:DoorsOverlay');

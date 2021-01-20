@@ -18,7 +18,7 @@ process.env.AUTH_GATEWAY_IP = defaultAuthGatewayIp;
 const authConfig = {
   realm: 'master',
   clientId: 'romi-dashboard',
-  url: `http://${defaultAuthGatewayIp ? defaultAuthGatewayIp : 'localhost'}:8080/auth`,
+  url: `http://${defaultAuthGatewayIp ? defaultAuthGatewayIp : 'localhost'}:8088/auth`,
 };
 process.env.REACT_APP_AUTH_CONFIG = JSON.stringify(authConfig);
 
