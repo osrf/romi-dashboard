@@ -1,0 +1,77 @@
+name: End-to-End
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  schedule:
+    # 2am SGT
+    - cron: '0 18 * * *'
+env:
+  CI: true
+jobs:
+  build-docker-images:
+    name: Push Docker images to GitHub Packages
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Push rmf image to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/rmf
+          tags: nightly
+          path: packages/dashboard/docker/rmf
+      - name: Push e2e image to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/e2e
+          tags: latest
+          dockerfile: packages/dashboard/docker/e2e.Dockerfile
+  e2e-tests:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    if: always()
+    needs: build-docker-images
+    container:
+      image: docker.pkg.github.com/osrf/rmf-web/e2e
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      options: --privileged --ipc=host
+    defaults: 
+      run:
+        shell: bash
+        working-directory: packages/dashboard
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: bootstrap
+        run: |
+          . /opt/rmf/setup.bash
+          npm config set unsafe-perm
+          npm run bootstrap -- packages/dashboard
+          docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+          cd packages/dashboard
+          npm run sync:docker
+          cd e2e
+          npm ci
+        working-directory: .
+      - name: e2e test
+        run: |
+          . /opt/rmf/setup.bash
+          cd e2e && (npm test || npm test || npm test)
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: screenshots
+          path: e2e/artifacts

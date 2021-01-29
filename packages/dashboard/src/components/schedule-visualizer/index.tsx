@@ -8,10 +8,10 @@ import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } fr
 import {
   Conflict,
   DefaultTrajectoryManager,
-  RobotTrajectoryManager,
   Trajectory,
   TrajectoryResponse,
 } from '../../managers/robot-trajectory-manager';
+import { FleetStateContext, RmfIngressContext } from '../rmf-app';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { toBlobUrl } from '../../util';
 import { AppControllerContext } from '../app-contexts';
@@ -42,8 +42,6 @@ export interface MapFloorLayer {
 
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   buildingMap: RomiCore.BuildingMap;
-  fleets: RomiCore.FleetState[];
-  trajManager?: RobotTrajectoryManager;
   negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
   mapFloorSort?(levels: RomiCore.Level[]): string[];
   onDoorClick?(door: RomiCore.Door): void;
@@ -105,15 +103,20 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   );
   const [bound, setBound] = React.useState(initialBounds);
 
+  const fleetStates = React.useContext(FleetStateContext);
+  const fleets = React.useMemo(() => Object.values(fleetStates), [fleetStates]);
+
+  const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext);
+
   const robots = React.useMemo(
     () =>
-      props.fleets.reduce<Record<string, RomiCore.RobotState>>((prev, fleet) => {
+      fleets.reduce<Record<string, RomiCore.RobotState>>((prev, fleet) => {
         fleet.robots.forEach((robot) => {
           prev[robotHash(robot.name, fleet.name)] = robot;
         });
         return prev;
       }, {}),
-    [props.fleets],
+    [fleets],
   );
 
   const trajLookahead = 60000; // 1 min
@@ -179,8 +182,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   React.useEffect(() => {
     let interval: number;
     (async () => {
-      const trajManager = props.trajManager;
-
       async function updateTrajectory() {
         if (!curMapFloorLayer || !trajManager) {
           return;
@@ -204,7 +205,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       interval = window.setInterval(updateTrajectory, trajAnimDuration);
     })();
     return () => clearInterval(interval);
-  }, [props.trajManager, curMapFloorLayer, trajAnimDuration]);
+  }, [trajManager, curMapFloorLayer, trajAnimDuration]);
 
   // Show notification when a conflict happens.
   const { showNotification: notificationDispatch } = React.useContext(AppControllerContext);
@@ -379,7 +380,7 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               <RobotsOverlay
                 currentFloorName={curLevelName}
                 bounds={curMapFloorLayer.bounds}
-                fleets={props.fleets}
+                fleets={fleets}
                 onRobotClick={props.onRobotClick}
                 conflictRobotNames={conflictRobotNames}
               />

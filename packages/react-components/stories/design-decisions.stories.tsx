@@ -1,4 +1,5 @@
-import { Divider, Typography } from '@material-ui/core';
+import { Divider, Typography, Button } from '@material-ui/core';
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { Story } from '@storybook/react';
 import React from 'react';
 import { DispenserAccordion, StatusLabel } from '../lib';
@@ -17,6 +18,35 @@ const styles: Record<string, React.CSSProperties> = {
     margin: '1rem 0',
   },
 };
+
+function ToggleDispenserState(): JSX.Element {
+  const [toggle, setToggle] = React.useState(true);
+
+  const dispenserState: RomiCore.DispenserState | null = toggle
+    ? makeDispenserState({
+        guid: 'Stateless dispenser',
+        mode: RomiCore.DispenserState.IDLE,
+        request_guid_queue: [],
+        seconds_remaining: 0,
+        time: { sec: 0, nanosec: 0 },
+      })
+    : null;
+
+  const handleToggle = () => {
+    setToggle(!toggle);
+  };
+
+  return (
+    <div>
+      <Button variant="contained" onClick={handleToggle}>
+        Toggle Dispenser State
+      </Button>
+      <div style={{ ...styles.spacing, width: 400 }}>
+        <DispenserAccordion dispenser={statelessDispenserGuid} dispenserState={dispenserState} />
+      </div>
+    </div>
+  );
+}
 
 export const handleLongName: Story = (args) => (
   <div style={styles.root}>
@@ -51,16 +81,15 @@ export const handleUnknown: Story = () => (
   </div>
 );
 
-export const ItemsWithUnknownState: Story = (args) => (
+export const ItemsWithUnknownState: Story = () => (
   <div>
     <Typography variant="body1">
       There are situations where the state of a component (for example, dispenser or robots) is not
       known due to them being disconnected from RMF or other reasons. We would display a message to
-      show users that the current state of the item is unknown.
+      show users that the current state of the item is unknown. Press button below to change the
+      state of dispenser panel to <b>null</b>.
     </Typography>
     <Divider style={{ margin: '1rem 0' }} />
-    <div style={{ ...styles.spacing, width: 400 }}>
-      <DispenserAccordion dispenser={statelessDispenserGuid} dispenserState={null} {...args} />
-    </div>
+    <ToggleDispenserState />
   </div>
 );

@@ -1,0 +1,35 @@
+name: ros2-bridge
+on:
+  pull_request:
+    paths:
+      - 'packages/react-components/**'
+  push:
+    branches:
+      - main
+env:
+  CI: true
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    container:
+      image: ros:foxy
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/ros2-bridge
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: bootstrap
+        run: |
+          . /opt/ros/foxy/setup.bash
+          npm config set unsafe-perm
+          npm run bootstrap -- packages/ros2-bridge
+        working-directory: .
+      - name: build
+        run: . /opt/ros/foxy/setup.bash && npm run build
+      - name: test
+        run: . /opt/ros/foxy/setup.bash && npm test

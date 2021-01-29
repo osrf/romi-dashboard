@@ -1,0 +1,37 @@
+name: react-components
+on:
+  pull_request:
+    paths:
+      - 'packages/react-components/**'
+  push:
+    branches:
+      - main
+env:
+  CI: true
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/react-components
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: bootstrap
+        run: |
+          npm config set unsafe-perm
+          npm run bootstrap -- packages/react-components
+        working-directory: .
+      - name: build
+        run: npm run build:storybook && npm run build
+      - name: test
+        run: npm run test:coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: react-components

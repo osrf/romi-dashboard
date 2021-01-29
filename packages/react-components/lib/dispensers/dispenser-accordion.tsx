@@ -1,26 +1,21 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionProps,
-  Divider,
-  makeStyles,
-} from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+import { Accordion, AccordionProps, makeStyles } from '@material-ui/core';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
 import ItemAccordionDetails from '../item-accordion-details';
 import ItemAccordionSummary from '../item-accordion-summary';
-import { SimpleInfo } from '../simple-info';
+import { ErrorOverlay } from '../error-overlay';
+import { SimpleInfo, SimpleInfoProps } from '../simple-info';
 
 const debug = Debug('Dispensers:DispenserAccordion');
 
 interface DispenserInfoProps {
   dispenser: RomiCore.DispenserState;
+  overrideStyle?: SimpleInfoProps['overrideStyle'];
 }
 
 const DispenserInfo = (props: DispenserInfoProps) => {
-  const { dispenser } = props;
+  const { dispenser, overrideStyle } = props;
 
   const data = [
     { name: 'Name', value: dispenser.guid },
@@ -33,7 +28,7 @@ const DispenserInfo = (props: DispenserInfoProps) => {
     { name: 'Seconds Remaining', value: dispenser.seconds_remaining },
   ];
 
-  return <SimpleInfo infoData={data} />;
+  return <SimpleInfo infoData={data} overrideStyle={overrideStyle ? overrideStyle : undefined} />;
 };
 
 function dispenserModeToString(mode: number): string {
@@ -58,6 +53,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const overrideStyles = makeStyles(() => ({
+  container: {
+    display: 'table',
+    borderCollapse: 'collapse',
+    width: '100%',
+    overflowX: 'auto',
+    userSelect: 'none',
+  },
+}));
+
 export interface DispenserAccordionProps extends Omit<AccordionProps, 'children'> {
   /**
    * Pre-condition: `dispenser === dispenserState.guid`
@@ -71,6 +76,21 @@ export const DispenserAccordion = React.forwardRef(
     const { dispenserState, dispenser, ...otherProps } = props;
     debug(`render ${dispenser}`);
     const classes = useStyles();
+    const overrideClasses = overrideStyles();
+
+    // TODO: refactor this into a common custom hook to handle stored state
+    // in future if we need it to track the states of other items.
+    function usePrevDispenserState(dispenserState: RomiCore.DispenserState | null) {
+      const ref = React.useRef<RomiCore.DispenserState | null>(null);
+      React.useEffect(() => {
+        if (dispenserState) {
+          ref.current = dispenserState;
+        }
+      });
+      return ref.current;
+    }
+    const previousState = usePrevDispenserState(dispenserState);
+    // end of TODO
 
     const getStatusLabelClass = () => {
       switch (dispenserState?.mode) {
@@ -97,20 +117,22 @@ export const DispenserAccordion = React.forwardRef(
             variant: statusLabelClass ? 'normal' : 'unknown',
           }}
         />
-        {dispenserState ? (
-          <ItemAccordionDetails>
-            <DispenserInfo dispenser={dispenserState} />
-          </ItemAccordionDetails>
-        ) : (
-          <AccordionDetails>
-            <Divider />
-            <Typography className={classes.typography} variant="body1">
-              The state of <b>{dispenser}</b> dispenser is unknown. Please check if{' '}
-              <b>{dispenser} </b>
-              is working properly.
-            </Typography>
-          </AccordionDetails>
-        )}
+        <ItemAccordionDetails>
+          <ErrorOverlay
+            errorMsg={
+              !dispenserState
+                ? 'Dispenser is not sending states. Please check if it is working properly.'
+                : null
+            }
+          >
+            <React.Fragment>
+              {dispenserState && <DispenserInfo dispenser={dispenserState} />}
+              {!dispenserState && previousState && (
+                <DispenserInfo dispenser={previousState} overrideStyle={overrideClasses} />
+              )}
+            </React.Fragment>
+          </ErrorOverlay>
+        </ItemAccordionDetails>
       </Accordion>
     );
   },
