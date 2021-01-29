@@ -1,6 +1,8 @@
-import { RobotRoster, RobotInfo, RobotRosterProps } from 'react-components';
+import { RobotRoster, RobotInfo } from 'react-components';
 import { MosaicWindow, MosaicBranch } from 'react-mosaic-component';
 import './layout-manager.css';
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import React from 'react';
 
 const test_robots: RobotInfo[] = [
   {
@@ -41,10 +43,14 @@ const test_robots: RobotInfo[] = [
   },
 ];
 
-export default function RobotRosterWindow(_props: {}): React.ReactElement {
+export interface RobotRosterWindowProps extends React.HTMLProps<HTMLDivElement> {
+  path: MosaicBranch[];
+}
+
+export default function RobotRosterWindow(props: RobotRosterWindowProps): React.ReactElement {
   return (
     <MosaicWindow<string>
-      path={_props.path}
+      path={props.path}
       className="layout-manager-theme"
       title="Robots"
       toolbarControls={[]}
