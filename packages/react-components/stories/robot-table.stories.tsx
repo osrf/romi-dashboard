@@ -1,8 +1,12 @@
-import { RobotRoster, RobotInfo } from 'react-components';
-import { MosaicWindow, MosaicBranch } from 'react-mosaic-component';
-import './layout-manager.css';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
+import { Meta, Story } from '@storybook/react';
 import React from 'react';
+import { RobotTable, RobotInfo } from '../lib';
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
+
+export default {
+  title: 'Robot Table',
+  component: RobotTable,
+} as Meta;
 
 const test_robots: RobotInfo[] = [
   {
@@ -43,19 +47,4 @@ const test_robots: RobotInfo[] = [
   },
 ];
 
-export interface RobotRosterWindowProps extends React.HTMLProps<HTMLDivElement> {
-  path: MosaicBranch[];
-}
-
-export default function RobotRosterWindow(props: RobotRosterWindowProps): React.ReactElement {
-  return (
-    <MosaicWindow<string>
-      path={props.path}
-      className="layout-manager-theme"
-      title="Robots"
-      toolbarControls={[]}
-    >
-      <RobotRoster robots={test_robots} />
-    </MosaicWindow>
-  );
-}
+export const RobotTableStory: Story = (args) => <RobotTable robots={test_robots} />;

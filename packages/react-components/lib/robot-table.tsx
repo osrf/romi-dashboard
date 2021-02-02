@@ -38,11 +38,11 @@ export interface RobotInfo {
   robot: RomiCore.RobotState;
 }
 
-export interface RobotRosterProps extends React.HTMLProps<HTMLDivElement> {
+export interface RobotTableProps extends React.HTMLProps<HTMLDivElement> {
   robots: RobotInfo[];
 }
 
-export const RobotRoster = (props: RobotRosterProps): JSX.Element => {
+export const RobotTable = (props: RobotTableProps): JSX.Element => {
   const classes = TableStyles();
 
   return (

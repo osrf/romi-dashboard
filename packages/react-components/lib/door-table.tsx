@@ -10,7 +10,7 @@ import Paper from '@material-ui/core/Paper';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { TableStyles } from './table-styles';
 
-export interface DoorListProps extends React.HTMLProps<HTMLDivElement> {
+export interface DoorTableProps extends React.HTMLProps<HTMLDivElement> {
   doors: RomiCore.DoorState[];
 }
 
@@ -27,7 +27,7 @@ function doorModeToString(doorMode: RomiCore.DoorMode): string {
   }
 }
 
-export const DoorList = (props: DoorListProps): JSX.Element => {
+export const DoorTable = (props: DoorTableProps): JSX.Element => {
   const classes = TableStyles();
 
   return (
