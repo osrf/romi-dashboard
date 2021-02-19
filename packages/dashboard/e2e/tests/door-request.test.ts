@@ -1,5 +1,5 @@
 import { Element } from '@wdio/sync';
-import { makeLauncher } from '../rmf-launcher';
+import { makeLauncher } from '../../rmf-launcher';
 import { login, overwriteClick } from './utils';
 
 describe('door request', () => {

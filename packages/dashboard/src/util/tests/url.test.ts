@@ -24,6 +24,22 @@ describe('normalizePath', () => {
   test('all at once', () => {
     expect(normalizePath('some//path/other/////path///')).toBe('/some/path/other/path');
   });
+
+  test('return the normalized path portion when given a url', () => {
+    expect(normalizePath('http://test.com/foo')).toBe('/foo');
+  });
+
+  test('return "/" when url does not contain path portion', () => {
+    expect(normalizePath('http://test.com')).toBe('/');
+  });
+
+  test('return normalized path when url contains fragment', () => {
+    expect(normalizePath('http://test.com/foo#fragment')).toBe('/foo');
+  });
+
+  test('return normalized path when url contains query', () => {
+    expect(normalizePath('http://test.com/foo?query=hello')).toBe('/foo');
+  });
 });
 
 describe('getFullPath', () => {

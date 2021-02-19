@@ -1,13 +1,12 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
-import appConfig from '../../app-config';
 import DispenserStateManager from '../../managers/dispenser-state-manager';
 import DoorStateManager from '../../managers/door-state-manager';
 import FleetManager from '../../managers/fleet-manager';
 import LiftStateManager from '../../managers/lift-state-manager';
 import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
 import TaskManager from '../../managers/task-manager';
-import { AppControllerContext } from '../app-contexts';
+import { AppConfigContext, AppControllerContext } from '../app-contexts';
 import {
   BuildingMapContext,
   DispenserStateContext,
@@ -28,6 +27,7 @@ enum ConnectionState {
 }
 
 function TransportContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
+  const appConfig = React.useContext(AppConfigContext);
   const [transport, setTransport] = React.useState<RomiCore.Transport | null>(null);
   const { showLoadingScreen } = React.useContext(AppControllerContext);
   const [connectionState, setConnectionState] = React.useState(() =>
@@ -46,7 +46,7 @@ function TransportContextsProvider(props: React.PropsWithChildren<{}>): JSX.Elem
         setConnectionState(ConnectionState.Disconnected);
       }
     })();
-  }, []);
+  }, [appConfig]);
 
   React.useEffect(() => {
     switch (connectionState) {
@@ -231,6 +231,7 @@ function TaskContextsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
 }
 
 function RmfIngressProvider(props: React.PropsWithChildren<{}>): JSX.Element {
+  const appConfig = React.useContext(AppConfigContext);
   const [rmfIngress, setRmfIngress] = React.useState<RmfIngress>(() => ({
     dispenserStateManager: new DispenserStateManager(),
     doorStateManager: new DoorStateManager(),
@@ -253,7 +254,7 @@ function RmfIngressProvider(props: React.PropsWithChildren<{}>): JSX.Element {
         trajectoryManager,
       }));
     })();
-  }, []);
+  }, [appConfig]);
 
   return (
     <RmfIngressContext.Provider value={rmfIngress}>{props.children}</RmfIngressContext.Provider>

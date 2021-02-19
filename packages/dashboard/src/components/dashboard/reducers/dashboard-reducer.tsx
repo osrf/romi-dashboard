@@ -53,7 +53,7 @@ export const dashboardReducer = (
       return { ...state, [DashboardActionType.CurrentView]: action.payload };
     case DashboardActionType.ResetView:
       state.stackNavigator.reset();
-      return state;
+      return { ...state, [DashboardActionType.CurrentView]: state.stackNavigator.reset() };
     default:
       console.error('Unexpected action');
       return state;

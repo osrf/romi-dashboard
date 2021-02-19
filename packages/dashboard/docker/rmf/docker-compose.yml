@@ -1,5 +1,0 @@
-version: "3"
-services:
-  build:
-    build: .
-    image: docker.pkg.github.com/osrf/rmf-web/rmf:nightly

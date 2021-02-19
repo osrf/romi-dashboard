@@ -23,6 +23,7 @@ const allPackages = [
   'packages/ros2-bridge',
   'packages/react-components',
   'packages/dashboard',
+  'packages/api-server',
 ];
 const scope = process.argv.length > 2 ? process.argv.slice(2) : allPackages;
 

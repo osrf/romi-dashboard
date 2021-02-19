@@ -1,10 +1,10 @@
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { render } from '@testing-library/react';
 import L from 'leaflet';
 import React from 'react';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { Map as LMap } from 'react-leaflet';
-import officeMap from '../../../mock/data/building-map-office';
 import LiftsOverlay, { getLiftModeVariant } from '../lift-overlay';
+import officeMap from './building-map-office';
 
 function getLift() {
   return officeMap.lifts;

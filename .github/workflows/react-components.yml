@@ -23,6 +23,7 @@ jobs:
           node-version: 12
       - name: bootstrap
         run: |
+          pip3 install pipenv
           npm config set unsafe-perm
           npm run bootstrap -- packages/react-components
         working-directory: .

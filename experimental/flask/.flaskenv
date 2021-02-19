@@ -1,2 +1,0 @@
-FLASK_APP=flask_sqlite3.py
-FLASK_ENV=development

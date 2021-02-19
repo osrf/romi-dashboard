@@ -4,7 +4,7 @@ import React from 'react';
 import { DispenserMarker } from 'react-components';
 import { Map as LMap } from 'react-leaflet';
 import ResourceManager from '../../../managers/resource-manager';
-import fakeResources from '../../../mock/data/resources';
+import fakeResources from '../../../managers/__mocks__/resources';
 import { ResourcesContext } from '../../app-contexts';
 import DispensersOverlay from '../dispensers-overlay';
 

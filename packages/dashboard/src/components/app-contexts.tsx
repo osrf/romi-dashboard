@@ -1,4 +1,5 @@
 import React from 'react';
+import appConfig, { AppConfig } from '../app-config';
 import ResourceManager from '../managers/resource-manager';
 import { defaultSettings, Settings } from '../settings';
 import { LoadingScreenProps } from './loading-screen';
@@ -54,3 +55,5 @@ export const AppControllerContext = React.createContext<AppController>({
   toggleTooltips: () => {},
   showLoadingScreen: () => {},
 });
+
+export const AppConfigContext = React.createContext<AppConfig>(appConfig);

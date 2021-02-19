@@ -59,11 +59,6 @@ exports[`renders well with the appropriate data 1`] = `
     />
     <Overlay
       checked={true}
-      data-component="NegotiationTrajCheckbox"
-      name="Negotiation Trajectories"
-    />
-    <Overlay
-      checked={true}
       name="Doors"
     />
     <Overlay

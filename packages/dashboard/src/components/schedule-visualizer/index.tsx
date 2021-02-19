@@ -43,6 +43,7 @@ export interface MapFloorLayer {
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   buildingMap: RomiCore.BuildingMap;
   negotiationTrajStore: Readonly<Record<string, NegotiationTrajectoryResponse>>;
+  showTrajectories?: boolean;
   mapFloorSort?(levels: RomiCore.Level[]): string[];
   onDoorClick?(door: RomiCore.Door): void;
   onLiftClick?(lift: RomiCore.Lift): void;
@@ -63,7 +64,7 @@ export function calcMaxBounds(
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
-  const { buildingMap, negotiationTrajStore, mapFloorSort } = props;
+  const { buildingMap, negotiationTrajStore, mapFloorSort, showTrajectories } = props;
   const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
 
   const mapFloorLayerSorted = React.useMemo(
@@ -195,17 +196,21 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           },
         });
         debug('set trajectories');
-        setTrajectories((prev) => ({
-          ...prev,
-          [curMapFloorLayer.level.name]: resp,
-        }));
+        if (showTrajectories === undefined || showTrajectories) {
+          setTrajectories((prev) => ({
+            ...prev,
+            [curMapFloorLayer.level.name]: resp,
+          }));
+        } else {
+          setTrajectories({});
+        }
       }
 
       await updateTrajectory();
       interval = window.setInterval(updateTrajectory, trajAnimDuration);
     })();
     return () => clearInterval(interval);
-  }, [trajManager, curMapFloorLayer, trajAnimDuration]);
+  }, [trajManager, curMapFloorLayer, trajAnimDuration, showTrajectories]);
 
   // Show notification when a conflict happens.
   const { showNotification: notificationDispatch } = React.useContext(AppControllerContext);
@@ -328,28 +333,22 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
           )}
         </LayersControl.Overlay>
 
-        <LayersControl.Overlay
-          name="Negotiation Trajectories"
-          data-component="NegotiationTrajCheckbox"
-          checked
-        >
-          {curMapFloorLayer && (
-            <Pane>
-              <ColorContext.Provider value={negotiationColors}>
-                <RobotTrajectoriesOverlay
-                  bounds={curMapFloorLayer.bounds}
-                  robots={robots}
-                  trajectories={
-                    negotiationTrajStore[curLevelName]
-                      ? props.negotiationTrajStore[curLevelName].values
-                      : []
-                  }
-                  conflicts={getConflicts(curLevelName)}
-                />
-              </ColorContext.Provider>
-            </Pane>
-          )}
-        </LayersControl.Overlay>
+        {curMapFloorLayer && (
+          <Pane>
+            <ColorContext.Provider value={negotiationColors}>
+              <RobotTrajectoriesOverlay
+                bounds={curMapFloorLayer.bounds}
+                robots={robots}
+                trajectories={
+                  negotiationTrajStore[curLevelName]
+                    ? props.negotiationTrajStore[curLevelName].values
+                    : []
+                }
+                conflicts={getConflicts(curLevelName)}
+              />
+            </ColorContext.Provider>
+          </Pane>
+        )}
 
         <LayersControl.Overlay name="Doors" checked>
           {curMapFloorLayer && (

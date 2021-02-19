@@ -1,4 +1,4 @@
-import { makeLauncher } from '../rmf-launcher';
+import { makeLauncher } from '../../rmf-launcher';
 import { login, openRequestForm, overwriteClick, requestLoop } from './utils';
 
 describe('Loop request for task summary', () => {

@@ -2,19 +2,11 @@
 
 # dockert = short for docker-trampoline.
 
-# simple script that runs a command with "pkexec" if user is not in "docker" group.
-# this is needed because we don't have a tty for sudo to work. "pkexec" runs a command as root and
-# prompts for the password in a gui.
+# Simple script that runs a command with "sudo" if user is not in "docker" group.
+# Because it is not able to enter sudo password when running in background,
+# `sudo` is used with `ssh-askpass` to present a graphical prompt.
 if groups | grep -q '\bdocker\b' || [[ $(id -u) == 0 ]]; then
   exec "$@"
 else
-  # execute command as root, we can't use sudo as we don't get an interactive tty. "pkexec" is the
-  # gui alternative that prompts for a password in a popup.
-
-  # pkexec always runs in the user's home directory so we need to change it back to the original
-  # directory. Can't use `cd` because it is a shell command instead of an executable, so we need to
-  # run the command under a subshell, we also can't use "$@" because the args would not be properly
-  # escaped. https://superuser.com/questions/403263/how-to-pass-bash-script-arguments-to-a-subshell
-  cmd="$(printf "${1+ %q}" "$@")"
-  exec pkexec bash -c "cd $(pwd) && $cmd"
+  SUDO_ASKPASS=$(which ssh-askpass) exec sudo -A "$@"
 fi

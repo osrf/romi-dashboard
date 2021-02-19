@@ -1,4 +1,4 @@
-import { makeLauncher } from '../rmf-launcher';
+import { makeLauncher } from '../../rmf-launcher';
 import { getRobotLocations, login, overwriteClick } from './utils';
 
 describe('loop request', () => {

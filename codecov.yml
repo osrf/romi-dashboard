@@ -6,7 +6,16 @@ flags:
   dashboard:
     paths:
       - packages/dashboard
-    api-server:
-      - packages/api-server
-    react-components:
+    carryforward: true
+  react-components:
+    paths:
       - packages/react-components
+    carryforward: true
+  ros2-bridge:
+    paths:
+      - packages/ros2-bridge
+    carryforward: true
+  api-server:
+    paths:
+      - packages/api-server
+    carryforward: true

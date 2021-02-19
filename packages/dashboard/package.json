@@ -2,15 +2,11 @@
   "name": "romi-dashboard",
   "version": "0.0.1-alpha.0",
   "private": true,
-  "homepage": ".",
   "scripts": {
-    "start": ". e2e/env.sh && concurrently npm:start:ros2-bridge npm:start:auth npm:start:rmf npm:start:react",
-    "start:react-auth": ". e2e/env.sh && concurrently npm:start:auth npm:start:react",
-    "start:docker": ". e2e/env.sh && scripts/dockert docker-compose -f docker/docker-compose.yml up dev",
-    "start:auth": ". e2e/env.sh && scripts/dockert docker-compose -f docker/docker-compose.yml up auth",
-    "start:react": ". e2e/env.sh && react-scripts start",
-    "start:mock": "REACT_APP_MOCK=1 react-scripts start",
-    "start:rmf": "ts-node -P e2e/tsconfig.json e2e/startBackend.ts",
+    "start": "concurrently npm:start:ros2-bridge npm:start:keycloak npm:start:rmf npm:start:react",
+    "start:keycloak": "scripts/dockert docker-compose -f docker/docker-compose.yml -p rmf-web up keycloak",
+    "start:react": "react-scripts start",
+    "start:rmf": "ts-node -P scripts/tsconfig.json -T scripts/start-rmf.ts",
     "start:ros2-bridge": "ros2-bridge --port 50002 --trajectoryServerUrl ws://localhost:8006 --publicKey e2e/certs/keycloak.pub",
     "build": "react-scripts build",
     "build:less": "lessc --autoprefix=defaults --source-map src/components/layout-manager/index.less src/components/layout-manager/layout-manager.css",
@@ -19,14 +15,10 @@
     "test:coverage": "npm run test -- --coverage --watchAll=false",
     "test:e2e": "cd e2e && npm test",
     "test:e2e:dev": "cd e2e && npm run test:dev",
-    "sync:docker": "docker pull docker.pkg.github.com/osrf/rmf-web/e2e && docker pull quay.io/keycloak/keycloak:11.0.0",
     "eject": "react-scripts eject",
-    "deploy:demo": "REACT_APP_MOCK=1 npm run build && NODE_DEBUG=gh-pages gh-pages -d build -m \"$(git rev-parse HEAD)\"",
     "setup": "node ./scripts/setup/setup.js && node ./scripts/setup/get-icons.js",
-    "storybook": "REACT_APP_MOCK=1 ../../node_modules/.bin/start-storybook -p 9009 -s public -s src/stories",
-    "storybook_old": "start-storybook -p 9009 -s public -s src/stories/static",
-    "build:storybook": "tsc --build src/stories && ../../../node_modules/.bin/build-storybook -s src/stories",
-    "build:storybook_old": "build-storybook -s public -s src/stories/static"
+    "storybook": "../../node_modules/.bin/start-storybook -p 9009 -s public -s src/stories/static",
+    "build:storybook": "build-storybook -s public -s src/stories/static"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -111,8 +103,9 @@
       "!src/leaflet/**",
       "!src/components/auth/authenticator.ts",
       "!src/managers/**",
+      "!src/components/rmf-app/**",
       "!**/stories/**",
-      "!**/mock/**"
+      "!**/tests/**"
     ],
     "snapshotSerializers": [
       "enzyme-to-json/serializer"

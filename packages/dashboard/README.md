@@ -81,7 +81,7 @@ password: admin
 
 Alternatively, if you want to connect to an existing rmf deployment, set the following environment variables:
 
-* _REACT_APP_BASE_PATH_: Base path that the app is hosted. Defaults to '/'.
+* _PUBLIC_URL_: Url that the app is hosted. Defaults to '/'.
 * _REACT_APP_TRAJECTORY_SERVER_: **Required** URL to the trajectory server.
 * _REACT_APP_ROS2_BRIDGE_SERVER_: **Required** URL to the ros2 bridge server.
 * _REACT_APP_AUTH_CONFIG_: **Required** A JSON object containing the following
@@ -106,55 +106,6 @@ npm run storybook
 ```
 
 This is ideal if you are working on individual isolated components.
-
-### Mock Data **(not recommended)**
-
-**This does not emulated robots, tasks, trajectories, deliveries, charging etc, running the dashboard with mock data is no longer a good "preview" of the actual dashboard.**
-
-If you are just working on the frontend, you can launch _RoMi-dashboard_ with a set of mock data, this does not require any rmf deployments, simply run
-
-```bash
-npm run start:mock
-```
-
-To bring up a web server using mock data.
-
-### Docker Based Backend **(not recommended)**
-
-**This will cause the dashboard to be ran as root, side effects include tainting file ownership and permissions, breaking npm commands etc. If an isolated environment is required, it is recommended to instead use a VM or move the whole dev environment into docker (note that you would have to handle gpu, x11/wayland, nested docker, permissions, persistent storage etc support yourself, only do this if you understand what you are doing)**
-
-If you have problem setting up rmf, you can make use of the docker image used by the e2e tests to run the backend in docker.
-
-First, download the docker images, the images are hosted on github packages so you will need a github account to access it, refer to [here](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages) for instructions.
-
-After you have the credentials set up, run this to download the images
-
-```bash
-npm run sync:docker
-```
-
-Then run this to start the dev services
-
-```bash
-npm run start:docker
-```
-
-This will start all the services in a docker container, the react web app will be hosted at `localhost:3000`.
-
-The rmf image is built nightly, if you would like to test against the latest build, be sure to update the docker images regularly.
-
-#### Building Docker Images Locally
-
-If you would like, you can also build the images locally, doing so is simple with
-
-```bash
-# build rmf image
-docker-compose -f <path-to-romi-dashboard>/packages/dashboard/docker/rmf/docker-compose.yml build --no-cache
-# build e2e image
-docker-compose -f <path-to-romi-dashboard>/packages/dashboard/docker/docker-compose.yml build --no-cache e2e
-```
-
-This will download and build all of rmf so it may take awhile.
 
 ## Building for production
 

@@ -1,12 +1,9 @@
 import { Grid, makeStyles } from '@material-ui/core';
 import React from 'react';
-import appConfig from '../app-config';
-import ResourceManager from '../managers/resource-manager';
 import { loadSettings, saveSettings } from '../settings';
 import {
   AppController,
   AppControllerContext,
-  ResourcesContext,
   SettingsContext,
   Tooltips,
   TooltipsContext,
@@ -20,6 +17,10 @@ const useStyles = makeStyles({
   appBase: {
     width: '100%',
     height: '100%',
+  },
+  appContent: {
+    position: 'relative',
+    flexGrow: 1,
   },
 });
 
@@ -38,8 +39,6 @@ const useStyles = makeStyles({
  */
 export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null {
   const classes = useStyles();
-
-  const resourceManager = React.useRef<ResourceManager | undefined>(undefined);
 
   const [settings, setSettings] = React.useState(() => loadSettings());
   const [showSettings, setShowSettings] = React.useState(false);
@@ -81,43 +80,25 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
     [],
   );
 
-  const [appReady, setAppReady] = React.useState(false);
-
-  /**
-   * If resource loading gets too long we should add a loading screen.
-   */
-  React.useEffect(() => {
-    if (!appConfig.appResources) {
-      setAppReady(true);
-      return;
-    }
-    (async () => {
-      resourceManager.current = await appConfig.appResources;
-      setAppReady(true);
-    })();
-  }, []);
-
-  return appReady ? (
+  return (
     <SettingsContext.Provider value={settings}>
-      <ResourcesContext.Provider value={resourceManager.current}>
-        <TooltipsContext.Provider value={tooltips}>
-          <AppControllerContext.Provider value={appController}>
-            <Grid container direction="column" className={classes.appBase}>
-              <AppBar />
-              <Grid style={{ flexGrow: 1 }}>
-                <LoadingScreen {...loadingScreenProps}>{props.children}</LoadingScreen>
-              </Grid>
-              <NotificationBar {...notificationProps} />
-              <AppDrawers
-                settings={settings}
-                showHelp={showHelp}
-                showHotkeysDialog={showHotkeysDialog}
-                showSettings={showSettings}
-              />
+      <TooltipsContext.Provider value={tooltips}>
+        <AppControllerContext.Provider value={appController}>
+          <Grid container direction="column" className={classes.appBase}>
+            <AppBar />
+            <Grid className={classes.appContent}>
+              <LoadingScreen {...loadingScreenProps}>{props.children}</LoadingScreen>
             </Grid>
-          </AppControllerContext.Provider>
-        </TooltipsContext.Provider>
-      </ResourcesContext.Provider>
+            <NotificationBar {...notificationProps} />
+            <AppDrawers
+              settings={settings}
+              showHelp={showHelp}
+              showHotkeysDialog={showHotkeysDialog}
+              showSettings={showSettings}
+            />
+          </Grid>
+        </AppControllerContext.Provider>
+      </TooltipsContext.Provider>
     </SettingsContext.Provider>
-  ) : null;
+  );
 }

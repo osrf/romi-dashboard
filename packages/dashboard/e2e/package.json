@@ -6,11 +6,8 @@
     "test": "tests"
   },
   "scripts": {
-    "start:react": "serve -c ../e2e/serve.json ../build",
-    "setup": "WORLD_NAME=office node scripts/get-resources-location.js",
-    "build": ". ./env.sh && cd .. && npm run build",
-    "test": ". ./env.sh && npm run setup && node scripts/test-e2e.js",
-    "test:dev": ". ./env.sh && ROMI_DASHBOARD_PORT=3000 ROMI_DASHBOARD_LAUNCH_MODE=none wdio"
+    "test": "node scripts/test-e2e.js",
+    "test:dev": "ROMI_DASHBOARD_PORT=3000 RMF_LAUNCH_MODE=none wdio"
   },
   "dependencies": {
     "@types/mocha": "^8.0.3",

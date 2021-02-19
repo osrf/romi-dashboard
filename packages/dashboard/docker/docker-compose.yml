@@ -1,36 +1,7 @@
 version: '3'
 services:
-  auth:
-    build:
-      context: .
-      dockerfile: auth.Dockerfile
-    image: romi-dashboard/auth
-    networks:
-      - romi_dashboard_e2e_network
+  keycloak:
+    build: keycloak
+    image: rmf-web/keycloak
     ports:
       - 8088:8080
-  unit-test:
-    image: docker.pkg.github.com/osrf/rmf-web/e2e
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ../../..:/root/romi-dashboard
-    working_dir: /root/romi-dashboard/packages/dashboard
-    environment:
-      CI: 1
-    ipc: host
-    network_mode: host
-    privileged: true
-    # need owner to be root for git ls-remote to work for some reason
-    command: bash -c 'npm ci --unsafe-perm && npm run test:coverage'
-  dev:
-    image: docker.pkg.github.com/osrf/rmf-web/e2e
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ../../..:/root/romi-dashboard
-    working_dir: /root/romi-dashboard/packages/dashboard
-    ipc: host
-    network_mode: host
-    privileged: true
-    command: bash -c 'BROWSER=none npm start'
-networks:
-  romi_dashboard_e2e_network:

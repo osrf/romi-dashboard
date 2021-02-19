@@ -2,10 +2,10 @@ import { render } from '@testing-library/react';
 import { act } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import FakeAuthenticator from '../../mock/fake-authenticator';
 import { AppController, AppControllerContext } from '../app-contexts';
 import AppBar from '../appbar';
 import { AuthenticatorContext, UserContext } from '../auth/contexts';
+import FakeAuthenticator from '../auth/__mocks__/authenticator';
 import { makeMockAppController } from './mock-app-controller';
 
 describe('AppBar', () => {
@@ -77,7 +77,7 @@ describe('AppBar', () => {
   });
 
   test('logout is triggered when logout button is clicked', () => {
-    const authenticator = new FakeAuthenticator();
+    const authenticator = new FakeAuthenticator({ username: 'fakeUser' });
     const spy = jest.spyOn(authenticator, 'logout').mockImplementation(() => undefined as any);
     const root = render(
       <Base>

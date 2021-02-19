@@ -1,7 +1,6 @@
 import { createMount, createShallow } from '@material-ui/core/test-utils';
 import TreeItem from '@material-ui/lab/TreeItem';
 import TreeView from '@material-ui/lab/TreeView';
-import toJson from 'enzyme-to-json';
 import React from 'react';
 import {
   NegotiationConflict,
@@ -120,24 +119,6 @@ it('renders negotiations correctly', () => {
     expect(classes).toBeDefined();
     expect(classes?.label?.includes('forfeited'));
   }
-
-  root.unmount();
-});
-
-it('matches snapshot', () => {
-  const root = mount(
-    <NegotiationsPanel
-      conflicts={negotiationStatuses}
-      spotlight={undefined}
-      mapFloorLayerSorted={undefined}
-      negotiationStatusManager={undefined}
-      negotiationTrajStore={undefined}
-      negotiationStatusUpdateTS={0}
-      setNegotiationTrajStore={setNegotiationTrajStore}
-    />,
-  );
-
-  expect(toJson(root)).toMatchSnapshot();
 
   root.unmount();
 });

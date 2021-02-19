@@ -1,3 +1,6 @@
-/.venv/
 /api_server.egg-info
 /static
+/test_artifacts/
+/.coverage
+/.coverage.*
+/htmlcov/

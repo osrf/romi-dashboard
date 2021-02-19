@@ -3,8 +3,10 @@ import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import 'typeface-roboto';
 import appConfig from '../app-config';
-import { BASE_PATH, MOSAIC_ROUTE, LOGIN_ROUTE } from '../util/url';
+import ResourceManager from '../managers/resource-manager';
+import { DASHBOARD_ROUTE, MOSAIC_ROUTE, LOGIN_ROUTE } from '../util/url';
 import { AppBase } from './app-base';
+import { ResourcesContext, AppConfigContext } from './app-contexts';
 import './app.css';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
 import Login from './auth/login';
@@ -25,53 +27,88 @@ const theme = createMuiTheme({
   },
 });
 
-function AppIntrinsics(props: React.PropsWithChildren<{}>): JSX.Element {
-  const user = React.useContext(UserContext);
-  return user ? (
+function AppIntrinsics({ children }: React.PropsWithChildren<{}>): JSX.Element | null {
+  return (
     <AppBase>
-      <RmfApp>{props.children}</RmfApp>
+      <RmfApp>{children}</RmfApp>
     </AppBase>
-  ) : (
-    <>{props.children}</>
   );
 }
 
 export default function App(): JSX.Element | null {
-  const [authInitialized, setAuthInitialized] = React.useState(false);
-  const [user, setUser] = React.useState<User | null>(null);
   const authenticator = appConfig.authenticator;
+  const [authInitialized, setAuthInitialized] = React.useState(!!authenticator.user);
+  const [user, setUser] = React.useState<User | null>(authenticator.user || null);
+  const appRoutes = [DASHBOARD_ROUTE];
 
   React.useEffect(() => {
+    if (user) {
+      return;
+    }
+    const onUserChanged = (newUser: User | null) => setUser(newUser);
+    authenticator.on('userChanged', onUserChanged);
     (async () => {
-      authenticator.on('userChanged', (newUser) => setUser(newUser));
       await authenticator.init();
       setUser(authenticator.user || null);
       setAuthInitialized(true);
     })();
-  }, [authenticator]);
+    return () => {
+      authenticator.off('userChanged', onUserChanged);
+    };
+  }, [authenticator, user]);
 
-  return authInitialized ? (
-    <AuthenticatorContext.Provider value={authenticator}>
-      <UserContext.Provider value={user}>
-        <ThemeProvider theme={theme}>
-          <AppIntrinsics>
-            <BrowserRouter>
-              <Switch>
-                <Route exact={true} path={LOGIN_ROUTE}>
-                  <Login />
-                </Route>
-                <PrivateRoute exact={true} path={BASE_PATH}>
-                  <Dashboard />
-                </PrivateRoute>
-                <PrivateRoute exact={true} path={MOSAIC_ROUTE}>
-                  <LayoutManager />
-                </PrivateRoute>
-                <Route component={NotFoundPage} />
-              </Switch>
-            </BrowserRouter>
-          </AppIntrinsics>
-        </ThemeProvider>
-      </UserContext.Provider>
-    </AuthenticatorContext.Provider>
+  const resourceManager = React.useRef<ResourceManager | undefined>(undefined);
+  const [appReady, setAppReady] = React.useState(false);
+
+  /**
+   * If resource loading gets too long we should add a loading screen.
+   */
+  React.useEffect(() => {
+    (async () => {
+      const appResources = await appConfig.appResourcesFactory();
+      if (!appResources) {
+        setAppReady(true);
+      } else {
+        resourceManager.current = appResources;
+        setAppReady(true);
+      }
+    })();
+  }, []);
+
+  return authInitialized && appReady ? (
+    <AppConfigContext.Provider value={appConfig}>
+      <ResourcesContext.Provider value={resourceManager.current}>
+        <AuthenticatorContext.Provider value={authenticator}>
+          <UserContext.Provider value={user}>
+            <ThemeProvider theme={theme}>
+              <BrowserRouter>
+                <Switch>
+                  <Route exact path={LOGIN_ROUTE}>
+                    <Login />
+                  </Route>
+                  {/* we need this because we don't want to re-mount `AppIntrinsics` when just moving
+                  from one route to another, but we want to unmount it when going "outside" the app. */}
+                  <PrivateRoute exact path={appRoutes}>
+                    <AppIntrinsics>
+                      <Switch>
+                        <PrivateRoute exact path={DASHBOARD_ROUTE}>
+                          <Dashboard />
+                        </PrivateRoute>
+                        <PrivateRoute exact={true} path={MOSAIC_ROUTE}>
+                          <LayoutManager />
+                        </PrivateRoute>
+                      </Switch>
+                    </AppIntrinsics>
+                  </PrivateRoute>
+                  <Route>
+                    <NotFoundPage />
+                  </Route>
+                </Switch>
+              </BrowserRouter>
+            </ThemeProvider>
+          </UserContext.Provider>
+        </AuthenticatorContext.Provider>
+      </ResourcesContext.Provider>
+    </AppConfigContext.Provider>
   ) : null;
 }

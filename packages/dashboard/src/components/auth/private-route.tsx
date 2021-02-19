@@ -2,12 +2,12 @@ import Debug from 'debug';
 import React from 'react';
 import { Redirect, Route, RouteProps, useLocation } from 'react-router';
 import { LOGIN_ROUTE } from '../../util/url';
-import { UserContext } from '../auth/contexts';
 import Unauthorized from '../error-pages/unauthorized';
+import { UserContext } from './contexts';
 
 const debug = Debug('PrivateRoute');
 
-interface Props extends React.PropsWithChildren<RouteProps> {
+export interface PrivateRouteProps extends React.PropsWithChildren<RouteProps> {
   // if true, do not redirect to login url if not authenticated
   noRedirectToLogin?: boolean;
 }
@@ -16,11 +16,15 @@ interface Props extends React.PropsWithChildren<RouteProps> {
  * This component validates if the user is authenticated before rendering component passed as a
  * prop.
  */
-const PrivateRoute = ({ noRedirectToLogin, children, ...rest }: Props): React.ReactElement => {
+const PrivateRoute = ({
+  noRedirectToLogin,
+  children,
+  ...rest
+}: PrivateRouteProps): JSX.Element | null => {
   const user = React.useContext(UserContext);
   const location = useLocation();
 
-  function render(): React.ReactNode {
+  function render() {
     if (user) {
       return children;
     } else {

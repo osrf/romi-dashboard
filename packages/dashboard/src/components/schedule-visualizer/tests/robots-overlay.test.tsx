@@ -4,9 +4,9 @@ import React from 'react';
 import { ColorManager, RobotMarker } from 'react-components';
 import { act } from 'react-dom/test-utils';
 import { Map as LMap } from 'react-leaflet';
-import getBuildingMap from '../../../mock/data/building-map';
-import fakeFleets from '../../../mock/data/fleets';
 import RobotsOverlay from '../robots-overlay';
+import getBuildingMap from './building-map';
+import fakeFleets from './fleets';
 
 describe('Robots Overlay', () => {
   let colorManager: ColorManager;

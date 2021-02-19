@@ -1,4 +1,4 @@
-[![End-to-End](https://github.com/osrf/rmf-web/workflows/End-to-End/badge.svg?branch=main)](https://github.com/osrf/rmf-web/actions?query=workflow%3AEnd-to-End+branch%3Amain) [![ros2-bridge](https://github.com/osrf/rmf-web/workflows/ros2-bridge/badge.svg?branch=main)](https://github.com/osrf/rmf-web/actions?query=workflow%3Aros2-bridge+branch%3Amain) [![react-components](https://github.com/osrf/rmf-web/workflows/react-components/badge.svg?branch=main)](https://github.com/osrf/rmf-web/actions?query=workflow%3Areact-components+branch%3Amain) [![dashboard](https://github.com/osrf/rmf-web/workflows/dashboard/badge.svg?branch=main)](https://github.com/osrf/rmf-web/actions?query=workflow%3Adashboard+branch%3Amain) [![codecov](https://codecov.io/gh/osrf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/osrf/rmf-web)
+[![End-to-End](https://github.com/osrf/rmf-web/workflows/End-to-End/badge.svg?branch=main)](https://github.com/osrf/rmf-web/actions?query=workflow%3AEnd-to-End+branch%3Amain) [![ros2-bridge](https://github.com/osrf/rmf-web/workflows/ros2-bridge/badge.svg?branch=main)](https://github.com/osrf/rmf-web/actions?query=workflow%3Aros2-bridge+branch%3Amain) [![react-components](https://github.com/osrf/rmf-web/workflows/react-components/badge.svg?branch=main)](https://github.com/osrf/rmf-web/actions?query=workflow%3Areact-components+branch%3Amain) [![dashboard](https://github.com/osrf/rmf-web/workflows/dashboard/badge.svg?branch=main)](https://github.com/osrf/rmf-web/actions?query=workflow%3Adashboard+branch%3Amain) [![api-server](https://github.com/osrf/rmf-web/workflows/api-server/badge.svg?branch=main)](https://github.com/osrf/rmf-web/actions?query=workflow%3Aapi-server+branch%3Amain) [![codecov](https://codecov.io/gh/osrf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/osrf/rmf-web)
 
 # Running the Dashboard
 
@@ -11,11 +11,27 @@ Install docker and docker-compose
 sudo apt update && sudo apt install docker.io docker-compose
 ```
 
+If you're using GNOME or KDE, there will be a pop-up window to ask for privilege escalation when running the Docker container which runs Keycloak, the authentication mechanism we are currently using.
+If you're using `i3` or other "unusual" window managers, this pop-up may not occur, which can be confusing since a password prompt can be easily lost in the console text stream.
+You can add yourself to the `docker` group to allow containers to start without requesting your password:
+```
+sudo usermod -aG docker $USER
+```
+After issuing this command, you may need to logout/login or restart your system depending on your OS/environment.
+
+Keep in mind that this convenience has security implications. This tradeoff is described in more detail in the Docker documentation:
+https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
+
 Install nodejs
 ```bash
 sudo apt update && sudo apt install curl
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
 nvm install 12
+```
+
+A recent version of pipenv is needed, the system packaged version is too old.
+```bash
+pip3 install pipenv
 ```
 
 Install rmf

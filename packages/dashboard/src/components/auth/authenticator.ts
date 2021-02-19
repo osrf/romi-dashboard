@@ -1,7 +1,7 @@
 import Debug from 'debug';
 import EventEmitter from 'eventemitter3';
 import Keycloak_, { KeycloakInstance } from 'keycloak-js';
-import { BASE_PATH } from '../../util/url';
+import { BASE_PATH, getUrl } from '../../util/url';
 import { User } from './user';
 
 const debug = Debug('authenticator');
@@ -21,8 +21,9 @@ export default interface Authenticator extends EventEmitter<AuthenticatorEventTy
 
   /**
    * Note: This redirects to external login page so it will never return.
+   * @param successRedirectUri The uri to redirect to after a successful login
    */
-  login(): Promise<never>;
+  login(successRedirectUri: string): Promise<never>;
 
   /**
    * Note: This redirects to external logout page so it will never return.
@@ -50,6 +51,11 @@ export class DefaultAuthenticator
   }
 
   async init() {
+    if (this._initialized) {
+      debug('already initialized');
+      return;
+    }
+
     debug('initializing authenticator');
 
     this._inst.onAuthSuccess = async () => {
@@ -68,7 +74,7 @@ export class DefaultAuthenticator
 
     await this._inst.init({
       onLoad: 'check-sso',
-      silentCheckSsoRedirectUri: `${window.location.origin}${BASE_PATH}/silent-check-sso.html`,
+      silentCheckSsoRedirectUri: getUrl(`${BASE_PATH}/silent-check-sso.html`),
       redirectUri: this._redirectUri,
     });
     try {
@@ -79,10 +85,13 @@ export class DefaultAuthenticator
     this._user = this._inst.idTokenParsed && {
       username: (this._inst.idTokenParsed as any).preferred_username,
     };
+    this._initialized = true;
   }
 
-  async login(): Promise<never> {
-    await this._inst.login();
+  async login(successRedirectUri: string): Promise<never> {
+    await this._inst.login({
+      redirectUri: successRedirectUri,
+    });
     throw new Error('should not reach here');
   }
 
@@ -91,6 +100,7 @@ export class DefaultAuthenticator
     throw new Error('should not reach here');
   }
 
+  private _initialized = false;
   private _inst: KeycloakInstance;
   private _redirectUri?: string;
   private _user?: User;

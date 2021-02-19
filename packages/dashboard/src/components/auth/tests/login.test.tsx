@@ -2,9 +2,9 @@ import { createMount } from '@material-ui/core/test-utils';
 import React from 'react';
 import { Redirect } from 'react-router';
 import { BrowserRouter } from 'react-router-dom';
-import FakeAuthenticator from '../../../mock/fake-authenticator';
 import { AuthenticatorContext, UserContext } from '../../auth/contexts';
 import Login from '../login';
+import FakeAuthenticator from '../__mocks__/authenticator';
 
 const mount = createMount();
 
@@ -35,7 +35,7 @@ describe('Login page', () => {
   });
 
   test('performs login when login button is clicked', () => {
-    const authenticator = new FakeAuthenticator();
+    const authenticator = new FakeAuthenticator({ username: 'fakeUser' });
     const spy = jest.spyOn(authenticator, 'login').mockImplementation(() => undefined as any);
 
     const root = mount(

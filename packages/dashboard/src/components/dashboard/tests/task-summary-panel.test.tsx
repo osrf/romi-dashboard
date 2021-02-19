@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import fakeTaskSummary from '../../../mock/data/task-summary';
 import TaskSummaryPanel from '../task-summary-panel';
+import fakeTaskSummary from './task-summary';
 
 describe('It renders correctly', () => {
   test('Renders tree items', () => {
