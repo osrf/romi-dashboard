@@ -1,7 +1,7 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import * as L from 'leaflet';
 import React from 'react';
-import { render, RenderResult, waitFor } from '@testing-library/react';
+import { render, RenderResult, screen, waitFor } from '@testing-library/react';
 import { robotHash } from 'react-components';
 import { Map as LMap } from 'react-leaflet';
 import FakeTrajectoryManager from '../../../managers/__mocks__/robot-trajectory-manager';
@@ -57,7 +57,7 @@ describe('RobotTrajectoriesOverlay', () => {
   it('smoke test', async () => {
     const settings = defaultSettings();
     let root: RenderResult;
-    await waitFor(() => {
+    await waitFor(async () => {
       root = render(
         <LMap>
           <SettingsContext.Provider value={settings}>
@@ -70,6 +70,8 @@ describe('RobotTrajectoriesOverlay', () => {
           </SettingsContext.Provider>
         </LMap>,
       );
+      screen.debug();
+      expect(root.findAllByTestId('trajMarker')).toBeInTheDocument();
       root.unmount();
     });
   });

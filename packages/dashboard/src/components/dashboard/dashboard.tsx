@@ -39,6 +39,7 @@ import CommandsPanel from './commands-panel';
 import MainMenu from './main-menu';
 import NegotiationsPanel from './negotiations-panel';
 import OmniPanelControl_ from './omnipanel-control';
+import EmergencyPanel from './emergency-panel';
 import { DashboardState, useDashboardReducer } from './reducers/dashboard-reducer';
 import TaskSummaryPanel from './task-summary-panel';
 
@@ -60,6 +61,7 @@ export enum OmniPanelViewIndex {
   Commands,
   Negotiations,
   Tasks,
+  Emergency,
 }
 
 export const dashboardInitialValues: DashboardState = {
@@ -375,6 +377,9 @@ export default function Dashboard(_props: {}): React.ReactElement {
           </OmniPanelView>
           <OmniPanelView viewId={OmniPanelViewIndex.Tasks}>
             <TaskSummaryPanel tasks={tasks} />
+          </OmniPanelView>
+          <OmniPanelView viewId={OmniPanelViewIndex.Emergency}>
+            <EmergencyPanel emergencyState={'No Emergency'} />
           </OmniPanelView>
         </OmniPanel>
       </Fade>

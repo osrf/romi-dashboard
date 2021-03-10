@@ -52,6 +52,10 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
     pushView(OmniPanelViewIndex.Tasks);
   }, [pushView]);
 
+  const handleMainMenuEmergencyClick = React.useCallback(() => {
+    pushView(OmniPanelViewIndex.Emergency);
+  }, [pushView]);
+
   return (
     <List className={classes.root} data-component="MainMenu">
       <ListItem data-item="Doors" button={true} onClick={handleMainMenuDoorsClick}>
@@ -98,6 +102,17 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
 
       <ListItem data-item="Plans" button={true} onClick={handleMainMenuTasksClick}>
         <Typography variant="h5">Plans</Typography>
+      </ListItem>
+      <Divider />
+
+      <ListItem data-item="Emergency" button={true} onClick={handleMainMenuEmergencyClick}>
+        <DashboardTooltip
+          title="This panel shows the current emergency state"
+          id="emergency-tooltip"
+          enabled={showTooltips}
+        >
+          <Typography variant="h5">Emergency</Typography>
+        </DashboardTooltip>
       </ListItem>
       <Divider />
     </List>

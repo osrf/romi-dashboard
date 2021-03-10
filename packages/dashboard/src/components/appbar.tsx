@@ -10,6 +10,7 @@ import {
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
+import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
 import React from 'react';
 import DashboardTooltip from 'react-components/lib/tooltip';
 import { AppControllerContext, TooltipsContext } from './app-contexts';
@@ -23,9 +24,11 @@ export interface AppBarProps {
 
 export const AppBar = React.memo(
   (_props: AppBarProps): React.ReactElement => {
-    const { showHelp: setShowHelp, showSettings: setShowSettings } = React.useContext(
-      AppControllerContext,
-    );
+    const {
+      showHelp: setShowHelp,
+      showSettings: setShowSettings,
+      showAlarms: setShowAlarms,
+    } = React.useContext(AppControllerContext);
 
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
@@ -106,6 +109,16 @@ export const AppBar = React.memo(
               <HelpIcon />
             </IconButton>
           </DashboardTooltip>
+          <IconButton
+            id="trigger-code-red-btn"
+            color="inherit"
+            onClick={() => {
+              setShowAlarms(true);
+              console.log('open drawer');
+            }}
+          >
+            <NotificationsActiveIcon />
+          </IconButton>
         </Toolbar>
       </MuiAppBar>
     );

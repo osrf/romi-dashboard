@@ -4,6 +4,7 @@ import ResourceManager from '../managers/resource-manager';
 import { defaultSettings, Settings } from '../settings';
 import { LoadingScreenProps } from './loading-screen';
 import { NotificationBarProps } from './notification-bar';
+import { Emergency } from './emergency-alarm';
 
 /* Declares the ResourcesContext which contains the resources used on the app*/
 export const ResourcesContext = React.createContext<ResourceManager | undefined>(undefined);
@@ -31,6 +32,10 @@ export interface AppController {
    */
   toggleTooltips(): void;
   showLoadingScreen: React.Dispatch<React.SetStateAction<LoadingScreenProps>>;
+  showAlarms(show: boolean): void;
+  toggleAlarms(): void;
+  showEmergencyDialog(show: boolean): void;
+  setEmergencyState: React.Dispatch<React.SetStateAction<Emergency>>;
 }
 
 export interface Tooltips {
@@ -54,6 +59,10 @@ export const AppControllerContext = React.createContext<AppController>({
   showTooltips: () => {},
   toggleTooltips: () => {},
   showLoadingScreen: () => {},
+  showAlarms: () => {},
+  toggleAlarms: () => {},
+  showEmergencyDialog: () => {},
+  setEmergencyState: () => {},
 });
 
 export const AppConfigContext = React.createContext<AppConfig>(appConfig);

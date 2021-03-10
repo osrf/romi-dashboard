@@ -12,6 +12,7 @@ import { AppDrawers } from './app-drawers';
 import AppBar from './appbar';
 import LoadingScreen, { LoadingScreenProps } from './loading-screen';
 import NotificationBar, { NotificationBarProps } from './notification-bar';
+import { Emergency } from './emergency-alarm';
 
 const useStyles = makeStyles({
   appBase: {
@@ -34,6 +35,7 @@ const useStyles = makeStyles({
  * - Hotkeys reference
  * - Notifications
  * - Snackbars
+ * - Emergency Alarms
  *
  * Also provides `AppControllerContext` to allow children components to control them.
  */
@@ -62,6 +64,10 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
     [showTooltips],
   );
 
+  const [showAlarms, setShowAlarms] = React.useState(false);
+  const [showEmergencyDialog, setShowEmergencyDialog] = React.useState(false);
+  const [emergencyState, setEmergencyState] = React.useState<Emergency>({ type: '' });
+
   const appController = React.useMemo<AppController>(
     () => ({
       showSettings: setShowSettings,
@@ -76,6 +82,10 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
       showTooltips: setShowTooltips,
       toggleTooltips: () => setShowTooltips((prev) => !prev),
       showLoadingScreen: setLoadingScreenProps,
+      showAlarms: setShowAlarms,
+      toggleAlarms: () => setShowAlarms((prev) => !prev),
+      showEmergencyDialog: () => setShowEmergencyDialog((prev) => !prev),
+      setEmergencyState,
     }),
     [],
   );
@@ -95,6 +105,10 @@ export function AppBase(props: React.PropsWithChildren<{}>): JSX.Element | null 
               showHelp={showHelp}
               showHotkeysDialog={showHotkeysDialog}
               showSettings={showSettings}
+              showAlarms={showAlarms}
+              showEmergencyDialog={showEmergencyDialog}
+              setEmergencyState={setEmergencyState}
+              emergencyState={emergencyState}
             />
           </Grid>
         </AppControllerContext.Provider>
