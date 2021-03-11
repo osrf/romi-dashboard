@@ -98,7 +98,7 @@ export function useTrashBinReducer<T>(
   restoreFunc?: TrashBinMergeFunc<T>,
   clearFunc?: TrashBinMergeFunc<T>,
 ): [TrashBinState<T>, React.Dispatch<TrashBinAction<T>>] {
-  return React.useReducer(makeTrashBinReducer(initialValues, restoreFunc, clearFunc), {
+  return React.useReducer(makeTrashBinReducer(emptyValue, restoreFunc, clearFunc), {
     current: initialValues,
     trash: emptyValue,
   });

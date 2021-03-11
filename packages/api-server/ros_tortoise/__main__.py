@@ -1,10 +1,12 @@
 import argparse
+import base64
+import hashlib
 import os.path
-import shutil
 from typing import Sequence
 
-import ament_index_python
 import jinja2
+
+import ament_index_python
 from rosidl_adapter.parser import MessageSpecification
 from rosidl_adapter.parser import Type as RosType
 from rosidl_adapter.parser import parse_message_file
@@ -123,32 +125,30 @@ def main():
         description="Generates tortoise-orm mixins boilerplate from ros messages",
     )
     parser.add_argument(
-        "-o",
-        "--output",
-        required=True,
-        metavar="DIRECTORY",
-        help="output directory",
+        "-o", "--output", required=True, metavar="DIRECTORY", help="output directory"
     )
-    parser.add_argument(
-        "packages",
-        nargs="+",
-        help="packages to generate",
-    )
+    parser.add_argument("packages", nargs="+", help="packages to generate")
 
     args = parser.parse_args()
     packages = [
         k
-        for k in ament_index_python.get_resources("rosidl_interfaces").keys()
+        for k in ament_index_python.get_resources("rosidl_interfaces")
         if k in args.packages
     ]
     os.makedirs(args.output, exist_ok=True)
+    sha1 = hashlib.sha1()
     for pkg in packages:
         pkg_spec = PackageSpec(pkg, parse_package(pkg))
         mixins = gen_mixin(pkg_spec)
+        sha1.update(mixins.encode())
         outfile = f"{args.output}/{pkg}_mixins.py"
         with open(outfile, "w") as f:
             f.write(mixins)
         print(outfile)
+
+    rev = base64.b32encode(sha1.digest())
+    with open(f"{args.output}/rev", "bw") as f:
+        f.write(rev)
 
     init_file = f"{args.output}/__init__.py"
     with open(f"{args.output}/__init__.py", "w") as f:

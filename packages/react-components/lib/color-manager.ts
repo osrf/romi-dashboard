@@ -26,16 +26,20 @@ export class ColorManager {
       this._robotColorCache[key] = await this._robotColorFromId(fleet, name, model);
       return this._robotColorCache[key];
     } else {
-      const palette = await Vibrant.from(image).getSwatches();
-      // TODO: remove usage of deprecated method
-      const rgb = palette.Vibrant?.getRgb();
-      if (rgb) {
-        const colorHolder = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-        this._robotColorCache[key] = colorHolder;
-        return colorHolder;
+      try {
+        const palette = await Vibrant.from(image).getSwatches();
+        // TODO: remove usage of deprecated method
+        const rgb = palette.Vibrant?.getRgb();
+        if (rgb) {
+          const colorHolder = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+          this._robotColorCache[key] = colorHolder;
+          return colorHolder;
+        }
+      } catch (e) {
+        console.warn(
+          `unable to get color from image, falling back to color from id (${e.message})`,
+        );
       }
-
-      console.warn('unable to get color from image, falling back to color from id');
       return this.robotPrimaryColor(fleet, name, model);
     }
   }

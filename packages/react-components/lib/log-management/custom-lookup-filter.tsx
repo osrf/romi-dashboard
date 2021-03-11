@@ -21,7 +21,7 @@ const MenuProps = {
   },
 };
 
-export interface CustomLookupFilterProps {
+export interface CustomLookupFilterParserProps {
   // Prop RowData from material-table is not exported so unknown
   columnDef: Column<{ level: string; message: string; timestamp: string }>;
   onFilterChanged: (rowId: string, value: string | number | unknown) => void;
@@ -31,7 +31,9 @@ export interface CustomLookupFilterProps {
  * Component created to override the default lookup filter.
  */
 
-export const CustomLookupFilter = (props: CustomLookupFilterProps): React.ReactElement => {
+export const CustomLookupFilterParser = (
+  props: CustomLookupFilterParserProps,
+): React.ReactElement => {
   const { columnDef: columnDefRaw, onFilterChanged } = props;
   /**
    * The column type in the material-table library it's not working correctly. So as a workaround I'm assigning the types to the properties need it in this component.
@@ -42,41 +44,59 @@ export const CustomLookupFilter = (props: CustomLookupFilterProps): React.ReactE
     lookup: Record<string, string>;
   };
 
-  const [selectedFilter, setSelectedFilter] = React.useState(columnDef.tableData.filterValue || []);
+  return (
+    <CustomLookupFilter
+      tableId={columnDef.tableData.id}
+      filterValue={columnDef.tableData.filterValue}
+      filterOnItemSelect={columnDef.filterOnItemSelect}
+      onFilterChanged={onFilterChanged}
+      lookup={columnDef.lookup}
+    />
+  );
+};
 
+export interface CustomLookupFilterProps {
+  tableId: number;
+  filterValue: EditCellColumnDef['tableData']['filterValue'];
+  filterOnItemSelect: unknown;
+  onFilterChanged: (rowId: string, value: string | number | unknown) => void;
+  lookup: Record<string, string>;
+}
+
+export const CustomLookupFilter = (props: CustomLookupFilterProps): React.ReactElement => {
+  const { tableId, filterValue, filterOnItemSelect, onFilterChanged, lookup } = props;
+  const [selectedFilter, setSelectedFilter] = React.useState(filterValue || []);
   React.useEffect(() => {
-    setSelectedFilter(columnDef.tableData.filterValue || []);
-  }, [columnDef.tableData.filterValue]);
+    setSelectedFilter(filterValue || []);
+  }, [filterValue]);
 
   return (
     <FormControl style={{ width: '100%' }}>
       <InputLabel
-        htmlFor={'select-multiple-checkbox' + columnDef.tableData.id}
+        htmlFor={'select-multiple-checkbox' + tableId}
         style={{ marginTop: -16 }}
       ></InputLabel>
       <Select
         multiple
         value={selectedFilter}
         onClose={() => {
-          if (columnDef.filterOnItemSelect !== true)
-            onFilterChanged(columnDef.tableData.id.toString(), selectedFilter);
+          if (filterOnItemSelect !== true) onFilterChanged(tableId.toString(), selectedFilter);
         }}
         onChange={(event) => {
           setSelectedFilter(event.target.value);
-          if (columnDef.filterOnItemSelect === true)
-            onFilterChanged(columnDef.tableData.id.toString(), event.target.value);
+          if (filterOnItemSelect === true) onFilterChanged(tableId.toString(), event.target.value);
         }}
-        input={<Input id={'select-multiple-checkbox' + columnDef.tableData.id} />}
+        input={<Input id={'select-multiple-checkbox' + tableId} />}
         renderValue={(selecteds) =>
-          (selecteds as string[]).map((selected: string) => columnDef.lookup[selected]).join(', ')
+          (selecteds as string[]).map((selected: string) => lookup[selected]).join(', ')
         }
         MenuProps={MenuProps}
         style={{ marginTop: 0 }}
       >
-        {Object.keys(columnDef?.lookup).map((key: string) => (
+        {Object.keys(lookup).map((key: string) => (
           <MenuItem key={key} value={key}>
             <Checkbox checked={selectedFilter.indexOf(key.toString()) > -1} />
-            <ListItemText primary={columnDef.lookup[key]} />
+            <ListItemText primary={lookup[key]} />
           </MenuItem>
         ))}
       </Select>

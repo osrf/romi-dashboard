@@ -24,9 +24,9 @@ export default function Login(props: LoginProps): JSX.Element {
   return user ? (
     <Redirect to={successRedirectUri} />
   ) : (
-    <LoginPage title="RoMi Dashboard" logo="assets/ros-health.png">
+    <LoginPage title="Dashboard" logo="assets/ros-health.png">
       <Button id="login-button" onClick={handleRmfLogin} variant="contained">
-        Login with RMF
+        Login
       </Button>
     </LoginPage>
   );

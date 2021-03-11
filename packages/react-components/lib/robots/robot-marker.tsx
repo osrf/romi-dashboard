@@ -1,9 +1,9 @@
 import { makeStyles } from '@material-ui/core';
-import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import Debug from 'debug';
 import React from 'react';
-import { SvgText } from '..';
+import { ColorContext, SvgText } from '..';
 import { fromRmfCoords, fromRmfYaw } from '../geometry-utils';
+import { BaseMarkerProps } from './base-marker';
 import { DefaultMarker } from './default-marker';
 import { ImageMarker } from './image-marker';
 
@@ -27,20 +27,8 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export interface RobotMarkerProps extends Omit<React.SVGAttributes<SVGGElement>, 'onClick'> {
-  robot: RomiCore.RobotState;
-  footprint: number;
-  fleetName: string;
+export interface RobotMarkerProps extends BaseMarkerProps {
   iconPath?: string;
-  /**
-   * Whether the component should perform a translate transform to put it inline with the position
-   * in RMF.
-   *
-   * default: true
-   */
-  translate?: boolean;
-  variant?: 'normal' | 'inConflict';
-  onClick?(event: React.MouseEvent, fleet: string, robot: RomiCore.RobotState): void;
 }
 
 /**
@@ -62,11 +50,30 @@ export const RobotMarker = React.forwardRef(
     } = props;
     debug(`render ${robot.name}`);
     const [useImageMarker, setUseImageMarker] = React.useState(!!iconPath);
+    const [robotColor, setRobotColor] = React.useState<string | undefined>(undefined);
+    const colorManager = React.useContext(ColorContext);
     const classes = useStyles();
     const pos = fromRmfCoords([robot.location.x, robot.location.y]);
     const yaw = (fromRmfYaw(robot.location.yaw) / Math.PI) * 180;
 
     const translateTransform = translate ? `translate(${pos[0]} ${pos[1]})` : undefined;
+
+    const isMounted = React.useRef(true);
+    React.useEffect(() => {
+      return () => {
+        isMounted.current = false;
+      };
+    }, []);
+
+    React.useEffect(() => {
+      if (useImageMarker) {
+        return;
+      }
+      (async () => {
+        const color = await colorManager.robotPrimaryColor(fleetName, robot.name, robot.model);
+        isMounted.current && setRobotColor(color);
+      })();
+    }, [colorManager, fleetName, robot.model, robot.name, useImageMarker]);
 
     return (
       <g ref={ref} onClick={(ev) => onClick && onClick(ev, fleetName, robot)} {...otherProps}>
@@ -78,9 +85,9 @@ export const RobotMarker = React.forwardRef(
                 iconPath={iconPath}
                 onError={() => setUseImageMarker(false)}
               />
-            ) : (
-              <DefaultMarker {...props} />
-            )}
+            ) : robotColor ? (
+              <DefaultMarker color={robotColor} {...props} />
+            ) : null}
           </g>
           <SvgText text={robot.name} targetWidth={footprint * 1.9} className={classes.text} />
         </g>

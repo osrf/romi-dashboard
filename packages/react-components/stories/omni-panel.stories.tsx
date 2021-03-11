@@ -1,78 +1,75 @@
 import { Button } from '@material-ui/core';
 import { Story } from '@storybook/react';
 import React from 'react';
-import { OmniPanel, OmniPanelView, StackNavigator } from '../lib';
+import { OmniPanel, OmniPanelView, useStackNavigator } from '../lib';
 
 export default {
   title: 'Omni Panel',
 };
 
-const SimpleOmniPanel = (): JSX.Element => {
-  const [view, setView] = React.useState<number | string>(0);
-  const stack = React.useMemo(() => new StackNavigator<number>(0), []);
+interface SimpleOmniPanelProps {
+  style?: React.CSSProperties;
+}
+
+const SimpleOmniPanel = (props: SimpleOmniPanelProps): JSX.Element => {
+  const [stack, stackDispatch] = useStackNavigator([0], 0);
 
   return (
     <OmniPanel
-      view={view}
-      style={{
-        width: 500,
-        height: 200,
-        border: '1px solid black',
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
-      }}
-      onBack={() => setView(stack.pop())}
-      onHome={() => setView(stack.reset())}
+      stack={stack}
+      style={props.style}
+      onBack={() => stackDispatch.pop()}
+      onHome={() => stackDispatch.home()}
     >
       <OmniPanelView viewId={0}>
         <div>
-          <Button variant="outlined" onClick={() => (stack.push(1), setView(1))}>
+          <Button variant="outlined" onClick={() => stackDispatch.push(1)}>
             Panel A
           </Button>
         </div>
         <div>
-          <Button variant="outlined" onClick={() => (stack.push(2), setView(2))}>
+          <Button variant="outlined" onClick={() => stackDispatch.push(2)}>
             Panel B
           </Button>
         </div>
         <div>
-          <Button variant="outlined" onClick={() => (stack.push(3), setView(3))}>
+          <Button variant="outlined" onClick={() => stackDispatch.push(3)}>
             Panel C
           </Button>
         </div>
         <div>
-          <Button variant="outlined" onClick={() => (stack.push(4), setView(4))}>
+          <Button variant="outlined" onClick={() => stackDispatch.push(4)}>
             Panel D
           </Button>
         </div>
         <div>
-          <Button variant="outlined" onClick={() => (stack.push(5), setView(5))}>
+          <Button variant="outlined" onClick={() => stackDispatch.push(5)}>
             Panel E
           </Button>
         </div>
       </OmniPanelView>
       <OmniPanelView viewId={1}>
-        <Button variant="outlined" onClick={() => setView(stack.pop())}>
+        <Button variant="outlined" onClick={() => stackDispatch.pop()}>
           Back
         </Button>
       </OmniPanelView>
       <OmniPanelView viewId={2}>
-        <Button variant="outlined" onClick={() => setView(stack.pop())}>
+        <Button variant="outlined" onClick={() => stackDispatch.pop()}>
           Back
         </Button>
       </OmniPanelView>
       <OmniPanelView viewId={3}>
-        <Button variant="outlined" onClick={() => setView(stack.pop())}>
+        <Button variant="outlined" onClick={() => stackDispatch.pop()}>
           Back
         </Button>
       </OmniPanelView>
       <OmniPanelView viewId={4}>
-        <Button variant="outlined" onClick={() => setView(stack.pop())}>
+        <Button variant="outlined" onClick={() => stackDispatch.pop()}>
           Back
         </Button>
       </OmniPanelView>
       <OmniPanelView viewId={5}>
-        <Button variant="outlined" onClick={() => setView(stack.pop())}>
+        <Button variant="outlined" onClick={() => stackDispatch.pop()}>
           Back
         </Button>
       </OmniPanelView>
@@ -80,6 +77,10 @@ const SimpleOmniPanel = (): JSX.Element => {
   );
 };
 
-export const SimplePanel: Story = (args) => {
+export const SimplePanelFixedSize: Story = (args) => {
+  return <SimpleOmniPanel style={{ width: 500, height: 200 }} {...args} />;
+};
+
+export const SimplePanelAutoSize: Story = (args) => {
   return <SimpleOmniPanel {...args} />;
 };

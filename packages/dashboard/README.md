@@ -9,15 +9,15 @@ Prerequisites:
 * nodejs == v12
 * docker
 * docker-compose
-* [rmf_core](https://github.com/osrf/rmf_core)
-* [traffic_editor](https://github.com/osrf/traffic_editor)
-* [rmf_schedule_visualizer](https://github.com/osrf/rmf_schedule_visualizer)
-* [rmf_demos](https://github.com/osrf/rmf_demos)
+* [rmf_core](https://github.com/open-rmf/rmf_core)
+* [traffic_editor](https://github.com/open-rmf/traffic_editor)
+* [rmf_schedule_visualizer](https://github.com/open-rmf/rmf_schedule_visualizer)
+* [rmf_demos](https://github.com/open-rmf/rmf_demos)
 
 Refer to the various repository for instructions to set them up.
 
 ```bash
-git clone https://github.com/osrf/rmf-web
+git clone https://github.com/open-rmf/rmf-web
 cd rmf-web
 npm run bootstrap
 ```
@@ -84,16 +84,13 @@ Alternatively, if you want to connect to an existing rmf deployment, set the fol
 * _PUBLIC_URL_: Url that the app is hosted. Defaults to '/'.
 * _REACT_APP_TRAJECTORY_SERVER_: **Required** URL to the trajectory server.
 * _REACT_APP_ROS2_BRIDGE_SERVER_: **Required** URL to the ros2 bridge server.
-* _REACT_APP_AUTH_CONFIG_: **Required** A JSON object containing the following
-  * _realm_: The keycloak realm
-  * _clientId_: clientId
-  * _url_: URL to the keycloak server
+* _REACT_APP_AUTH_PROVIDER_: A string indicating the auth provider to use, defaults to the stub authenticator.
 
-Then start the web server with
-
-```bash
-npm run start:react
-```
+Supported auth providers are
+| provider | config |
+|----------|--------|
+| stub | N/A |
+| keycloak | _REACT_APP_KEYCLOAK_CONFIG_: a json string with the keys _realm_, _clientId_ and _url_ |
 
 ### Storybook
 

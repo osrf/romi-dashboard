@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { DurabilityPolicy, HistoryPolicy, ReliabilityPolicy } from '@osrf/romi-js-core-interfaces';
 import RclnodejsTransport from '@osrf/romi-js-rclnodejs-transport';
 import * as events from 'events';
 import winston from 'winston';
 import Ros2Plugin, { MessageResult, Ros2Service, Ros2Topic } from '..';
-import { RpcResponse, Sender } from '../../../rpc-middleware';
+import { Sender } from '../../../rpc-middleware';
 
 type TestMessage = { data: string };
 type TestServiceRequest = { data: boolean };
@@ -134,7 +136,6 @@ test('client subscriptions get cleared when connection is closed', () => {
 
 test('can unsubscribe', (done) => {
   let receiveCount = 0;
-  let id: number;
 
   const sender: Sender = {
     socket: mockSocket,
@@ -151,7 +152,7 @@ test('can unsubscribe', (done) => {
     error: jest.fn(),
   };
 
-  id = plugin.subscribe(
+  const id = plugin.subscribe(
     {
       topic: testTopic,
     },

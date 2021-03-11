@@ -22,7 +22,7 @@ async function loadPlugins(): Promise<Record<string, Plugin>> {
     .map((dirent) => dirent.name);
 
   const plugins: Record<string, Plugin> = {};
-  for (let module of modules) {
+  for (const module of modules) {
     try {
       const plugin = (await import(`./plugins/${module}`)) as Plugin;
       plugin.options(yargs);
@@ -107,7 +107,7 @@ async function main() {
   }
 
   const rpc = new RpcMiddleware();
-  for (let [module, plugin] of Object.entries(plugins)) {
+  for (const [module, plugin] of Object.entries(plugins)) {
     try {
       await plugin.onLoad(config, rpc);
       logger.info(`loaded plugin "${module}"`);

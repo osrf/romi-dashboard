@@ -1,8 +1,7 @@
 import * as fs from 'fs';
 import * as jwt from 'jsonwebtoken';
-import WebSocket from 'ws';
-import { WebSocketMiddleware } from './websocket-connect';
 import baseLogger from './logger';
+import { WebSocketMiddleware } from './websocket-connect';
 
 export interface Options {
   type: 'secret' | 'publicKey';

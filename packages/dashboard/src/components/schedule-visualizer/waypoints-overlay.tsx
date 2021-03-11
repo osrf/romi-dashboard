@@ -32,7 +32,12 @@ export const WaypointsOverlay = (props: WaypointsOverlayProps) => {
         {waypoints.map(
           (waypoint) =>
             !!waypoint.name && (
-              <WaypointMarker key={waypoint.name} waypoint={waypoint} size={size} />
+              <WaypointMarker
+                key={waypoint.name}
+                waypoint={waypoint}
+                size={size}
+                data-testid="waypointMarker"
+              />
             ),
         )}
       </svg>

@@ -1,5 +1,36 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 
+export function allLiftMotion(): number[] {
+  return [
+    RomiCore.LiftState.MOTION_UP,
+    RomiCore.LiftState.MOTION_DOWN,
+    RomiCore.LiftState.MOTION_STOPPED,
+    RomiCore.LiftState.MOTION_UNKNOWN,
+    -1,
+  ];
+}
+
+export function allLiftModes(): number[] {
+  return [
+    RomiCore.LiftState.MODE_AGV,
+    RomiCore.LiftState.MODE_EMERGENCY,
+    RomiCore.LiftState.MODE_FIRE,
+    RomiCore.LiftState.MODE_HUMAN,
+    RomiCore.LiftState.MODE_OFFLINE,
+    RomiCore.LiftState.MODE_UNKNOWN,
+    -1,
+  ];
+}
+
+export function allDoorStates(): number[] {
+  return [
+    RomiCore.LiftState.DOOR_CLOSED,
+    RomiCore.LiftState.DOOR_MOVING,
+    RomiCore.LiftState.DOOR_OPEN,
+    -1,
+  ];
+}
+
 export function makeLift(lift?: Partial<RomiCore.Lift>): RomiCore.Lift {
   return {
     name: 'test',

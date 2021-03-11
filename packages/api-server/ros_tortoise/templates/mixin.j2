@@ -11,7 +11,7 @@ from tortoise import fields
 
 
 {% for msg_spec in messages %}
-class {{ msg_spec.msg_name }}Mixin():
+class {{ msg_spec.msg_name }}Mixin:
 {% if msg_spec.fields %}
 {% for field in msg_spec.fields %}
     {{ field.name }} = {{ to_tortoise_type(field.type) }}

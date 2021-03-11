@@ -3,14 +3,15 @@ import os
 import sys
 import threading
 
-import rclpy
 import socketio
+
+import rclpy
 from rclpy.node import Node
 from tortoise import Tortoise
 
 from .app_config import app_config
-from .repositories import SqlRepository, StaticFilesRepository
-from .rmf_io import RmfBookKeeper, RmfGateway, RmfIO, RmfTransport
+from .repositories import RmfRepository, SqlRepository, StaticFilesRepository
+from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfGateway, RmfIO, RmfTransport
 
 
 class MainNode(Node):
@@ -31,7 +32,27 @@ async def init_tortoise():
     await Tortoise.generate_schemas()
 
 
+logger = logging.getLogger("app")
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
+logger.addHandler(handler)
+if "RMF_API_SERVER_DEBUG" in os.environ:
+    logger.setLevel(logging.DEBUG)
+else:
+    logger.setLevel(logging.INFO)
+
 sio_client = socketio.AsyncClient()
+
+
+async def load_states(repo: RmfRepository, gateway: RmfGateway):
+    logger.info("loading states from database...")
+
+    door_states = await repo.read_door_states()
+    for state in door_states:
+        gateway.door_states.on_next(state)
+    logger.info(f"loaded {len(door_states)} door states")
+
+    logger.info("successfully loaded all states")
 
 
 async def on_startup():
@@ -47,14 +68,14 @@ async def on_startup():
         logger.getChild("static_files"),
     )
 
-    sql_repo = SqlRepository(logger.getChild("sql_repo"))
-    rmf_gateway = RmfGateway(initial_door_states=await sql_repo.read_door_states())
+    sql_repo = SqlRepository(logger.getChild("SqlRepository"))
+    rmf_gateway = RmfGateway()
+    await load_states(sql_repo, rmf_gateway)
     rmf_io = RmfIO(  # pylint: disable=unused-variable
-        sio,
-        rmf_gateway,
-        static_files_repo,
-        logger=logger.getChild("RmfIO"),
+        sio, rmf_gateway, static_files_repo, logger=logger.getChild("RmfIO")
     )
+
+    HealthWatchdog(rmf_gateway, logger=logger.getChild("HealthWatchdog"))
 
     rmf_transport = RmfTransport(ros2_node, rmf_gateway)
     rmf_transport.subscribe_all()
@@ -73,15 +94,6 @@ async def on_shutdown():
     await Tortoise.close_connections()
     logger.info("shutdown app")
 
-
-logger = logging.getLogger("app")
-handler = logging.StreamHandler(sys.stdout)
-handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
-logger.addHandler(handler)
-if "RMF_API_SERVER_DEBUG" in os.environ:
-    logger.setLevel(logging.DEBUG)
-else:
-    logger.setLevel(logging.INFO)
 
 sio = socketio.AsyncServer(async_mode="asgi")
 app = socketio.ASGIApp(

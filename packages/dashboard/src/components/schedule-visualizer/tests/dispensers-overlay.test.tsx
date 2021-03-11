@@ -1,32 +1,42 @@
-import { createMount } from '@material-ui/core/test-utils';
+import { render, waitFor } from '@testing-library/react';
 import L from 'leaflet';
 import React from 'react';
-import { DispenserMarker } from 'react-components';
+import { DispenserMarkerProps } from 'react-components';
 import { Map as LMap } from 'react-leaflet';
 import ResourceManager from '../../../managers/resource-manager';
 import fakeResources from '../../../managers/__mocks__/resources';
 import { ResourcesContext } from '../../app-contexts';
 import DispensersOverlay from '../dispensers-overlay';
 
-const mount = createMount();
+function FakeMarker(props: DispenserMarkerProps & { 'data-testid'?: string }) {
+  return <div data-testid={props['data-testid']}></div>;
+}
 
 describe('Dispensers Overlay', () => {
-  test('Render robots correctly', async () => {
+  test('Render dispensers correctly', async () => {
     const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
     const resources = new ResourceManager(fakeResources());
 
-    const wrapper = mount(
+    const root = render(
       <ResourcesContext.Provider value={resources}>
-        <LMap>
-          <DispensersOverlay bounds={bounds} currentFloorName="L1" />
+        <LMap
+          bounds={[
+            [0, 0],
+            [1, 1],
+          ]}
+        >
+          <DispensersOverlay bounds={bounds} currentFloorName="L1" MarkerComponent={FakeMarker} />
         </LMap>
       </ResourcesContext.Provider>,
     );
 
-    expect(wrapper.find(DispenserMarker).exists()).toBeTruthy();
+    await waitFor(() => {
+      expect(root.queryAllByTestId('dispenserMarker').length).toBeTruthy();
+      expect(root.getAllByTestId('dispenserMarker').length).toBe(
+        resources.dispensers?.allValues?.length,
+      );
+    });
 
-    expect(wrapper.find(DispenserMarker).length).toBe(resources.dispensers?.allValues?.length);
-
-    wrapper.unmount();
+    root.unmount();
   });
 });

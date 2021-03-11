@@ -1,7 +1,6 @@
-import { mount } from 'enzyme';
 import L from 'leaflet';
 import React from 'react';
-import { WaypointMarker } from 'react-components';
+import { render, waitFor } from '@testing-library/react';
 import { Map as LMap } from 'react-leaflet';
 import WaypointsOverlay from '../waypoints-overlay';
 import getBuildingMap from './building-map';
@@ -13,14 +12,20 @@ test('Render waypoints correctly', async () => {
   const nav_graphs = buildingMap.levels.flatMap((x) => x.nav_graphs);
   const waypoints = nav_graphs[0].vertices;
 
-  const wrapper = mount(
-    <LMap>
+  const root = render(
+    <LMap
+      bounds={[
+        [0, 0],
+        [1, 1],
+      ]}
+    >
       <WaypointsOverlay bounds={bounds} currentLevel={currentLevel} />
     </LMap>,
   );
 
-  expect(wrapper.find(WaypointMarker).exists()).toBeTruthy();
-  expect(wrapper.find(WaypointMarker).length).toBe(waypoints.length);
+  await waitFor(() => {
+    expect(root.getAllByTestId('waypointMarker').length).toBe(waypoints.length);
+  });
 
-  wrapper.unmount();
+  root.unmount();
 });

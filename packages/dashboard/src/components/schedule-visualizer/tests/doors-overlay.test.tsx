@@ -1,10 +1,9 @@
 import { Map as LMap } from 'react-leaflet';
-import { mount } from 'enzyme';
+import { render, waitFor } from '@testing-library/react';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import DoorsOverlay from '../doors-overlay';
 import L from 'leaflet';
 import React from 'react';
-import { DoorMarker } from 'react-components';
 
 const doors = [
   {
@@ -29,10 +28,10 @@ const doors = [
   },
 ];
 
-test('Render doors correctly', () => {
+test('Render doors correctly', async () => {
   const testDoors = doors;
   const bounds = new L.LatLngBounds([0, 25.7], [-14, 0]);
-  const wrapper = mount(
+  const root = render(
     <LMap
       bounds={[
         [0, 0],
@@ -42,7 +41,7 @@ test('Render doors correctly', () => {
       <DoorsOverlay bounds={bounds} doors={testDoors} />
     </LMap>,
   );
-  expect(wrapper.find(DoorMarker).length).toBe(2);
+  await waitFor(() => expect(root.getAllByTestId('doorMarker').length).toBe(2));
 
-  wrapper.unmount();
+  root.unmount();
 });

@@ -1,26 +1,27 @@
-import { createMount } from '@material-ui/core/test-utils';
 import React from 'react';
-import { Redirect } from 'react-router';
+import { cleanup, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthenticatorContext, UserContext } from '../../auth/contexts';
 import Login from '../login';
 import FakeAuthenticator from '../__mocks__/authenticator';
 
-const mount = createMount();
-
 describe('Login page', () => {
-  test('renders correctly', () => {
-    const component = mount(
+  afterEach(() => {
+    cleanup();
+  });
+
+  test('renders without crashing', () => {
+    const root = render(
       <BrowserRouter>
         <Login />
       </BrowserRouter>,
     );
-    expect(component).toMatchSnapshot();
+    root.unmount();
   });
 
-  test('redirects to dashboard when user is authenticated', () => {
-    window.history.replaceState(window.history.state, '');
-    const wrapper = mount(
+  test('redirects from login when user is authenticated', () => {
+    const root = render(
       <BrowserRouter>
         <UserContext.Provider
           value={{
@@ -31,23 +32,24 @@ describe('Login page', () => {
         </UserContext.Provider>
       </BrowserRouter>,
     );
-    expect(wrapper.find(Redirect)).toBeTruthy();
+
+    expect(root.queryByText('Login')).toBeFalsy();
   });
 
   test('performs login when login button is clicked', () => {
     const authenticator = new FakeAuthenticator({ username: 'fakeUser' });
     const spy = jest.spyOn(authenticator, 'login').mockImplementation(() => undefined as any);
 
-    const root = mount(
+    const root = render(
       <BrowserRouter>
         <AuthenticatorContext.Provider value={authenticator}>
           <Login />
         </AuthenticatorContext.Provider>
       </BrowserRouter>,
     );
-    const loginButton = root.find('button#login-button').first();
-    expect(loginButton).toBeTruthy();
-    loginButton.simulate('click');
+    const loginButton = root.getByRole('button', { name: /Login/i });
+    userEvent.click(loginButton);
+
     expect(spy).toHaveBeenCalledTimes(1);
   });
 });

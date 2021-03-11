@@ -2,7 +2,7 @@ import { useTheme } from '@material-ui/core';
 import React from 'react';
 import { ColorContext } from '../color-manager';
 import { uniqueId } from '../css-utils';
-import { RobotMarkerProps } from './robot-marker';
+import { BaseMarkerProps } from './base-marker';
 
 /**
  *
@@ -24,12 +24,13 @@ function makeGradientShadow(
   );
 }
 
-export const DefaultMarker = (props: RobotMarkerProps): JSX.Element | null => {
-  const { robot, footprint, fleetName, variant = 'normal' } = props;
+export interface DefaultMarkerProps extends BaseMarkerProps {
+  color: string;
+}
+
+export const DefaultMarker = (props: DefaultMarkerProps): JSX.Element => {
+  const { color, footprint, variant = 'normal' } = props;
   const colorManager = React.useContext(ColorContext);
-  const [robotColor, setRobotColor] = React.useState<string | null>(() =>
-    colorManager.robotColorFromCache(fleetName, robot.name),
-  );
   const theme = useTheme();
 
   const componentId = React.useMemo(uniqueId, []);
@@ -43,17 +44,7 @@ export const DefaultMarker = (props: RobotMarkerProps): JSX.Element | null => {
     colorManager.conflictHighlight,
   ]);
 
-  React.useLayoutEffect(() => {
-    if (robotColor) {
-      return;
-    }
-    (async () => {
-      setRobotColor(await colorManager.robotPrimaryColor(fleetName, robot.name, robot.model));
-      await colorManager.robotPrimaryColor(fleetName, robot.name, robot.model);
-    })();
-  }, [robot, robotColor, colorManager, fleetName]);
-
-  return robotColor ? (
+  return (
     <g>
       <defs>
         <Shadow id={shadowId} />
@@ -64,10 +55,10 @@ export const DefaultMarker = (props: RobotMarkerProps): JSX.Element | null => {
         r={footprint * 1.3}
         fill={variant === 'inConflict' ? `url(#${conflictShadowId})` : `url(#${shadowId})`}
       />
-      <circle r={footprint} fill={robotColor} />
+      <circle r={footprint} fill={color} />
       <line x2={footprint} stroke={theme.palette.common.black} strokeWidth="0.05" />
     </g>
-  ) : null;
+  );
 };
 
 export default DefaultMarker;

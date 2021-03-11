@@ -1,4 +1,5 @@
 import * as ChildProcess from 'child_process';
+import { mkdirSync } from 'fs';
 
 enum LaunchMode {
   None,
@@ -80,7 +81,11 @@ export class LocalLauncher {
     if (headless) {
       officeDemoArgs.push('headless:=true');
     }
-    this._officeDemo = new ManagedProcess('ros2', officeDemoArgs, { stdio: 'inherit' });
+    mkdirSync(`${__dirname}/.rmf`, { recursive: true });
+    this._officeDemo = new ManagedProcess('ros2', officeDemoArgs, {
+      stdio: 'inherit',
+      cwd: `${__dirname}/.rmf`,
+    });
 
     const ready = await this._rmfReady();
     if (!ready) {

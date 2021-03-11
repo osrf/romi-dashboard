@@ -10,6 +10,13 @@ setup(
     author="Teo Koon Peng",
     author_email="koonpeng@openrobotics.org",
     keywords=["ROS", "RMF"],
+    install_requires=[
+        "fastapi==0.63.*",
+        "uvicorn[standard]==0.13.*",
+        "python-socketio==5.*",
+        "rx==3.*",
+        "tortoise-orm==0.16.*",
+    ],
     classifiers=[
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
@@ -21,7 +28,7 @@ setup(
             "rmf_api_server=api_server.__main__:main",
             "rmf_api_cli=cli_client.__main__:main",
             "rmf_rest_server=rest_server.__main__:main",
-        ],
+        ]
     },
     license="Apache License, Version 2.0",
 )

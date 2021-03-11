@@ -245,18 +245,22 @@ export const DoorMarker = React.forwardRef(
       }
     };
 
-    const center = getDoorCenter(door);
-
-    return (
-      <g ref={ref} onClick={(ev) => onClick && onClick(ev, door)} {...otherProps}>
-        <g
-          className={onClick ? classes.marker : undefined}
-          transform={!translate ? `translate(${-center[0]} ${center[1]})` : undefined}
-        >
-          {renderDoor()}
+    try {
+      const center = getDoorCenter(door);
+      return (
+        <g ref={ref} onClick={(ev) => onClick && onClick(ev, door)} {...otherProps}>
+          <g
+            className={onClick ? classes.marker : undefined}
+            transform={!translate ? `translate(${-center[0]} ${center[1]})` : undefined}
+          >
+            {renderDoor()}
+          </g>
         </g>
-      </g>
-    );
+      );
+    } catch (e) {
+      console.error((e as Error).message);
+      return null;
+    }
   },
 );
 

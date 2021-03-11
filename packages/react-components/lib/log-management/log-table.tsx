@@ -1,6 +1,6 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import { CustomLookupFilter, LogLevel } from '.';
+import { CustomLookupFilterParser, LogLevel } from '.';
 import { makeStyles, Typography } from '@material-ui/core';
 import moment from 'moment';
 import { materialTableIcons } from '../material-table-icons';
@@ -75,7 +75,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
             maxHeight: '2px',
           },
           lookup: LogLevel,
-          filterComponent: (props) => <CustomLookupFilter {...props} />,
+          filterComponent: (props) => <CustomLookupFilterParser {...props} />,
           render: (rowData) => {
             return (
               <Typography className={`${getLogLevelStyle(rowData.level)} ${classes.cellContent}`}>

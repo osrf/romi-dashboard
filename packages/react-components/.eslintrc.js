@@ -3,12 +3,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:react-hooks/recommended',
-    'plugin:@typescript-eslint/recommended',
-  ],
+  extends: ['../../.eslintrc.js', 'plugin:react/recommended', 'plugin:react-hooks/recommended'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
@@ -17,7 +12,7 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module',
   },
-  plugins: ['react', '@typescript-eslint'],
+  plugins: ['react'],
   settings: {
     react: {
       version: 'detect',
@@ -28,6 +23,12 @@ module.exports = {
     'react/prop-types': 'off',
   },
   overrides: [
+    {
+      files: ['lib/**', 'stories/**', 'tests/**'],
+      env: {
+        node: false,
+      },
+    },
     {
       files: 'tests/**',
       rules: {

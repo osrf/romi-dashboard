@@ -1,10 +1,10 @@
-import { shallow } from 'enzyme';
 import React from 'react';
+import { render, waitFor } from '@testing-library/react';
 import { GlobalHotKeys, KeySequence } from 'react-hotkeys';
 import HotKeysDialog from '../hotkeys-dialog';
 
 describe('Hotkeys Dialog', () => {
-  test('Component renders correctly', () => {
+  test('should render without crashing', async () => {
     const keyMap = {
       OPEN_COMMANDS: {
         name: 'Open Commands',
@@ -16,15 +16,15 @@ describe('Hotkeys Dialog', () => {
       OPEN_COMMANDS: () => jest.fn(),
     };
 
-    const root = shallow(
-      <GlobalHotKeys keyMap={keyMap} handlers={handlers}>
-        <HotKeysDialog handleClose={() => jest.fn()} open={true} />
-      </GlobalHotKeys>,
-    );
-    const hotKeyDialog = root.find(HotKeysDialog).dive();
-    expect(hotKeyDialog.find('[detail-type="hotkeyDetail"]').length).toBe(
-      Object.keys(keyMap).length,
-    );
-    expect(root.find(HotKeysDialog).dive()).toMatchSnapshot();
+    await waitFor(() => {
+      const root = render(
+        <GlobalHotKeys keyMap={keyMap} handlers={handlers}>
+          <HotKeysDialog handleClose={() => jest.fn()} open={true} />
+        </GlobalHotKeys>,
+      );
+      expect(root.baseElement.childNodes).toBeDefined();
+      expect(root.getAllByTestId('hotkeyDetail').length).toBe(Object.keys(keyMap).length);
+      root.unmount();
+    });
   });
 });

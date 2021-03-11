@@ -1,6 +1,6 @@
 import Debug from 'debug';
 import React from 'react';
-import { DispenserMarker as DispenserMarker_ } from 'react-components';
+import { DispenserMarker as DispenserMarker_, DispenserMarkerProps } from 'react-components';
 import { DispenserResource } from '../../managers/resource-manager-dispensers';
 import { viewBoxFromLeafletBounds } from '../../util/css-utils';
 import { ResourcesContext } from '../app-contexts';
@@ -12,12 +12,18 @@ const DispenserMarker = React.memo(DispenserMarker_);
 export interface DispensersOverlayProps extends SVGOverlayProps {
   currentFloorName: string;
   onDispenserClick?(event: React.MouseEvent, guid: string): void;
+  MarkerComponent?: React.ComponentType<DispenserMarkerProps>;
 }
 
 export const DispensersOverlay = (props: DispensersOverlayProps): React.ReactElement => {
   debug('render');
 
-  const { currentFloorName, onDispenserClick, ...otherProps } = props;
+  const {
+    currentFloorName,
+    onDispenserClick,
+    MarkerComponent = DispenserMarker,
+    ...otherProps
+  } = props;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const footprint = 0.4;
   const dispenserResourcesContext = React.useContext(ResourcesContext)?.dispensers;
@@ -43,7 +49,7 @@ export const DispensersOverlay = (props: DispensersOverlayProps): React.ReactEle
         {dispenserResourcesContext &&
           dispenserInCurLevel.map((dispenser: DispenserResource) => {
             return (
-              <DispenserMarker
+              <MarkerComponent
                 key={dispenser.guid}
                 guid={dispenser.guid}
                 location={[dispenser.location.x, dispenser.location.y]}
@@ -52,6 +58,7 @@ export const DispensersOverlay = (props: DispensersOverlayProps): React.ReactEle
                 onClick={onDispenserClick}
                 aria-label={dispenser.guid}
                 data-component="DispenserMarker"
+                data-testid="dispenserMarker"
               />
             );
           })}

@@ -4,21 +4,22 @@ from tortoise import fields
 from tortoise.models import Model
 
 from ..ros_time import py_to_ros_time, ros_to_py_datetime
-from .door_mode import DoorModeEnum
 
 
 class DoorState(Model):
-    # TODO: foreign key with Door
-    door_name = fields.CharField(255)
-    current_mode = fields.IntEnumField(DoorModeEnum)
+    # KP: We could have a FK to Door,
+    # but I decided against it to make things easier (pesky race conditions).
+    # If we receive a door name that does not exist in the building,
+    # just take it at face value and write into the database regardless.
+    door_name = fields.CharField(255, pk=True)
+    # Could use IntEnumField, but to make things easier, just allow any value.
+    # If we received a door state with invalid mode, just take it at face value and write
+    # into the db regardless.
+    current_mode = fields.SmallIntField()
     door_time = fields.DatetimeField()
 
-    class Meta:
-        unique_together = ("door_name", "door_time")
-        indexes = (("door_name", "door_time"),)
-
     @staticmethod
-    def from_rmf(rmf_door_state: RmfDoorState):
+    async def from_rmf(rmf_door_state: RmfDoorState):
         return DoorState(
             door_name=rmf_door_state.door_name,
             current_mode=rmf_door_state.current_mode.value,

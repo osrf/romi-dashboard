@@ -1,7 +1,0 @@
-version: '3'
-services:
-  keycloak:
-    build: keycloak
-    image: rmf-web/keycloak
-    ports:
-      - 8088:8080

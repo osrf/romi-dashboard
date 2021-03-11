@@ -94,6 +94,7 @@ export const RobotTrajectoriesOverlay = (props: RobotTrajectoriesOverlayProps) =
                 animationScale={animationScale}
                 variant={trajectoryVariant}
                 data-component="TrajectoryMarker"
+                data-testid="trajMarker"
               />
             ),
         )}

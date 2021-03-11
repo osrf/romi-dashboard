@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'packages/dashboard/**'
+      - 'packages/react-components/**'
   push:
     branches:
       - main
@@ -13,7 +14,7 @@ jobs:
     name: Unit Tests
     runs-on: ubuntu-latest
     container:
-      image: docker.pkg.github.com/osrf/rmf-web/e2e
+      image: docker.pkg.github.com/open-rmf/rmf-web/e2e
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}

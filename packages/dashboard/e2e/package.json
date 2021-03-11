@@ -6,6 +6,8 @@
     "test": "tests"
   },
   "scripts": {
+    "start:keycloak": "../scripts/dockert docker-compose -f docker/docker-compose.yml -p rmf-web up keycloak",
+    "start:ros2-bridge": "../node_modules/.bin/ros2-bridge --port 50002 --publicKey certs/keycloak.pub",
     "test": "node scripts/test-e2e.js",
     "test:dev": "ROMI_DASHBOARD_PORT=3000 RMF_LAUNCH_MODE=none wdio"
   },

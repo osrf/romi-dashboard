@@ -1,33 +1,23 @@
 const concurrently = require('concurrently');
 const { execSync } = require('child_process');
 
-function dockert(cmd) {
-  return `${__dirname}/../../scripts/dockert ${cmd}`;
+process.env.REACT_APP_AUTH_PROVIDER = process.env.REACT_APP_AUTH_PROVIDER || 'keycloak';
+if (process.env.REACT_APP_AUTH_PROVIDER === 'keycloak') {
+  process.env.REACT_APP_KEYCLOAK_CONFIG =
+    process.env.REACT_APP_KEYCLOAK_CONFIG ||
+    JSON.stringify({
+      realm: 'master',
+      clientId: 'romi-dashboard',
+      url: 'http://localhost:8088/auth',
+    });
 }
-
-// only create rmf-web network if it doesn't exist, `rmf-web_default` is the default network
-// used  by docker-compose.
-if (!execSync(dockert("docker network ls -f=name='^rmf-web_default$'").toString())) {
-  execSync(dockert('docker network create rmf-web_default', { stdio: 'inherit' }));
-  console.log('created new docker "rmf-web_default"');
-}
-
-const gatewayIp = execSync(
-  dockert("docker network inspect -f='{{(index .IPAM.Config 0).Gateway}}' rmf-web_default"),
-)
-  .toString()
-  .trim();
-
-const authConfig = {
-  realm: 'master',
-  clientId: 'romi-dashboard',
-  url: `http://${gatewayIp}:8088/auth`,
-};
-
-process.env.REACT_APP_TRAJECTORY_SERVER = 'ws://localhost:8006';
-process.env.REACT_APP_ROS2_BRIDGE_SERVER = 'ws://localhost:50002';
-process.env.REACT_APP_AUTH_CONFIG = JSON.stringify(authConfig);
-process.env.ROMI_DASHBOARD_PORT = '5000';
+process.env.REACT_APP_TRAJECTORY_SERVER =
+  process.env.REACT_APP_TRAJECTORY_SERVER || 'ws://localhost:8006';
+process.env.REACT_APP_ROS2_BRIDGE_SERVER =
+  process.env.REACT_APP_ROS2_BRIDGE_SERVER || 'ws://localhost:50002';
+process.env.E2E_USER = process.env.E2E_USER || 'admin';
+process.env.E2E_PASSWORD = process.env.E2E_PASSWORD || 'admin';
+process.env.E2E_DASHBOARD_URL = process.env.E2E_DASHBOARD_URL || 'http://localhost:5000';
 
 execSync('WORLD_NAME=office node scripts/get-resources-location.js', { stdio: 'inherit' });
 execSync('cd .. && node ./scripts/setup/get-icons.js', { stdio: 'inherit' });
@@ -39,18 +29,30 @@ const wdioArgs = process.argv
   .map((arg) => `"${arg}"`)
   .join(' ');
 
-concurrently(
-  [
-    'npm --prefix .. run start:ros2-bridge',
-    'npm --prefix .. run start:keycloak',
-    'serve -c ../e2e/serve.json ../build',
-    `node scripts/auth-ready.js && wdio ${wdioArgs}`,
-  ],
-  {
-    killOthers: ['success', 'failure'],
-    successCondition: 'first',
-  },
-).catch((e) => {
+const services = [];
+// eslint-disable-next-line no-eval
+if (!eval(process.env.E2E_NO_AUTH)) {
+  switch (process.env.REACT_APP_AUTH_PROVIDER) {
+    case 'keycloak':
+      services.push('npm run start:keycloak');
+      break;
+    default:
+      throw new Error('cannot start auth provider');
+  }
+}
+// eslint-disable-next-line no-eval
+if (!eval(process.env.E2E_NO_DASHBOARD)) {
+  services.push('serve -c ../e2e/serve.json ../build');
+}
+// eslint-disable-next-line no-eval
+if (!eval(process.env.E2E_NO_ROS2_BRIDGE)) {
+  services.push('npm run start:ros2-bridge');
+}
+
+concurrently([...services, `node scripts/auth-ready.js && wdio ${wdioArgs}`], {
+  killOthers: ['success', 'failure'],
+  successCondition: 'first',
+}).catch((e) => {
   console.error(e);
   process.exitCode = -1;
 });

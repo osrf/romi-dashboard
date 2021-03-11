@@ -1,14 +1,11 @@
-import { createMount } from '@material-ui/core/test-utils';
+import { render, screen } from '@testing-library/react';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
-import { DeliveryRequestForm, LoopRequestForm } from 'react-components';
 import ResourceManager from '../../../managers/resource-manager';
 import fakeResources from '../../../managers/__mocks__/resources';
 import { ResourcesContext } from '../../app-contexts';
 import CommandsPanel from '../commands-panel';
 import fakeFleets from './fleets';
-
-const mount = createMount();
 
 let fleets: RomiCore.FleetState[];
 
@@ -18,20 +15,21 @@ beforeEach(() => {
 
 it('Renders loop and delivery form', () => {
   const resources = new ResourceManager(fakeResources());
-  const root = mount(
+  render(
     <ResourcesContext.Provider value={resources}>
       <CommandsPanel allFleets={fleets.map((fleet) => fleet.name)} />
     </ResourcesContext.Provider>,
   );
 
-  expect(root.find(LoopRequestForm).length).toBe(1);
-  expect(root.find(DeliveryRequestForm).length).toBe(1);
-
-  root.unmount();
+  expect(screen.getByText('Loop Request')).toBeDefined();
+  expect(screen.getByText('Delivery Request')).toBeDefined();
 });
 
 it('Renders error on render without context', () => {
-  const root = mount(<CommandsPanel allFleets={fleets.map((fleet) => fleet.name)} />);
-  expect(root.find('#no-config-file-error-msg').exists()).toBeTruthy();
-  root.unmount();
+  render(<CommandsPanel allFleets={fleets.map((fleet) => fleet.name)} />);
+  expect(
+    screen.getByText(
+      'There was an error while loading the commands panel (unable to load resources metadata).',
+    ),
+  ).toBeDefined();
 });

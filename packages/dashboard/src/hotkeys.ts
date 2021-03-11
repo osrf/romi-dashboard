@@ -1,10 +1,12 @@
+import { StackNavigatorDispatch } from 'react-components';
 import { HotKeysEnabledProps, KeyMap, KeySequence } from 'react-hotkeys';
 import { AppController } from './components/app-contexts';
 import { OmniPanelViewIndex } from './components/dashboard/dashboard';
 import { ReducerDashboardDispatch } from './components/dashboard/reducers/dashboard-reducer';
 
-export interface hotKeysProps {
+export interface HotKeysProps {
   reducerDashboardDispatch: ReducerDashboardDispatch;
+  viewStackDispatch: StackNavigatorDispatch<OmniPanelViewIndex>;
   appController: AppController;
 }
 
@@ -47,33 +49,34 @@ export const keyMap: KeyMap = {
   } as KeySequence,
 };
 
-export const buildHotKeys = (props: hotKeysProps): HotKeysEnabledProps => {
-  const { setCurrentView, setShowOmniPanel, toggleOmnipanel } = props.reducerDashboardDispatch;
+export const buildHotKeys = (props: HotKeysProps): HotKeysEnabledProps => {
+  const { setShowOmniPanel, toggleOmnipanel } = props.reducerDashboardDispatch;
+  const { viewStackDispatch } = props;
   const { toggleHotkeysDialog: toggleHotkeys, toggleSettings, toggleHelp } = props.appController;
 
   const openCommands = () => {
     setShowOmniPanel(true);
-    setCurrentView(OmniPanelViewIndex.Commands);
+    viewStackDispatch.push(OmniPanelViewIndex.Commands);
   };
 
   const openDispensers = () => {
     setShowOmniPanel(true);
-    setCurrentView(OmniPanelViewIndex.Dispensers);
+    viewStackDispatch.push(OmniPanelViewIndex.Dispensers);
   };
 
   const openDoors = () => {
     setShowOmniPanel(true);
-    setCurrentView(OmniPanelViewIndex.Doors);
+    viewStackDispatch.push(OmniPanelViewIndex.Doors);
   };
 
   const openLifts = () => {
     setShowOmniPanel(true);
-    setCurrentView(OmniPanelViewIndex.Lifts);
+    viewStackDispatch.push(OmniPanelViewIndex.Lifts);
   };
 
   const openRobots = () => {
     setShowOmniPanel(true);
-    setCurrentView(OmniPanelViewIndex.Robots);
+    viewStackDispatch.push(OmniPanelViewIndex.Robots);
   };
 
   // Keep the same name as the KeyMap

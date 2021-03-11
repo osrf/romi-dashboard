@@ -5,6 +5,7 @@ import deepEqual from 'fast-deep-equal';
 import { Argv } from 'yargs';
 import RpcMiddleware, { Logger, Sender } from '../../rpc-middleware';
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function options(yargs: Argv) {
   return yargs.option('ros2NodeName', {
     default: 'romi_dashboard_server',

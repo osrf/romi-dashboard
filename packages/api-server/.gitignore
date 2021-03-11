@@ -4,3 +4,5 @@
 /.coverage
 /.coverage.*
 /htmlcov/
+/build/
+/api_server/models/mixins/

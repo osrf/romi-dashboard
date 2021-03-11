@@ -11,11 +11,11 @@
  *     there on an "external" install.
  */
 const child_process = require('child_process');
-const fs = require('fs');
 
 // hardcoded for now
 const deps = {
   'packages/dashboard': ['packages/ros2-bridge', 'packages/react-components'],
+  'packages/api-client': ['packages/api-server'],
 };
 
 const allPackages = [
@@ -24,6 +24,7 @@ const allPackages = [
   'packages/react-components',
   'packages/dashboard',
   'packages/api-server',
+  'packages/api-client',
 ];
 const scope = process.argv.length > 2 ? process.argv.slice(2) : allPackages;
 

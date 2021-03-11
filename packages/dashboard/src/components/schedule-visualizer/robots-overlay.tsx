@@ -14,12 +14,20 @@ export interface RobotsOverlayProps extends SVGOverlayProps {
   onRobotClick?(fleet: string, robot: RomiCore.RobotState): void;
   conflictRobotNames: string[][];
   currentFloorName: string;
+  MarkerComponent?: React.ComponentType<RobotMarkerProps>;
 }
 
 export const RobotsOverlay = (props: RobotsOverlayProps) => {
   debug('render');
 
-  const { fleets, onRobotClick, conflictRobotNames, currentFloorName, ...otherProps } = props;
+  const {
+    fleets,
+    onRobotClick,
+    conflictRobotNames,
+    currentFloorName,
+    MarkerComponent = RobotMarker,
+    ...otherProps
+  } = props;
   const robotResourcesContext = React.useContext(ResourcesContext)?.robots;
   const viewBox = viewBoxFromLeafletBounds(props.bounds);
   const footprint = 0.5;
@@ -70,7 +78,7 @@ export const RobotsOverlay = (props: RobotsOverlayProps) => {
       <svg viewBox={viewBox}>
         {robotsInCurLevel.map(({ fleet, robots }) =>
           robots.map((robot) => (
-            <RobotMarker
+            <MarkerComponent
               key={robot.name}
               robot={robot}
               fleetName={fleetContainer[`${robot.name}_${robot.model}`]}
@@ -80,6 +88,7 @@ export const RobotsOverlay = (props: RobotsOverlayProps) => {
               onClick={handleRobotClick}
               aria-label={robot.name}
               data-component="RobotMarker"
+              data-testid="robotMarker"
             />
           )),
         )}

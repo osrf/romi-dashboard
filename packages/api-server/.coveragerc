@@ -2,6 +2,9 @@
 source =
     api_server
 omit =
+    # test files
+    **/test_*.py
+
     # generated files
     api_server/models/mixins/**
 

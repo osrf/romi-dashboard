@@ -1,6 +1,21 @@
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import { RawKnot, RawVelocity, Trajectory } from '../../lib';
 
+export function allRobotModes(): RomiCore.RobotMode[] {
+  return [
+    { mode: RomiCore.RobotMode.MODE_ADAPTER_ERROR },
+    { mode: RomiCore.RobotMode.MODE_CHARGING },
+    { mode: RomiCore.RobotMode.MODE_DOCKING },
+    { mode: RomiCore.RobotMode.MODE_EMERGENCY },
+    { mode: RomiCore.RobotMode.MODE_GOING_HOME },
+    { mode: RomiCore.RobotMode.MODE_IDLE },
+    { mode: RomiCore.RobotMode.MODE_MOVING },
+    { mode: RomiCore.RobotMode.MODE_PAUSED },
+    { mode: RomiCore.RobotMode.MODE_WAITING },
+    { mode: -1 },
+  ];
+}
+
 export function makeRobot(robotState?: Partial<RomiCore.RobotState>): RomiCore.RobotState {
   return {
     name: 'test',

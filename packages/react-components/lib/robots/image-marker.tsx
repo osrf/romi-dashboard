@@ -1,7 +1,7 @@
 import React from 'react';
 import { ColorContext } from '../color-manager';
 import { uniqueId } from '../css-utils';
-import { RobotMarkerProps } from './robot-marker';
+import { BaseMarkerProps } from './base-marker';
 
 /**
  *
@@ -20,7 +20,7 @@ function makeGradientShadow(
   );
 }
 
-export interface ImageMarkerProps extends RobotMarkerProps {
+export interface ImageMarkerProps extends BaseMarkerProps {
   iconPath: string;
   onError?: React.EventHandler<React.SyntheticEvent<SVGImageElement, Event>>;
 }

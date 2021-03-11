@@ -11,7 +11,7 @@ interface RpcRequestWithId<T> extends RpcRequest<T> {
 type RpcRequestWithoutId<T> = Omit<RpcRequest<T>, 'id'>;
 
 export default class RpcClient {
-  static async connect(url: string, token: string): Promise<RpcClient> {
+  static async connect(url: string, token?: string): Promise<RpcClient> {
     const socket = new WebSocket(url);
     socket.binaryType = 'arraybuffer';
     await new Promise((res, reject) => {
@@ -19,11 +19,15 @@ export default class RpcClient {
         reject(ev);
       };
       socket.addEventListener('close', closeListener);
-      socket.addEventListener('open', () => socket.send(token));
-      socket.addEventListener('message', (ev) => {
-        socket.removeEventListener('close', closeListener);
-        res(ev);
-      });
+      if (token) {
+        socket.addEventListener('open', () => socket.send(token));
+        socket.addEventListener('message', (ev) => {
+          socket.removeEventListener('close', closeListener);
+          res(ev);
+        });
+      } else {
+        socket.addEventListener('open', res);
+      }
     });
     return new RpcClient(socket);
   }

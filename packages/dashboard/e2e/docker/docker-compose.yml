@@ -1,0 +1,10 @@
+version: '3.5'
+services:
+  keycloak:
+    build: keycloak
+    image: rmf-web/keycloak
+    ports:
+      - 8088:8080
+networks:
+  default:
+    name: ${E2E_DOCKER_NETWORK:-rmf-web_default}

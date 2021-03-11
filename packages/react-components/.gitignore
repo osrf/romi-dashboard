@@ -1,2 +1,5 @@
 /lib/**/*.js
 /lib/**/*.d.ts
+/tests/**/*.d.ts
+lcov.info
+coverage-final.json

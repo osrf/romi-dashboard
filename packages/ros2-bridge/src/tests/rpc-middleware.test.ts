@@ -3,11 +3,11 @@ import WebSocket from 'ws';
 import RpcMiddleware, { ErrorCodes, RpcRequest, RpcResponse, Sender } from '../rpc-middleware';
 import WebSocketConnect from '../websocket-connect';
 
-function echo(params: any) {
+function echo(params: unknown) {
   return params;
 }
 
-function makeRpcRequest(method: string, params?: any, id?: string | number | null): Uint8Array {
+function makeRpcRequest(method: string, params?: unknown, id?: string | number | null): Uint8Array {
   const rpcRequest: RpcRequest = {
     version: '0',
     method,
@@ -74,7 +74,7 @@ test('object request params', (done) => {
     expect(resp.id).toBe(0);
     expect(resp.error).toBeUndefined();
     expect(resp.more).toBeUndefined();
-    expect((resp.result as any).data).toBe('world');
+    expect((resp.result as any).data).toBe('world'); // eslint-disable-line @typescript-eslint/no-explicit-any
     done();
   });
   client.once('open', () => client.send(makeRpcRequest('test', { data: 'hello' }, 0)));

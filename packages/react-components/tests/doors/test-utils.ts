@@ -14,6 +14,19 @@ export function makeDoor(door?: Partial<RomiCore.Door>): RomiCore.Door {
   };
 }
 
+export function allDoorTypes(): number[] {
+  return [
+    RomiCore.Door.DOOR_TYPE_DOUBLE_SLIDING,
+    RomiCore.Door.DOOR_TYPE_DOUBLE_SWING,
+    RomiCore.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
+    RomiCore.Door.DOOR_TYPE_SINGLE_SLIDING,
+    RomiCore.Door.DOOR_TYPE_SINGLE_SWING,
+    RomiCore.Door.DOOR_TYPE_SINGLE_TELESCOPE,
+    RomiCore.Door.DOOR_TYPE_UNDEFINED,
+    -1,
+  ];
+}
+
 export function makeDoorState(state?: Partial<RomiCore.DoorState>): RomiCore.DoorState {
   return {
     door_name: 'test',
@@ -21,4 +34,13 @@ export function makeDoorState(state?: Partial<RomiCore.DoorState>): RomiCore.Doo
     door_time: { sec: 0, nanosec: 0 },
     ...state,
   };
+}
+
+export function allDoorModes(): RomiCore.DoorMode[] {
+  return [
+    { value: RomiCore.DoorMode.MODE_CLOSED },
+    { value: RomiCore.DoorMode.MODE_OPEN },
+    { value: RomiCore.DoorMode.MODE_MOVING },
+    { value: -1 },
+  ];
 }

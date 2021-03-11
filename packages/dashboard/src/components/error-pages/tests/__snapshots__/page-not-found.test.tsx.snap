@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`PageNotFound renders correctly 1`] = `"<div class=\\"makeStyles-div-1\\"><img class=\\"makeStyles-img-2\\" src=\\"assets/aron-visuals-3jBU9TbKW7o-unsplash.jpg\\" alt=\\"404 Not Found\\"><h2 class=\\"MuiTypography-root makeStyles-text-3 MuiTypography-h1 MuiTypography-gutterBottom\\">Are you lost? <a href=\\"/login\\">Go to Login </a></h2><p class=\\"MuiTypography-root makeStyles-author-4 MuiTypography-body1\\">Photo by Aron Visuals on Unsplash</p></div>"`;

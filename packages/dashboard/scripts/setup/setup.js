@@ -25,7 +25,7 @@ You have two options:
       },
       {
         name: 'REPO',
-        message: `Set REPO. Example: https://github.com/osrf/rmf_demos.git`,
+        message: `Set REPO. Example: https://github.com/open-rmf/rmf_demos.git`,
         when: (keys) => keys['GET_OR_COPY'] === '1',
         validate: (input) =>
           /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(

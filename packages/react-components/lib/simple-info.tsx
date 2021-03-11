@@ -92,7 +92,7 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
     wrap,
   }: SimpleInfoData<DataValueTypePrimitive>) => (
     <>
-      <Typography className={classes.displayName} variant="body1">
+      <Typography className={classes.displayName} variant="body1" role="rowheader">
         {name}
       </Typography>
       <Typography
@@ -103,6 +103,7 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
           disabled ? classes.disabled : undefined,
           className?.value,
         )}
+        role="cell"
       >
         {value}
       </Typography>
@@ -121,10 +122,10 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
     const valueStyle = className?.overrideValue ? className?.overrideValue : classes.value;
     return (
       <>
-        <Typography className={classes.displayName} variant="body1">
+        <Typography className={classes.displayName} variant="body1" role="rowheader">
           {name}
         </Typography>
-        <List className={valueStyle} dense>
+        <List className={valueStyle} dense role="cell">
           {value.map((item, i) => (
             <ListItem key={i} className={classes.arrayListItem}>
               <Typography
@@ -172,6 +173,7 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
             <div
               className={overrideStyle?.tableRow ? overrideStyle?.tableRow : classes.tableRow}
               role="row"
+              aria-label={item.name}
             >
               {renderLine(item)}
             </div>

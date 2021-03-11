@@ -1,7 +1,6 @@
 import React from 'react';
+import { render, waitFor } from '@testing-library/react';
 import ScheduleVisualizer from '../index';
-import toJson from 'enzyme-to-json';
-import { shallow } from 'enzyme';
 
 const mockBuildingMap = {
   name: 'name',
@@ -19,16 +18,13 @@ const mockBuildingMap = {
   lifts: [],
 };
 
-it('renders well with the appropriate data', () => {
+it('renders well with the appropriate data', async () => {
   URL.createObjectURL = jest.fn();
 
-  const wrapper = shallow(
-    <ScheduleVisualizer
-      negotiationTrajStore={{}}
-      fleets={[]}
-      mapFloorLayerSorted={['name']}
-      buildingMap={mockBuildingMap}
-    />,
-  );
-  expect(toJson(wrapper)).toMatchSnapshot();
+  await waitFor(() => {
+    const root = render(
+      <ScheduleVisualizer negotiationTrajStore={{}} buildingMap={mockBuildingMap} />,
+    );
+    root.unmount();
+  });
 });

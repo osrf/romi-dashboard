@@ -37,6 +37,7 @@ export const DoorsOverlay = (props: DoorsOverlayProps) => {
             doorMode={doorsState && doorsState[door.name] && doorsState[door.name].current_mode}
             aria-label={door.name}
             data-component="DoorMarker"
+            data-testid="doorMarker"
           />
         ))}
       </svg>

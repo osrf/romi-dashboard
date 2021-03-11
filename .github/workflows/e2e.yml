@@ -33,7 +33,7 @@ jobs:
           registry: docker.pkg.github.com
           repository: ${{ github.repository }}/e2e
           tags: latest
-          build-args: BASE_IMAGE=docker.pkg.github.com/osrf/rmf-web/rmf:nightly
+          build_args: BASE_IMAGE=docker.pkg.github.com/open-rmf/rmf-web/rmf:nightly
           path: packages/dashboard/e2e/docker/e2e
   e2e-tests:
     name: End-to-End Tests
@@ -41,7 +41,7 @@ jobs:
     if: always()
     needs: build-docker-images
     container:
-      image: docker.pkg.github.com/osrf/rmf-web/e2e
+      image: docker.pkg.github.com/open-rmf/rmf-web/e2e
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -62,20 +62,22 @@ jobs:
           pip3 install pipenv
           npm config set unsafe-perm
           npm run bootstrap -- packages/dashboard
-          docker login https://docker.pkg.github.com -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
-          cd packages/dashboard
-          docker pull docker.pkg.github.com/osrf/rmf-web/e2e
           docker pull quay.io/keycloak/keycloak:11.0.0
-          cd e2e
+          cd packages/dashboard/e2e
           npm ci
         working-directory: .
       - name: e2e test
         run: |
           . /opt/rmf/setup.bash
-          cd e2e && (npm test || npm test || npm test)
+          cd e2e && (npm test || npm test)
+        env:
+          E2E_DOCKER_NETWORK: ${{job.container.network}}
+          REACT_APP_AUTH_PROVIDER: keycloak
+          # need to use the internal port because we are connecting from within the same network
+          REACT_APP_KEYCLOAK_CONFIG: '{ "realm": "master", "clientId": "romi-dashboard", "url": "http://rmf-web_keycloak_1:8080/auth" }'
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
           name: screenshots
-          path: e2e/artifacts
+          path: packages/dashboard/e2e/artifacts

@@ -57,14 +57,6 @@ Generate coverage report
 npm run test:report
 ```
 
-## Generated files
-
-The files in `api_server/models/mixins` are generated, they are committed to the repo to make distribution easier. Follow these steps to regenerate the files if needed:
-
-```bash
-./generate_mixins.sh
-```
-
 ## Live reload
 
 ```bash

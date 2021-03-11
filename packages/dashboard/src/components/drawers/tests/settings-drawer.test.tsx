@@ -1,13 +1,9 @@
 import React from 'react';
-import { createMount } from '@material-ui/core/test-utils';
-import toJson from 'enzyme-to-json';
-import { shallow } from 'enzyme';
-
-import { loadSettings, TrajectoryAnimation, Settings } from '../../../settings';
+import { render, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { loadSettings } from '../../../settings';
 import { SettingsContext } from '../../app-contexts';
 import SettingsDrawer from '../../drawers/settings-drawer';
-
-const mount = createMount();
 
 describe('Settings Drawer', () => {
   let settings = loadSettings();
@@ -20,7 +16,7 @@ describe('Settings Drawer', () => {
   });
 
   it('should render correctly', () => {
-    const wrapper = shallow(
+    const root = render(
       <SettingsContext.Provider value={settings}>
         <SettingsDrawer
           handleCloseButton={handleCloseButton}
@@ -30,34 +26,27 @@ describe('Settings Drawer', () => {
         />
       </SettingsContext.Provider>,
     );
-    expect(toJson(wrapper.dive())).toMatchSnapshot();
-    wrapper.unmount();
+    root.unmount();
   });
 
   it('should call onSettingsChange function when handleTrajectoryAnimationChange is called', () => {
-    const newSettings: Settings = {
-      ...settings,
-      trajectoryAnimation: TrajectoryAnimation.None,
-    };
-    const mockEvent = { target: { value: TrajectoryAnimation.None } };
-    const wrapper = mount(
-      <SettingsContext.Provider value={newSettings}>
+    const root = render(
+      <SettingsContext.Provider value={settings}>
         <SettingsDrawer
-          settings={settings}
-          onSettingsChange={(newSettings) => onSettingsChange(newSettings)}
-          open={true}
           handleCloseButton={handleCloseButton}
+          settings={settings}
+          onSettingsChange={onSettingsChange}
+          open={true}
         />
       </SettingsContext.Provider>,
     );
-
-    // Accessing the 'fill' animation @ the fourth input field
-    wrapper.find('input').find({ name: 'None' }).simulate('change', mockEvent);
+    const input = root.getByLabelText('None');
+    userEvent.click(input);
     expect(onSettingsChange).toHaveBeenCalledTimes(1);
   });
 
   it('should call handleCloseButton function when closeIcon button is clicked', () => {
-    const wrapper = mount(
+    const root = render(
       <SettingsContext.Provider value={settings}>
         <SettingsDrawer
           settings={settings}
@@ -67,7 +56,8 @@ describe('Settings Drawer', () => {
         />
       </SettingsContext.Provider>,
     );
-    wrapper.find('#closeDrawerButton').find('button').simulate('click');
+    const closeButton = root.getByRole('button');
+    userEvent.click(closeButton);
     expect(handleCloseButton).toHaveBeenCalledTimes(1);
   });
 });

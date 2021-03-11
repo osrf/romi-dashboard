@@ -133,7 +133,7 @@ export const LiftMarker = React.forwardRef(function (
     return liftState ? (
       <text className={classes.text} transform={`scale(${textScale})`}>
         <tspan x="0" dy="-1.8em">
-          {liftState?.current_floor}
+          {liftState.current_floor}
         </tspan>
         <tspan x="0" dy="1.2em" fontSize="0.7em">
           {getLiftModeText(liftState)}

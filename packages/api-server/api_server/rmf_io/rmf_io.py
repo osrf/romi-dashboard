@@ -2,16 +2,17 @@ import asyncio
 import base64
 import hashlib
 import logging
-from typing import Dict, Optional
+from typing import Dict, Optional, OrderedDict, cast
 
 import socketio
+
 from building_map_msgs.msg import AffineImage, BuildingMap, Level
 from rmf_door_msgs.msg import DoorState
 from rosidl_runtime_py.convert import message_to_ordereddict
 
-from ..repositories.static_files import StaticFilesRepository
-from .authenticator import (AuthenticationError, Authenticator,
-                            StubAuthenticator)
+from ..models import DoorHealth
+from ..repositories import StaticFilesRepository
+from .authenticator import AuthenticationError, Authenticator, StubAuthenticator
 from .gateway import RmfGateway
 from .topics import topics
 
@@ -33,17 +34,21 @@ class RmfIO:
         self.logger = logger or sio.logger
         self.loop = loop or asyncio.get_event_loop()
         self.authenticator = authenticator
-        self.room_records: Dict[str, dict] = {}
+        self.room_records = {}
 
         self.sio.on("connect", self._on_connect)
         self.sio.on("disconnect", self._on_disconnect)
         self.sio.on("subscribe", self._on_subscribe)
 
-        self._door_states: Dict[str, dict] = {}
+        self._door_states = cast(Dict[str, OrderedDict], {})
         self.rmf_gateway.door_states.subscribe(self._on_door_state)
         self.room_records[topics.door_states] = self._door_states
 
-        self._building_map: Optional[dict] = None
+        self._door_health = cast(Dict[str, OrderedDict], {})
+        self.rmf_gateway.door_health.subscribe(self._on_door_health)
+        self.room_records[topics.door_health] = self._door_health
+
+        self._building_map: Optional[OrderedDict] = None
         self.rmf_gateway.building_map.subscribe(self._on_building_map)
         self.room_records[topics.building_map] = None
 
@@ -54,6 +59,16 @@ class RmfIO:
         async def emit_task():
             await self.sio.emit(topics.door_states, state_dict, to=topics.door_states)
             self.logger.debug(f'emitted message to room "{topics.door_states}"')
+
+        self.loop.create_task(emit_task())
+
+    def _on_door_health(self, health: DoorHealth):
+        health_dict = health.to_dict()
+        self._door_health[health.name] = health_dict
+
+        async def emit_task():
+            await self.sio.emit(topics.door_health, health_dict, to=topics.door_health)
+            self.logger.debug(f'emitted message to room "{topics.door_health}"')
 
         self.loop.create_task(emit_task())
 

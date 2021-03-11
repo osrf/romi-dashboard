@@ -42,6 +42,7 @@ function TransportContextsProvider(props: React.PropsWithChildren<{}>): JSX.Elem
         setTransport(await appConfig.transportFactory());
         setConnectionState(ConnectionState.Connected);
       } catch (e) {
+        console.error(e);
         setError(e);
         setConnectionState(ConnectionState.Disconnected);
       }

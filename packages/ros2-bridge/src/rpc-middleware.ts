@@ -32,6 +32,7 @@ export interface Sender<T = unknown> {
   error(error: RpcError): void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type RpcHandler<Param = any, Result = unknown> = (
   params: Param,
   sender: Sender<Result>,
@@ -138,7 +139,7 @@ export default class RpcMiddleware {
     };
 
     try {
-      if (!this._rpcHandlers.hasOwnProperty(req.method)) {
+      if (!Object.prototype.hasOwnProperty.call(this._rpcHandlers, req.method)) {
         logger.error('no handler for method', req);
         sender.error({
           code: ErrorCodes.NoSuchMethod,

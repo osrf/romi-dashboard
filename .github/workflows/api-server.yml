@@ -13,7 +13,7 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     container:
-      image: docker.pkg.github.com/osrf/rmf-web/e2e
+      image: docker.pkg.github.com/open-rmf/rmf-web/e2e
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -28,7 +28,8 @@ jobs:
         run: |
           apt update && apt install -y python3-pip
           pip3 install pipenv
-          npm run bootstrap -- packages/api-server
+          npm config set unsafe-perm
+          . /opt/rmf/setup.bash && npm run bootstrap -- packages/api-server
         working-directory: .
       - name: tests
         run: |

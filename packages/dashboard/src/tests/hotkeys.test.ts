@@ -1,4 +1,5 @@
 import { act, HookResult, renderHook } from '@testing-library/react-hooks';
+import { useStackNavigator, StackNavigatorDispatch } from 'react-components';
 import { HotKeysEnabledProps } from 'react-hotkeys';
 import { AppController } from '../components/app-contexts';
 import { dashboardInitialValues, OmniPanelViewIndex } from '../components/dashboard/dashboard';
@@ -11,7 +12,12 @@ import { buildHotKeys, keyMap } from '../hotkeys';
 
 test('build hotkeys on the correct format', () => {
   const { result } = renderHook(() => useDashboardReducer(dashboardInitialValues));
+  const { result: viewResult } = renderHook(() =>
+    useStackNavigator([OmniPanelViewIndex.MainMenu], OmniPanelViewIndex.MainMenu),
+  );
+  const viewStackDispatch = viewResult.current[1];
   const hotkeys = buildHotKeys({
+    viewStackDispatch,
     reducerDashboardDispatch: result.current.dispatch,
     appController: makeMockAppController(),
   });
@@ -22,13 +28,18 @@ test('build hotkeys on the correct format', () => {
 describe('update states correctly', () => {
   let hotkeys: HotKeysEnabledProps;
   let result: HookResult<ReducerDashboardProps>;
+  let viewResult: HookResult<[OmniPanelViewIndex[], StackNavigatorDispatch<OmniPanelViewIndex>]>;
   let appController: AppController;
 
   beforeEach(() => {
     const hookResult = renderHook(() => useDashboardReducer(dashboardInitialValues));
+    viewResult = renderHook(() =>
+      useStackNavigator([OmniPanelViewIndex.MainMenu], OmniPanelViewIndex.MainMenu),
+    ).result;
     result = hookResult.result;
     appController = makeMockAppController();
     hotkeys = buildHotKeys({
+      viewStackDispatch: viewResult.current[1],
       reducerDashboardDispatch: result.current.dispatch,
       appController,
     });
@@ -38,35 +49,40 @@ describe('update states correctly', () => {
     act(() => {
       hotkeys.handlers?.OPEN_COMMANDS();
     });
-    expect(result.current.state.currentView).toBe(OmniPanelViewIndex.Commands);
+    const viewStack = viewResult.current[0];
+    expect(viewStack[viewStack.length - 1]).toBe(OmniPanelViewIndex.Commands);
   });
 
   test('set dispensers as current view', () => {
     act(() => {
       hotkeys.handlers?.OPEN_DISPENSERS();
     });
-    expect(result.current.state.currentView).toBe(OmniPanelViewIndex.Dispensers);
+    const viewStack = viewResult.current[0];
+    expect(viewStack[viewStack.length - 1]).toBe(OmniPanelViewIndex.Dispensers);
   });
 
   test('set doors as current view', () => {
     act(() => {
       hotkeys.handlers?.OPEN_DOORS();
     });
-    expect(result.current.state.currentView).toBe(OmniPanelViewIndex.Doors);
+    const viewStack = viewResult.current[0];
+    expect(viewStack[viewStack.length - 1]).toBe(OmniPanelViewIndex.Doors);
   });
 
   test('set lifts current view correctly', () => {
     act(() => {
       hotkeys.handlers?.OPEN_LIFTS();
     });
-    expect(result.current.state.currentView).toBe(OmniPanelViewIndex.Lifts);
+    const viewStack = viewResult.current[0];
+    expect(viewStack[viewStack.length - 1]).toBe(OmniPanelViewIndex.Lifts);
   });
 
   test('set robots current view correctly', () => {
     act(() => {
       hotkeys.handlers?.OPEN_ROBOTS();
     });
-    expect(result.current.state.currentView).toBe(OmniPanelViewIndex.Robots);
+    const viewStack = viewResult.current[0];
+    expect(viewStack[viewStack.length - 1]).toBe(OmniPanelViewIndex.Robots);
   });
 
   test('toggles Help Panel correctly', () => {

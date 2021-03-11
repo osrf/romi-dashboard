@@ -17,7 +17,12 @@ const DrawerHeader = (props: DrawerHeaderProps) => {
     <>
       {handleBackButton && (
         <Grid item>
-          <IconButton id="backDrawerButton" className={classes.button} onClick={handleBackButton}>
+          <IconButton
+            data-testid="backDrawerButton"
+            id="backDrawerButton"
+            className={classes.button}
+            onClick={handleBackButton}
+          >
             <BackIcon />
           </IconButton>
         </Grid>
@@ -30,7 +35,8 @@ const DrawerHeader = (props: DrawerHeaderProps) => {
         {handleCloseButton && (
           <Grid item>
             <IconButton
-              id="closeDrawerButton"
+              data-testid="closeDrawerButton"
+              id="backDrawerButton"
               className={classes.button}
               onClick={handleCloseButton}
             >

@@ -20,7 +20,7 @@ export default class WebSocketConnect {
       logger.info('connection established');
 
       try {
-        for (let mdw of this.stack) {
+        for (const mdw of this.stack) {
           await new Promise<void>((res) => mdw(socket, req, res));
         }
       } catch (e) {
@@ -30,7 +30,7 @@ export default class WebSocketConnect {
     });
   }
 
-  use(mdw: WebSocketMiddleware) {
+  use(mdw: WebSocketMiddleware): void {
     this.stack.push(mdw);
   }
 }
