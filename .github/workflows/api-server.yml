@@ -26,8 +26,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: bootstrap
         run: |
-          apt update && apt install -y python3-pip
-          pip3 install pipenv
           npm config set unsafe-perm
           . /opt/rmf/setup.bash && npm run bootstrap -- packages/api-server
         working-directory: .
