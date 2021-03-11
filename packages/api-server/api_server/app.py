@@ -3,9 +3,8 @@ import os
 import sys
 import threading
 
-import socketio
-
 import rclpy
+import socketio
 from rclpy.node import Node
 from tortoise import Tortoise
 
