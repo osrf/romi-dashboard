@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import 'typeface-roboto';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
-import { DASHBOARD_ROUTE, LOGIN_ROUTE } from '../util/url';
+import { DASHBOARD_ROUTE, LOGIN_ROUTE, MOSAIC_ROUTE } from '../util/url';
 import { AppBase } from './app-base';
 import { ResourcesContext, AppConfigContext } from './app-contexts';
 import './app.css';
@@ -15,6 +15,7 @@ import { User } from './auth/user';
 import Dashboard from './dashboard/dashboard';
 import NotFoundPage from './error-pages/page-not-found';
 import { RmfApp } from './rmf-app';
+import LayoutManager from './layout-manager/layout-manager';
 
 const theme = createMuiTheme({
   palette: {
@@ -38,7 +39,7 @@ export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
   const [authInitialized, setAuthInitialized] = React.useState(!!authenticator.user);
   const [user, setUser] = React.useState<User | null>(authenticator.user || null);
-  const appRoutes = [DASHBOARD_ROUTE];
+  const appRoutes = [DASHBOARD_ROUTE, MOSAIC_ROUTE];
 
   React.useEffect(() => {
     if (user) {
@@ -92,6 +93,9 @@ export default function App(): JSX.Element | null {
                       <Switch>
                         <PrivateRoute exact path={DASHBOARD_ROUTE}>
                           <Dashboard />
+                        </PrivateRoute>
+                        <PrivateRoute exact path={MOSAIC_ROUTE}>
+                          <LayoutManager />
                         </PrivateRoute>
                       </Switch>
                     </AppIntrinsics>

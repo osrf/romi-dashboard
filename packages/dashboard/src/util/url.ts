@@ -40,3 +40,4 @@ export function getUrl(path: string): string {
 
 export const DASHBOARD_ROUTE = BASE_PATH;
 export const LOGIN_ROUTE = normalizePath(`${BASE_PATH}/login`);
+export const MOSAIC_ROUTE = normalizePath(`${BASE_PATH}/mosaic`);
