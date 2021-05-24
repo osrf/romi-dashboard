@@ -25,6 +25,17 @@ else:
 logger.info("started app")
 
 
+TORTOISE_ORM = {
+    "connections": {"default": app_config.db_url},
+    "apps": {
+        "models": {
+            "models": ["models", "aerich.models"],
+            "default_connection": "default",
+        },
+    },
+}
+
+
 def get_app(run_config=SystemMode.ALL):
     app = FastAPI()
 
@@ -51,7 +62,7 @@ def get_app(run_config=SystemMode.ALL):
         app,
         db_url=app_config.db_url,
         modules={"models": ["models"]},
-        generate_schemas=run_config in (SystemMode.ALL, SystemMode.FLUENTD),
+        generate_schemas=False,
         add_exception_handlers=True,
     )
 
