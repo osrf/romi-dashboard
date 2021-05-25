@@ -11,6 +11,8 @@ RUN . /opt/rmf/setup.bash && \
 
 FROM rmf-web/builder
 
+COPY --from=0 /root/rmf-web/packages/reporting-server/ /root/reporting-server/
+
 COPY --from=0 /root/rmf-web/packages/reporting-server/dist/ .
 
 SHELL ["bash", "-c"]
@@ -22,6 +24,7 @@ RUN rm -rf /var/lib/apt/lists && \
   npm cache clean --force
 
 RUN echo -e '#!/bin/bash\n\
+  cd root/reporting-server &&  aerich upgrade \n\ 
   exec reporting_server "$@"\n\
   ' > /docker-entry-point.sh && chmod +x /docker-entry-point.sh
 
