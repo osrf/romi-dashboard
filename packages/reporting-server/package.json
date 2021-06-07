@@ -10,7 +10,7 @@
     "test:cov": "RMF_API_SERVER_LOG_LEVEL=CRITICAL RMF_API_SERVER_TEST_COVERAGE=1 pipenv run python -m coverage run -p -m unittest && pipenv run python -m coverage combine",
     "test:report": "pipenv run python -m coverage html && xdg-open htmlcov/index.html",
     "lint": "python3 -m pipenv run pylint rest_server",
-    "test:migration": "cd migration_test &&  ./migration.sh"
+    "test:migration": "cd test_migration && pipenv run aerich upgrade"
   },
   "devDependencies": {
     "pipenv-install": "*"
