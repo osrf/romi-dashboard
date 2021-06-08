@@ -1,42 +1,23 @@
-FROM ubuntu/postgres:13-21.04_beta
+FROM postgres:latest
 
 ENV POSTGRES_PASSWORD postgres 
-ENV POSTGRES_DB testdb
+ENV POSTGRES_DB reporting
 ENV TZ UTC
 EXPOSE 5432
 
-
-
-# RUN apt-get update && apt-get install -y curl && \
-#   apt-get update && apt-get install -y nodejs python3-pip
-
-# RUN pip3 install fastapi tortoise-orm pydantic aerich asyncpg
+RUN apt-get update && apt-get install -y curl python3-pip pipenv
+RUN pip3 install fastapi uvicorn tortoise-orm pydantic aerich asyncpg 
 
 SHELL ["bash", "-c"]
-COPY . /root/rmf-web
+COPY test_migration /root/reporting-server/
+COPY migrations /root/reporting-server/migrations/
 
-RUN apt-get update && apt-get install -y curl && \
-  curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
-  apt-get update && apt-get install -y nodejs python3-pip
-
-RUN pip3 install pipenv
-
-RUN npm config set unsafe-perm && \
-  cd /root/rmf-web && \
-  CI=1 npm install -g lerna@4 && lerna bootstrap --scope=reporting-server && \
-  cd packages/reporting-server && \
-  npm run prepack
-
-RUN . /opt/rmf/setup.bash && \
-  pip3 install $(ls -1 | grep '.*.whl')[postgres]
-
-# cleanup
-RUN rm -rf /var/lib/apt/lists && \
-  npm cache clean --force
-
-# RUN echo -e '#!/bin/bash\n\
-#   cd root/reporting-server/test_migration &&  chmod +x migration.sh && ./migration.sh \n\
-#   ' > /docker-entry-point.sh && chmod +x /docker-entry-point.sh
+RUN echo -e '#!/bin/bash\n\
+  cd root/reporting-server &&  aerich upgrade && aerich downgrade --yes -v 0 \n\ 
+  # exec reporting_server "$@"\n\
+  ' > /migrate.sh && chmod +x /migrate.sh
 
 # ENTRYPOINT ["/docker-entry-point.sh"]
-# CMD ["--help"]
+
+# CMD ["cd "]
+CMD cd root/reporting-server; python3 check_port.py

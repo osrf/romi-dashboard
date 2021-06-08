@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: reporting-server-migrations-job
+spec:
+  # This is an Alpha feature to remove completed jobs automatically.
+  ttlSecondsAfterFinished: 20
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: reporting-server-base
+          image: rmf-web/reporting-server-base
+          imagePullPolicy: Never # remove this in a real deployment
+          env:
+            - name: RMF_REPORT_REST_SERVER_CONFIG
+              value: /reporting-server-config/reporting_server_config.py
+              
+          command: ["/bin/sh", "-c"]
+          args: ['cd root/reporting-server &&  aerich upgrade && echo "upgrade complete"']
+          
+          volumeMounts:
+            - mountPath: /jwt-configmap
+              name: jwt-pub-key
+            - mountPath: /reporting-server-config
+              name: reporting-server-config
+      volumes:
+        - name: jwt-pub-key
+          configMap:
+            name: jwt-pub-key
+        - name: reporting-server-config
+          configMap:
+            name: reporting-server-config
+
+
+
+       
+        
+      # hostNetwork: true
+      # dnsPolicy: ClusterFirstWithHostNet
+     
