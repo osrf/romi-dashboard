@@ -114,6 +114,10 @@ spec:
           env:
             - name: RMF_REPORT_REST_SERVER_CONFIG
               value: /reporting-server-config/reporting_server_config.py
+          
+          command: ["/bin/sh", "-c"]
+          args: ['exec reporting_server']
+          
           volumeMounts:
             - mountPath: /jwt-configmap
               name: jwt-pub-key

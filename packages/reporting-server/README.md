@@ -61,7 +61,7 @@ RMF_REPORT_REST_SERVER_CONFIG='my_config.py' reporting_server
 * MySQL
 * MariaDB
 
-by default it uses a in-memory sqlite instance, to use other databases, install rmf-server with the relevalent extras
+by default it uses a PostgreSQL instance, to use other databases, install rmf-server with the relevalent extras
 
 * PostgreSQL - postgres
 * MySQL - mysql
@@ -73,7 +73,7 @@ by default it uses a in-memory sqlite instance, to use other databases, install 
 pip3 install reporting-server[postgres]
 ```
 
-Then in your config, set the `db_url` accordingly, the url should be in the form
+Create the database instance on the engine that you chose. Then in your config, set the `db_url` accordingly, the url should be in the form
 
 ```
 DB_TYPE://USERNAME:PASSWORD@HOST:PORT/DB_NAME?PARAM1=value&PARAM2=value
@@ -87,8 +87,47 @@ postgres://<user>:<password>@<host>/<database>
 
 for more information, see https://tortoise-orm.readthedocs.io/en/latest/databases.html.
 
+## Run the application
+
+Now that you have already elected, configured and created a database and set you configurations. You need to run the migrations to create the database tables. For that we use `Aerich`:
+
+you can install aerich by running the following command:
+
+```bash
+pip3 install reporting-server[aerich]
+```
+
+Once Aerich is installed, we can proceed to apply migrations to create the database tables by running
+
+```bash
+aerich upgrade
+```
+
+After running this command your database should have all the tables defined in the code. Now you can run the application
+
+```bash
+reporting_server
+
+# Or for server reload
+uvicorn --reload rest_server.app:get_app
+```
 
 # Developers
+
+## Migration
+We are using [aerich](https://github.com/tortoise/aerich) as our database migration tool. That means that the changes to made to the model will not be reflected in the database automatically. You must run the aerich migration command to create a new migration with the changes:
+
+``` bash
+aerich migrate
+```
+
+If there are some changes in the Tortoise models, the previus command will create a migration (sql) file that has your changes. To apply these changes to the database you need to run
+
+
+``` bash
+aerich upgrade
+```
+
 
 ## Running tests
 
