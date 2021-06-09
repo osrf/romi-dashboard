@@ -113,7 +113,6 @@ uvicorn --reload rest_server.app:get_app
 ```
 
 # Developers
-
 ## Migration
 We are using [aerich](https://github.com/tortoise/aerich) as our database migration tool. That means that the changes to made to the model will not be reflected in the database automatically. You must run the aerich migration command to create a new migration with the changes:
 
@@ -128,6 +127,9 @@ If there are some changes in the Tortoise models, the previus command will creat
 aerich upgrade
 ```
 
+## PR migration rules
+
+It should only be one migration file per PR unless is strictly necessary to have multiple migrations for clarity.
 
 ## Running tests
 
