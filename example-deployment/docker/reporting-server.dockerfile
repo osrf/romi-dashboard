@@ -17,7 +17,8 @@ COPY --from=0 /root/rmf-web/packages/reporting-server/dist/ .
 
 SHELL ["bash", "-c"]
 RUN . /opt/rmf/setup.bash && \
-  pip3 install $(ls -1 | grep '.*.whl')[postgres]
+  pip3 install $(ls -1 | grep '.*.whl')[postgres] &&\
+  pip3 install $(ls -1 | grep '.*.whl')[aerich]
 
 # cleanup
 RUN rm -rf /var/lib/apt/lists && \

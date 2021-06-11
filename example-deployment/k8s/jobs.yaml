@@ -9,8 +9,8 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-        - name: reporting-server-base
-          image: rmf-web/reporting-server-base
+        - name: reporting-server
+          image: rmf-web/reporting-server
           imagePullPolicy: Never # remove this in a real deployment
           env:
             - name: RMF_REPORT_REST_SERVER_CONFIG
