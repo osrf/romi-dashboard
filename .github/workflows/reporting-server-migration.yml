@@ -54,7 +54,7 @@ jobs:
       # - name: Install dependencies
       #   run: apt-get update && apt-get install -y curl python3-pip pipenv 
       - name: Install python dependencies
-        run: pip3 install aerich asyncpg 
+        run: pip3 install tortoise-orm pydantic aerich asyncpg 
       - name: Copy migrations 
         run: cp -r packages/reporting-server/migrations/ packages/reporting-server/test_migration/migrations/
 
