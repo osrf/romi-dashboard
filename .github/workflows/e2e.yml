@@ -1,77 +1,77 @@
-# name: End-to-End
-# on:
-#   pull_request:
-#   push:
-#     branches:
-#       - main
-#   schedule:
-#     # 2am SGT
-#     - cron: '0 18 * * *'
-# env:
-#   CI: true
-# jobs:
-#   build-docker-images:
-#     name: Push Docker images to GitHub Packages
-#     runs-on: ubuntu-latest
-#     if: github.event_name == 'schedule'
-#     steps:
-#       - uses: actions/checkout@v2
-#       - name: Push rmf image to GitHub Packages
-#         uses: docker/build-push-action@v1
-#         with:
-#           username: ${{ github.actor }}
-#           password: ${{ secrets.GITHUB_TOKEN }}
-#           registry: docker.pkg.github.com
-#           repository: ${{ github.repository }}/rmf
-#           tags: nightly
-#           path: packages/dashboard-e2e/docker/rmf
-#       - name: Push e2e image to GitHub Packages
-#         uses: docker/build-push-action@v1
-#         with:
-#           username: ${{ github.actor }}
-#           password: ${{ secrets.GITHUB_TOKEN }}
-#           registry: docker.pkg.github.com
-#           repository: ${{ github.repository }}/e2e
-#           tags: latest
-#           build_args: BASE_IMAGE=docker.pkg.github.com/open-rmf/rmf-web/rmf:nightly
-#           path: packages/dashboard-e2e/docker/e2e
-#   e2e-tests:
-#     name: End-to-End Tests
-#     runs-on: ubuntu-latest
-#     if: always()
-#     needs: build-docker-images
-#     container:
-#       image: docker.pkg.github.com/open-rmf/rmf-web/e2e
-#       credentials:
-#         username: ${{ github.repository_owner }}
-#         password: ${{ secrets.GITHUB_TOKEN }}
-#       options: --privileged --ipc=host
-#     defaults: 
-#       run:
-#         shell: bash
-#         working-directory: packages/dashboard-e2e
-#     steps:
-#       - uses: actions/checkout@v2
-#       - name: bootstrap
-#         run: |
-#           . /opt/rmf/setup.bash
-#           npm config set unsafe-perm
-#           npm install -g lerna@4
-#           lerna bootstrap --scope=rmf-dashboard-e2e
-#           docker pull quay.io/keycloak/keycloak:12.0.4
-#         working-directory: .
-#       - name: e2e test
-#         run: |
-#           . /opt/rmf/setup.bash
-#           npm test || npm test
-#         env:
-#           E2E_DOCKER_NETWORK: ${{job.container.network}}
-#           REACT_APP_AUTH_PROVIDER: keycloak
-#           # need to use the internal port because we are connecting from within the same network
-#           REACT_APP_KEYCLOAK_CONFIG: '{ "realm": "master", "clientId": "rmf-dashboard", "url": "http://rmf-web_keycloak_1:8080/auth" }'
-#       - name: upload artifacts
-#         uses: actions/upload-artifact@v2
-#         if: ${{ always() }}
-#         with:
-#           name: screenshots
-#           path: packages/dashboard-e2e/artifacts
+name: End-to-End
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  schedule:
+    # 2am SGT
+    - cron: '0 18 * * *'
+env:
+  CI: true
+jobs:
+  build-docker-images:
+    name: Push Docker images to GitHub Packages
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Push rmf image to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/rmf
+          tags: nightly
+          path: packages/dashboard-e2e/docker/rmf
+      - name: Push e2e image to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/e2e
+          tags: latest
+          build_args: BASE_IMAGE=docker.pkg.github.com/open-rmf/rmf-web/rmf:nightly
+          path: packages/dashboard-e2e/docker/e2e
+  e2e-tests:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    if: always()
+    needs: build-docker-images
+    container:
+      image: docker.pkg.github.com/open-rmf/rmf-web/e2e
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      options: --privileged --ipc=host
+    defaults: 
+      run:
+        shell: bash
+        working-directory: packages/dashboard-e2e
+    steps:
+      - uses: actions/checkout@v2
+      - name: bootstrap
+        run: |
+          . /opt/rmf/setup.bash
+          npm config set unsafe-perm
+          npm install -g lerna@4
+          lerna bootstrap --scope=rmf-dashboard-e2e
+          docker pull quay.io/keycloak/keycloak:12.0.4
+        working-directory: .
+      - name: e2e test
+        run: |
+          . /opt/rmf/setup.bash
+          npm test || npm test
+        env:
+          E2E_DOCKER_NETWORK: ${{job.container.network}}
+          REACT_APP_AUTH_PROVIDER: keycloak
+          # need to use the internal port because we are connecting from within the same network
+          REACT_APP_KEYCLOAK_CONFIG: '{ "realm": "master", "clientId": "rmf-dashboard", "url": "http://rmf-web_keycloak_1:8080/auth" }'
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: screenshots
+          path: packages/dashboard-e2e/artifacts

@@ -1,40 +1,40 @@
-# name: react-components
-# on:
-#   pull_request:
-#     paths:
-#       - 'packages/react-components/**'
-#       - 'packages/rmf-models/**'
-#   push:
-#     branches:
-#       - main
-# env:
-#   CI: true
-# jobs:
-#   unit-tests:
-#     name: Unit Tests
-#     runs-on: ubuntu-latest
-#     defaults:
-#       run:
-#         shell: bash
-#         working-directory: packages/react-components
-#     steps:
-#       - uses: actions/checkout@v2
-#       - uses: actions/setup-node@v2
-#         with:
-#           node-version: '14'
-#       - name: bootstrap
-#         run: |
-#           pip3 install pipenv
-#           npm config set unsafe-perm
-#           npm install -g lerna@4
-#           lerna bootstrap --scope=react-components
-#         working-directory: .
-#       - name: test build storybook
-#         run: npm run build:storybook
-#       - name: test
-#         run: npm run test:coverage
-#       - name: Upload coverage to Codecov
-#         uses: codecov/codecov-action@v1
-#         with:
-#           token: ${{ secrets.CODECOV_TOKEN }}
-#           flags: react-components
+name: react-components
+on:
+  pull_request:
+    paths:
+      - 'packages/react-components/**'
+      - 'packages/rmf-models/**'
+  push:
+    branches:
+      - main
+env:
+  CI: true
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/react-components
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: bootstrap
+        run: |
+          pip3 install pipenv
+          npm config set unsafe-perm
+          npm install -g lerna@4
+          lerna bootstrap --scope=react-components
+        working-directory: .
+      - name: test build storybook
+        run: npm run build:storybook
+      - name: test
+        run: npm run test:coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: react-components

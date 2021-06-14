@@ -1,43 +1,43 @@
-# name: api-server
-# on:
-#   pull_request:
-#     paths:
-#       - 'packages/api-server/**'
-#   push:
-#     branches:
-#       - main
-# env:
-#   CI: true
-# jobs:
-#   tests:
-#     name: Tests
-#     runs-on: ubuntu-latest
-#     container:
-#       image: docker.pkg.github.com/open-rmf/rmf-web/e2e
-#       credentials:
-#         username: ${{ github.repository_owner }}
-#         password: ${{ secrets.GITHUB_TOKEN }}
-#     defaults:
-#       run:
-#         shell: bash
-#         working-directory: packages/api-server
-#     steps:
-#       - uses: actions/checkout@v2
-#       - name: bootstrap
-#         run: |
-#           npm config set unsafe-perm
-#           . /opt/rmf/setup.bash
-#           npm install -g lerna@4
-#           lerna bootstrap --scope=api-server
-#         working-directory: .
-#       - name: tests
-#         run: |
-#           . /opt/rmf/setup.bash
-#           npm run lint
-#           npm run test:cov
-#           python3 -m pipenv run python -m coverage xml
-#       - name: Upload coverage to Codecov
-#         uses: codecov/codecov-action@v1
-#         with:
-#           token: ${{ secrets.CODECOV_TOKEN }}
-#           flags: api-server
+name: api-server
+on:
+  pull_request:
+    paths:
+      - 'packages/api-server/**'
+  push:
+    branches:
+      - main
+env:
+  CI: true
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    container:
+      image: docker.pkg.github.com/open-rmf/rmf-web/e2e
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/api-server
+    steps:
+      - uses: actions/checkout@v2
+      - name: bootstrap
+        run: |
+          npm config set unsafe-perm
+          . /opt/rmf/setup.bash
+          npm install -g lerna@4
+          lerna bootstrap --scope=api-server
+        working-directory: .
+      - name: tests
+        run: |
+          . /opt/rmf/setup.bash
+          npm run lint
+          npm run test:cov
+          python3 -m pipenv run python -m coverage xml
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: api-server

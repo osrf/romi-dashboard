@@ -1,39 +1,39 @@
-# name: rmf-auth
-# on:
-#   pull_request:
-#     paths:
-#       - 'packages/rmf-auth/**'
-#   push:
-#     branches:
-#       - main
-# env:
-#   CI: true
-# jobs:
-#   unit-tests:
-#     name: Unit Tests
-#     runs-on: ubuntu-latest
-#     defaults:
-#       run:
-#         shell: bash
-#         working-directory: packages/rmf-auth
-#     steps:
-#       - uses: actions/checkout@v2
-#       - uses: actions/setup-node@v1
-#         with:
-#           node-version: 14
-#       - name: bootstrap
-#         run: |
-#           pip3 install pipenv
-#           npm config set unsafe-perm
-#           npm install -g lerna@4
-#           lerna bootstrap --scope=rmf-auth
-#         working-directory: .
-#       - name: build
-#         run: npm run build
-#       - name: unit test
-#         run: npm run test:coverage
-#       - name: Upload coverage to Codecov
-#         uses: codecov/codecov-action@v1
-#         with:
-#           token: ${{ secrets.CODECOV_TOKEN }}
-#           flags: rmf-auth
+name: rmf-auth
+on:
+  pull_request:
+    paths:
+      - 'packages/rmf-auth/**'
+  push:
+    branches:
+      - main
+env:
+  CI: true
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/rmf-auth
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: bootstrap
+        run: |
+          pip3 install pipenv
+          npm config set unsafe-perm
+          npm install -g lerna@4
+          lerna bootstrap --scope=rmf-auth
+        working-directory: .
+      - name: build
+        run: npm run build
+      - name: unit test
+        run: npm run test:coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: rmf-auth
