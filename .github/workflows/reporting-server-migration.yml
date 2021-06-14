@@ -8,7 +8,7 @@ jobs:
   # Label of the container job
   container-job:
     # Containers must run in Linux based operating systems
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     # Docker Hub image that `container-job` executes in
     container: 
       image: docker.pkg.github.com/open-rmf/rmf-web/e2e
@@ -25,12 +25,12 @@ jobs:
           - 5432:5432
         # Provide the password for postgres
         env:
-          POSTGRES_HOST: localhost
+          # POSTGRES_HOST: localhost
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
           # The default PostgreSQL port
-          POSTGRES_PORT: 5432
-          POSTGRES_DB: postgres
+          # POSTGRES_PORT: 5432
+          # POSTGRES_DB: postgres
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -62,7 +62,7 @@ jobs:
         # Environment variables used by the `client.js` script to create a new PostgreSQL table.
         env:
           # The hostname used to communicate with the PostgreSQL service container
-          POSTGRES_HOST: localhost
+          POSTGRES_HOST: 127.0.0.1
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
           # The default PostgreSQL port
