@@ -1,44 +1,44 @@
-name: reporting
-on:
-  pull_request:
-    paths:
-      - 'packages/reporting/**'
-      - 'packages/react-components/**'
-      - 'packages/rmf-auth/**'
-      - 'packages/rmf-models/**'
-  push:
-    branches:
-      - main
-env:
-  CI: true
-jobs:
-  unit-tests:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    container:
-      image: docker.pkg.github.com/open-rmf/rmf-web/e2e
-      credentials:
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    defaults:
-      run:
-        shell: bash
-        working-directory: packages/reporting
-    steps:
-      - uses: actions/checkout@v2
-      - name: bootstrap
-        run: |
-          . /opt/rmf/setup.bash
-          npm config set unsafe-perm
-          npm install -g lerna@4
-          lerna bootstrap --scope=reporting
-        working-directory: .
-      - name: build
-        run: npm run build:storybook && npm run build
-      - name: unit test
-        run: npm run test:coverage
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          flags: reporting
+# name: reporting
+# on:
+#   pull_request:
+#     paths:
+#       - 'packages/reporting/**'
+#       - 'packages/react-components/**'
+#       - 'packages/rmf-auth/**'
+#       - 'packages/rmf-models/**'
+#   push:
+#     branches:
+#       - main
+# env:
+#   CI: true
+# jobs:
+#   unit-tests:
+#     name: Unit Tests
+#     runs-on: ubuntu-latest
+#     container:
+#       image: docker.pkg.github.com/open-rmf/rmf-web/e2e
+#       credentials:
+#         username: ${{ github.repository_owner }}
+#         password: ${{ secrets.GITHUB_TOKEN }}
+#     defaults:
+#       run:
+#         shell: bash
+#         working-directory: packages/reporting
+#     steps:
+#       - uses: actions/checkout@v2
+#       - name: bootstrap
+#         run: |
+#           . /opt/rmf/setup.bash
+#           npm config set unsafe-perm
+#           npm install -g lerna@4
+#           lerna bootstrap --scope=reporting
+#         working-directory: .
+#       - name: build
+#         run: npm run build:storybook && npm run build
+#       - name: unit test
+#         run: npm run test:coverage
+#       - name: Upload coverage to Codecov
+#         uses: codecov/codecov-action@v1
+#         with:
+#           token: ${{ secrets.CODECOV_TOKEN }}
+#           flags: reporting
