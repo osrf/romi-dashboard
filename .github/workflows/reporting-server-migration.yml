@@ -10,11 +10,11 @@ jobs:
     # Containers must run in Linux based operating systems
     runs-on: ubuntu-latest
     # Docker Hub image that `container-job` executes in
-    container: 
-      image: docker.pkg.github.com/open-rmf/rmf-web/e2e
-      credentials:
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    # container: 
+    #   image: docker.pkg.github.com/open-rmf/rmf-web/e2e
+    #   credentials:
+    #     username: ${{ github.repository_owner }}
+    #     password: ${{ secrets.GITHUB_TOKEN }}
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container
@@ -43,9 +43,9 @@ jobs:
       - name: Install python dependencies
         run: pip3 install fastapi uvicorn tortoise-orm pydantic aerich asyncpg 
       - name: Copy migrations 
-        run: cp -r migrations/ test_migration/migrations/
+        run: cp -r packages/reporting-server/migrations/ packages/reporting-server/test_migration/migrations/
 
-      - name: Connect to PostgreSQL
+      - name: Connect to PostgreSQL and run migrations
         # Runs a script that creates a PostgreSQL table, populates
         # the table with data, and then retrieves the data.
         run: aerich upgrade
