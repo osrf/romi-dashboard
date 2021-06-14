@@ -1,6 +1,8 @@
-name: PostgreSQL service example
+name: Reporting Server Migration tests
 on:
   pull_request:
+    paths:
+      - 'packages/reporting-server/**'
   push:
     branches:
       - main
@@ -9,12 +11,6 @@ jobs:
   migrations:
     # Containers must run in Linux based operating systems
     runs-on: ubuntu-latest
-    # Docker Hub image that `container-job` executes in
-    # container: 
-    #   image: docker.pkg.github.com/open-rmf/rmf-web/e2e
-    #   credentials:
-    #     username: ${{ github.repository_owner }}
-    #     password: ${{ secrets.GITHUB_TOKEN }}
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container
@@ -25,12 +21,8 @@ jobs:
           - 5432:5432
         # Provide the password for postgres
         env:
-          # POSTGRES_HOST: localhost
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
-          # The default PostgreSQL port
-          # POSTGRES_PORT: 5432
-          # POSTGRES_DB: postgres
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -46,13 +38,7 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: '3.x'
-      - name: Add the current IP address, long hostname and short hostname record to /etc/hosts file
-        run: |
-          echo -e "$(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)\t$(hostname -f) $(hostname -s)" | sudo tee -a /etc/hosts
-      # Performs a clean installation of all dependencies in the `package.json` file
-      # For more information, see https://docs.npmjs.com/cli/ci.html
-      # - name: Install dependencies
-      #   run: apt-get update && apt-get install -y curl python3-pip pipenv 
+
       - name: Install python dependencies
         run: pip3 install tortoise-orm pydantic aerich asyncpg 
       - name: Copy migrations 
@@ -61,14 +47,13 @@ jobs:
       - name: Connect to PostgreSQL and run migrations
         # Runs a script that creates a PostgreSQL table, populates
         # the table with data, and then retrieves the data.
-        run: cd packages/reporting-server/test_migration/ && aerich upgrade
+        run: cd packages/reporting-server/test_migration/ && aerich upgrade && && aerich downgrade --yes -v 0
         # Environment variables used by the `client.js` script to create a new PostgreSQL table.
         env:
           # The hostname used to communicate with the PostgreSQL service container
           POSTGRES_HOST: 127.0.0.1
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
-          # The default PostgreSQL port
           POSTGRES_PORT: 5432
           POSTGRES_DB: postgres
 
