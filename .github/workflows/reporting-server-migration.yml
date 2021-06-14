@@ -8,7 +8,7 @@ jobs:
   # Label of the container job
   container-job:
     # Containers must run in Linux based operating systems
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     # Docker Hub image that `container-job` executes in
     container: 
       image: docker.pkg.github.com/open-rmf/rmf-web/e2e
@@ -23,7 +23,12 @@ jobs:
         image: postgres
         # Provide the password for postgres
         env:
+          POSTGRES_HOST: localhost
           POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          # The default PostgreSQL port
+          POSTGRES_PORT: 5432
+          POSTGRES_DB: postgres
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
