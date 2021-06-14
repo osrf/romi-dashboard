@@ -10,11 +10,11 @@ jobs:
     # Containers must run in Linux based operating systems
     runs-on: ubuntu-latest
     # Docker Hub image that `container-job` executes in
-    # container: 
-    #   image: docker.pkg.github.com/open-rmf/rmf-web/e2e
-    #   credentials:
-    #     username: ${{ github.repository_owner }}
-    #     password: ${{ secrets.GITHUB_TOKEN }}
+    container: 
+      image: docker.pkg.github.com/open-rmf/rmf-web/e2e
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container
