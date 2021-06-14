@@ -1,6 +1,9 @@
 name: PostgreSQL service example
-on: push
-
+on:
+  pull_request:
+  push:
+    branches:
+      - main
 jobs:
   # Label of the container job
   container-job:
