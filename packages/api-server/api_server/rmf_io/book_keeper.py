@@ -120,7 +120,7 @@ class RmfBookKeeper:
 
     def _create_task(self, coro: Coroutine):
         if len(self._pending_tasks) > self.PendingBuffer:
-            raise RuntimeError(
+            self._main_logger.warning(
                 "too many pending writes to the database, this usually means there is too much backpressure and some rmf events are being missed."
             )
         task = self._loop.create_task(coro)

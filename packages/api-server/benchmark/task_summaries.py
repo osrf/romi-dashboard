@@ -69,6 +69,7 @@ with subprocess.Popen(
 
     timer = node.create_timer(1 / args.rate, pub)
 
+    start = time.time_ns()
     rclpy.spin_until_future_complete(node, fut)
     rclpy.shutdown()
 
@@ -77,12 +78,14 @@ with subprocess.Popen(
     while prev_logged_count != logged_count:
         prev_logged_count = logged_count
         time.sleep(0.1)
+    elasped = (time.time_ns() - start) / 1000000000
 
     proc.terminate()
     proc.wait()
     read_stdout_thread.join()
 
     exit_code = 0
+    print(f"tasks/sec = {logged_count / elasped}")
     if logged_count == args.count:
         print("OK")
     else:
