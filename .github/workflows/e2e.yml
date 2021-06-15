@@ -1,6 +1,16 @@
 name: End-to-End
 on:
   pull_request:
+   paths:
+    - 'packages/api-client/**'
+    - 'packages/api-server/**'
+    - 'packages/dashboard-e2e/**'
+    - 'packages/dashboard/**'
+    - 'packages/react-components/**'
+    - 'packages/rmf-auth/**'
+    - 'packages/rmf-models/**'
+    - 'packages/ros-translator/**'
+    - 'packages/ros2-bridge/**'
   push:
     branches:
       - main
