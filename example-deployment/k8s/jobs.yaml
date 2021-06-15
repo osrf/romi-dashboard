@@ -3,8 +3,6 @@ kind: Job
 metadata:
   name: reporting-server-migrations-job
 spec:
-  # This is an Alpha feature to remove completed jobs automatically.
-  ttlSecondsAfterFinished: 20
   template:
     spec:
       restartPolicy: Never
@@ -32,10 +30,4 @@ spec:
           configMap:
             name: reporting-server-config
 
-
-
-       
-        
-      # hostNetwork: true
-      # dnsPolicy: ClusterFirstWithHostNet
      
