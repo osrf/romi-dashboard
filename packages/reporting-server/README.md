@@ -139,6 +139,33 @@ It should only be one migration file per PR unless is strictly necessary to have
 npm run test
 ```
 
+### Running migration tests locally
+
+First, you need to build the docker image, this will copy all the migrations to the container. 
+
+```bash
+docker build . -t rmf-web/reporting-server-migration-test -f migration-test.dockerfile
+```
+
+Once you have your docker image built, you can run it with the following command
+
+```bash
+docker run -d --name=reporting-server-migration-test rmf-web/
+reporting-server-migration-test:latest
+```
+
+Now you have a container with all the migrations and a Postgres database up and running inside the container. To test the migrations you can run the following command:
+
+```bash
+docker exec -it reporting-server-migration-test ./migrate.sh
+```
+
+Once you're done testing you can stop the container by running the following command:
+
+```bash
+docker stop reporting-server-migration-test
+```
+
 ### Collecting code coverage
 
 ```bash

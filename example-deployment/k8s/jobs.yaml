@@ -22,7 +22,7 @@ spec:
               name: jwt-pub-key
             - mountPath: /reporting-server-config
               name: reporting-server-config
-      volumes:
+    volumes:
         - name: jwt-pub-key
           configMap:
             name: jwt-pub-key
