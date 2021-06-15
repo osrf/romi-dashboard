@@ -228,19 +228,6 @@ class App(FastIO):
             )
             self.rmf_gateway = RmfGateway(self.rmf_events, static_files)
 
-            stopping = False
-
-            def spin():
-                logger.info("start spinning rclpy node")
-                # using spin_once instead of spin because events can get missed/significantly
-                # delayed if they are added from another thread while the spin thread is sleeping
-                while not stopping:
-                    rclpy.spin_once(self.rmf_gateway, timeout_sec=0.1)
-                logger.info("finished spinning rclpy node")
-
-            spin_thread = threading.Thread(target=spin)
-            spin_thread.start()
-
             def stop_spinning():
                 nonlocal stopping
                 stopping = True
@@ -255,8 +242,21 @@ class App(FastIO):
             # 2. start the services after loading states so that the loaded states are not
             # used. Failing to do so will cause for example, book keeper to save the loaded states
             # back into the db and mess up health watchdog's heartbeat system.
-            self.rmf_gateway.subscribe_all()
-            shutdown_cbs.append(self.rmf_gateway.unsubscribe_all)
+            stopping = False
+
+            def spin():
+                logger.info("start spinning rclpy node")
+                self.rmf_gateway.subscribe_all()
+                # using spin_once instead of spin because events can get missed/significantly
+                # delayed if they are added from another thread while the spin thread is sleeping
+                while not stopping:
+                    rclpy.spin_once(self.rmf_gateway, timeout_sec=0.1)
+                self.rmf_gateway.unsubscribe_all()
+                logger.info("finished spinning rclpy node")
+
+            spin_thread = threading.Thread(target=spin)
+            spin_thread.start()
+
             await rmf_bookkeeper.start()
             shutdown_cbs.append(rmf_bookkeeper.stop())
             health_watchdog = HealthWatchdog(

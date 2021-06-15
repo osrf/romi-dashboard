@@ -35,6 +35,8 @@ class RmfBookKeeperEvents:
 
 
 class RmfBookKeeper:
+    PendingBuffer = 250
+
     _ChildLoggers = namedtuple(
         "_ChildLoggers",
         [
@@ -115,10 +117,12 @@ class RmfBookKeeper:
         for sub in self._subscriptions:
             sub.dispose()
         self._subscriptions.clear()
-        if len(self._pending_tasks) > 0:
-            await asyncio.wait(self._pending_tasks)
 
     def _create_task(self, coro: Coroutine):
+        if len(self._pending_tasks) > self.PendingBuffer:
+            raise RuntimeError(
+                "too many pending writes to the database, this usually means there is too much backpressure and some rmf events are being missed."
+            )
         task = self._loop.create_task(coro)
         task.add_done_callback(self._pending_tasks.remove)
         self._pending_tasks.add(task)

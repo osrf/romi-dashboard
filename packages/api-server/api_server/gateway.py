@@ -89,7 +89,6 @@ class RmfGateway(rclpy.node.Node):
         self._subscriptions = cast(List[Subscription], [])
         self._spin_thread: Optional[threading.Thread] = None
         self._stopping = False
-        self._loop: asyncio.AbstractEventLoop = None
 
     async def call_service(self, client: rclpy.client.Client, req, timeout=1):
         """
