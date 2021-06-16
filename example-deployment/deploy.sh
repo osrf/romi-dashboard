@@ -106,17 +106,6 @@ done
 echo 'running migration job...'
 .bin/minikube kubectl -- apply -f k8s/jobs.yaml
 
-echo 'deploying Minio...'
-.bin/minikube kubectl -- apply -f k8s/minio.yaml
-
-echo 'Applying FluentD configmap ...'
-.bin/minikube kubectl -- apply -f k8s/fluentd-configmap.yaml
-echo 'deploying FluentD daemonset...'
-.bin/minikube kubectl -- apply -f k8s/fluentd.yaml
-
-echo 'deploying cronjobs ...'
-.bin/minikube kubectl -- apply -f k8s/cronjobs.yaml
-
 # if the migration is finished kill the job
 until kubectl get jobs reporting-server-migrations-job -o jsonpath='{.status.conditions[?(@.type=="Complete")].status}' | grep True ;
 do 
@@ -127,3 +116,13 @@ done
 echo 'killing migration job...'
 .bin/minikube kubectl  -- delete -f k8s/jobs.yaml
 
+echo 'deploying Minio...'
+.bin/minikube kubectl -- apply -f k8s/minio.yaml
+
+echo 'Applying FluentD configmap ...'
+.bin/minikube kubectl -- apply -f k8s/fluentd-configmap.yaml
+echo 'deploying FluentD daemonset...'
+.bin/minikube kubectl -- apply -f k8s/fluentd.yaml
+
+echo 'deploying cronjobs ...'
+.bin/minikube kubectl -- apply -f k8s/cronjobs.yaml
