@@ -24,4 +24,4 @@ RUN . /opt/rmf/setup.bash && \
 RUN rm -rf /var/lib/apt/lists && \
   npm cache clean --force
 
-CMD ["--help"]
+CMD ["reporting_server"]
