@@ -29,5 +29,3 @@ spec:
         - name: reporting-server-config
           configMap:
             name: reporting-server-config
-
-     
