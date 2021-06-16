@@ -10,7 +10,6 @@ on:
     - 'packages/rmf-auth/**'
     - 'packages/rmf-models/**'
     - 'packages/ros-translator/**'
-    - 'packages/ros2-bridge/**'
   push:
     branches:
       - main
