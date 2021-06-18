@@ -41,13 +41,11 @@ jobs:
 
       - name: Install python dependencies
         run: pip3 install tortoise-orm pydantic aerich asyncpg 
-      - name: Copy migrations 
-        run: cp -r packages/reporting-server/migrations/ packages/reporting-server/test_migration/migrations/
-
+ 
       - name: Connect to PostgreSQL and run migrations
         # Runs a script that creates a PostgreSQL table, populates
         # the table with data, and then retrieves the data.
-        run: cd packages/reporting-server/test_migration/ && aerich upgrade && aerich downgrade --yes -v 0
+        run: cd packages/reporting-server/migrations/ && aerich upgrade && aerich downgrade --yes -v 0
         # Environment variables used by the `client.js` script to create a new PostgreSQL table.
         env:
           # The hostname used to communicate with the PostgreSQL service container
