@@ -61,7 +61,7 @@ RMF_REPORT_REST_SERVER_CONFIG='my_config.py' reporting_server
 * MySQL
 * MariaDB
 
-by default it uses a PostgreSQL instance, to use other databases, install reporting-server with the relevalent extras
+by default it uses a PostgreSQL instance, to use other databases, install reporting-server with the relevant extras
 
 * PostgreSQL - postgres
 * MySQL - mysql
@@ -89,15 +89,7 @@ for more information, see https://tortoise-orm.readthedocs.io/en/latest/database
 
 ## Run the application
 
-Now that you have already elected, configured and created a database and set you configurations. You need to run the migrations to create the database tables. For that we use `Aerich`:
-
-you can install aerich by running the following command:
-
-```bash
-pip3 install reporting-server[aerich]
-```
-
-Once Aerich is installed, we can proceed to apply migrations to create the database tables by running
+Now that you have already elected, configured and created a database and set you configurations. You need to run the migrations to create the database tables. We can proceed to apply migrations to create the database tables by running
 
 ```bash
 aerich upgrade
@@ -112,6 +104,12 @@ reporting_server
 uvicorn --reload rest_server.app:get_app
 ```
 
+If you want to run the migrations and start the server you could also run:
+
+```bash
+npm run start:dev
+```
+
 # Developers
 ## Migration
 We are using [aerich](https://github.com/tortoise/aerich) as our database migration tool. That means that the changes to made to the model will not be reflected in the database automatically. You must run the aerich migration command to create a new migration with the changes:
@@ -120,8 +118,7 @@ We are using [aerich](https://github.com/tortoise/aerich) as our database migrat
 aerich migrate
 ```
 
-If there are some changes in the Tortoise models, the previus command will create a migration (sql) file that has your changes. To apply these changes to the database you need to run
-
+If there are some changes in the Tortoise models, the previous command will create a migration (sql) file that has your changes. To apply these changes to the database you need to run
 
 ``` bash
 aerich upgrade
@@ -141,7 +138,7 @@ npm run test
 
 ### Running migration tests locally
 
-First, you need to build the docker image, this will copy all the migrations to the container. 
+First, you need to build the docker image, this will copy all the migrations to the container.
 
 ```bash
 docker build . -t rmf-web/reporting-server-migration-test -f migration-test.dockerfile
@@ -154,7 +151,7 @@ docker run -d --name=reporting-server-migration-test rmf-web/
 reporting-server-migration-test:latest
 ```
 
-Now you have a container with all the migrations and a Postgres database up and running inside the container. To test the migrations you can run the following command:
+Now you have a container with all the migrations and a PostgreSQL database up and running inside the container. To test the migrations you can run the following command:
 
 ```bash
 docker exec -it reporting-server-migration-test ./migrate.sh
