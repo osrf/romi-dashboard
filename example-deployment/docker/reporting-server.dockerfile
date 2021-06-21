@@ -11,8 +11,6 @@ RUN . /opt/rmf/setup.bash && \
 
 FROM rmf-web/builder
 
-COPY --from=0 /root/rmf-web/packages/reporting-server/ /root/reporting-server/
-
 COPY --from=0 /root/rmf-web/packages/reporting-server/dist/ .
 
 SHELL ["bash", "-c"]

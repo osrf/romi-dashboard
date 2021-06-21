@@ -7,15 +7,12 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-        - name: reporting-server
-          image: rmf-web/reporting-server
+        - name: reporting-server-migrations
+          image: rmf-web/reporting-server-migrations
           imagePullPolicy: Never # remove this in a real deployment
           env:
             - name: RMF_REPORT_REST_SERVER_CONFIG
               value: /reporting-server-config/reporting_server_config.py
-              
-          command: ["/bin/sh", "-c"]
-          args: ['cd root/reporting-server &&  aerich upgrade && echo "upgrade complete"']
           
           volumeMounts:
             - mountPath: /jwt-configmap

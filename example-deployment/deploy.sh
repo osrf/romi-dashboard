@@ -87,13 +87,10 @@ kubectl create configmap reporting-server-config --from-file=reporting_server_co
 echo 'deploying reporting-server...'
 kubectl apply -f k8s/reporting-server.yaml
 
-
-echo 'building reporting image...'
-docker build -t rmf-web/reporting -f docker/reporting.dockerfile $rmf_web_ws
-echo 'publishing reporting image...'
-docker save rmf-web/reporting | bash -c 'eval $(.bin/minikube docker-env) && docker load'
-echo 'deploying reporting-server...'
-kubectl apply -f k8s/reporting.yaml
+echo 'building reporting-server migrations...'
+docker build -t rmf-web/reporting-server-migrations -f docker/reporting-server-migrations.dockerfile $rmf_web_ws
+echo 'publishing reporting-server-migrations image...'
+docker save rmf-web/reporting-server-migrations | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 
 
 # Checks if the reporting-server and the reporting-server-db are ready
@@ -115,6 +112,14 @@ done
 
 echo 'killing migration job...'
 .bin/minikube kubectl  -- delete -f k8s/jobs.yaml
+
+
+echo 'building reporting image...'
+docker build -t rmf-web/reporting -f docker/reporting.dockerfile $rmf_web_ws
+echo 'publishing reporting image...'
+docker save rmf-web/reporting | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+echo 'deploying reporting-server...'
+kubectl apply -f k8s/reporting.yaml
 
 echo 'deploying Minio...'
 .bin/minikube kubectl -- apply -f k8s/minio.yaml
