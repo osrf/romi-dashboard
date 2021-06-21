@@ -124,6 +124,8 @@ If there are some changes in the Tortoise models, the previous command will crea
 aerich upgrade
 ```
 
+![aerich](https://user-images.githubusercontent.com/11761240/122826198-d97f2e80-d2b0-11eb-813f-384f4ae61d6b.png)
+
 ## PR migration rules
 
 It should only be one migration file per PR unless is strictly necessary to have multiple migrations for clarity.
