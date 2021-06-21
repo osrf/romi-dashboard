@@ -6,7 +6,7 @@ if "RMF_REPORT_REST_SERVER_CONFIG" in os.environ:
     spec = importlib.util.spec_from_file_location("config", config_file)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    url = module.config.db_url
+    url = module.config["db_url"]
 
 else:
     host = os.environ.get("POSTGRES_HOST", "localhost")
