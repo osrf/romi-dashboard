@@ -61,7 +61,7 @@ RMF_REPORT_REST_SERVER_CONFIG='my_config.py' reporting_server
 * MySQL
 * MariaDB
 
-by default it uses a PostgreSQL instance, to use other databases, install rmf-server with the relevalent extras
+by default it uses a PostgreSQL instance, to use other databases, install reporting-server with the relevalent extras
 
 * PostgreSQL - postgres
 * MySQL - mysql
