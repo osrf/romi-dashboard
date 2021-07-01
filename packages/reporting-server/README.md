@@ -87,6 +87,27 @@ postgres://<user>:<password>@<host>/<database>
 
 for more information, see https://tortoise-orm.readthedocs.io/en/latest/databases.html.
 
+
+## Install PostgreSQL (Optional step if you use a different database)
+
+Instructions for ubuntu 20.04:
+
+Open a terminal and run:
+
+```bash
+sudo apt update && sudo apt install postgresql postgresql-contrib
+```
+
+Once PostgreSQL is installed, you can run the following command to create a database:
+
+``` bash
+sudo -u postgres createdb <database>
+# E.g: sudo -u postgres createdb reporting
+```
+
+For more information you can check [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart)
+
+
 ## Run the application
 
 Now that you have already elected, configured and created a database and set you configurations. You need to run the migrations to create the database tables. We can proceed to apply migrations to create the database tables by running
