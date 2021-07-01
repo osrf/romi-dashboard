@@ -23,6 +23,7 @@ setup(
         "pyjwt[crypto]~=2.0",
         "pydantic~=1.8",
         "aerich~=0.5.3",
+        "python-dateutil~=2.8.1",
     ],
     extras_require={
         "postgres": ["asyncpg~=0.22.0"],
