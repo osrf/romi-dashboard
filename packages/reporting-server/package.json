@@ -6,7 +6,9 @@
   "scripts": {
     "prepack": "pipenv run python setup.py bdist_wheel",
     "start": "pipenv run python -m reporting_server",
-    "start:dev": "aerich upgrade && pipenv run python -m reporting_server",
+    "migrate":"aerich migrate",
+    "apply:migrations": "aerich upgrade",
+    "start:dev": "chmod +x run_dev.sh && ./run_dev.sh",
     "test": "python3 -m pipenv run python -m unittest",
     "test:cov": "RMF_API_SERVER_LOG_LEVEL=CRITICAL RMF_API_SERVER_TEST_COVERAGE=1 pipenv run python -m coverage run -p -m unittest && pipenv run python -m coverage combine",
     "test:report": "pipenv run python -m coverage html && xdg-open htmlcov/index.html",
