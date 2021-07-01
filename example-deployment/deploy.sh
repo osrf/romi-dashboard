@@ -121,8 +121,6 @@ docker save rmf-web/reporting | bash -c 'eval $(.bin/minikube docker-env) && doc
 echo 'deploying reporting-server...'
 kubectl apply -f k8s/reporting.yaml
 
-echo 'deploying Minio...'
-.bin/minikube kubectl -- apply -f k8s/minio.yaml
 
 echo 'Applying FluentD configmap ...'
 .bin/minikube kubectl -- apply -f k8s/fluentd-configmap.yaml
