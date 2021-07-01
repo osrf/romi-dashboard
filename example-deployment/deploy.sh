@@ -100,8 +100,8 @@ while [ "$(kubectl get pods -l=app='reporting-server' -o jsonpath='{.items[*].st
 done
 
 # run migration job
-echo 'running migration job...'
-.bin/minikube kubectl -- apply -f k8s/jobs.yaml
+echo 'running reporting-server-migrations-job...'
+.bin/minikube kubectl -- apply -f k8s/jobs/reporting-server-migrations-job.yaml
 
 # if the migration is finished kill the job
 until kubectl get jobs reporting-server-migrations-job -o jsonpath='{.status.conditions[?(@.type=="Complete")].status}' | grep True ;
@@ -110,8 +110,8 @@ do
   sleep 1; 
 done
 
-echo 'killing migration job...'
-.bin/minikube kubectl  -- delete -f k8s/jobs.yaml
+echo 'killing reporting-server-migrations-job...'
+.bin/minikube kubectl  -- delete -f k8s/reporting-server-migrations-job.yaml
 
 
 echo 'building reporting image...'
@@ -128,4 +128,4 @@ echo 'deploying FluentD daemonset...'
 .bin/minikube kubectl -- apply -f k8s/fluentd.yaml
 
 echo 'deploying cronjobs ...'
-.bin/minikube kubectl -- apply -f k8s/cronjobs.yaml
+.bin/minikube kubectl -- apply -f k8s/jobs/cronjobs.yaml
