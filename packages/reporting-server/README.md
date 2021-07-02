@@ -35,10 +35,10 @@ When you run this command, two instances of the reporting server will run. One o
 For development we recommend running this command:
 
 ```bash
-uvicorn --reload rest_server.app:get_app
+npm run start:dev
 ```
 
-This would only create one instance of the reporting-server and it'll serve on the default port.
+This would only create one instance of the reporting-server and it'll serve on the default port. Before the server start it'll check for unapplied migrations and it'll ask you for running those migrations.
 
 ## Configuration
 
@@ -120,9 +120,6 @@ After running this command your database should have all the tables defined in t
 
 ```bash
 reporting_server
-
-# Or for server reload
-uvicorn --reload rest_server.app:get_app
 ```
 
 If you want to run the migrations and start the server you could also run:
@@ -136,13 +133,13 @@ npm run start:dev
 We are using [aerich](https://github.com/tortoise/aerich) as our database migration tool. That means that the changes to made to the model will not be reflected in the database automatically. You must run the aerich migration command to create a new migration with the changes:
 
 ``` bash
-aerich migrate
+npm run migrate
 ```
 
 If there are some changes in the Tortoise models, the previous command will create a migration (sql) file that has your changes. To apply these changes to the database you need to run
 
 ``` bash
-aerich upgrade
+npm run apply:migrations 
 ```
 
 ![aerich](https://user-images.githubusercontent.com/11761240/122826198-d97f2e80-d2b0-11eb-813f-384f4ae61d6b.png)
@@ -207,4 +204,4 @@ uvicorn --reload rest_server.app:get_app
 
 *  I have a zombie process running either on port 8002 or 8003?
 
-   The `reporting_server` runs two instances of the app on the same process. So, sometimes when you shut down one of the reporting-server instances, the other stay alive, resulting in a zombie process. You can kill it by running this command `kill -9 <process id>` (on Linux based OS). That's why we recommend using `uvicorn --reload rest_server.app:get_app` for development purposes.
+   The `reporting_server` runs two instances of the app on the same process. So, sometimes when you shut down one of the reporting-server instances, the other stay alive, resulting in a zombie process. You can kill it by running this command `kill -9 <process id>` (on Linux based OS). That's why we recommend using `npm run start:dev` for development purposes.
