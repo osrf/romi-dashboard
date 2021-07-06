@@ -158,6 +158,15 @@ npm run test
 
 ### Running migration tests locally
 
+**Short Version:**  
+To test the migrations on your local machine you can run the following command:
+
+```bash
+npm run test:migrations
+```
+
+
+**Long version:**  
 First, you need to build the docker image, this will copy all the migrations to the container.
 
 ```bash

@@ -3,7 +3,7 @@ FROM postgres:latest
 ENV POSTGRES_PASSWORD postgres 
 ENV POSTGRES_DB reporting
 ENV TZ UTC
-EXPOSE 5432
+EXPOSE 5432:5432
 
 RUN apt-get update && apt-get install -y curl python3-pip pipenv
 RUN pip3 install tortoise-orm pydantic aerich asyncpg 
