@@ -13,3 +13,5 @@ if [[ $migrations != "No available heads,try migrate first" ]]
   else
     echo "Migrations are up to date"
 fi
+
+python3 -m pipenv run uvicorn --reload rest_server.app:get_app
