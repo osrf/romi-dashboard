@@ -70,9 +70,9 @@ async function createAudienceClientScope(headers, name, description, audience) {
       },
       {
         clientId: 'dashboard',
-        rootUrl: 'https://example.com',
-        redirectUris: ['https://example.com/*'],
-        webOrigins: ['https://example.com'],
+        rootUrl: 'https://ntu.demo.open-rmf.org',
+        redirectUris: ['https://ntu.demo.open-rmf.org/*'],
+        webOrigins: ['https://ntu.demo.open-rmf.org'],
         publicClient: true,
       },
     );
@@ -85,9 +85,9 @@ async function createAudienceClientScope(headers, name, description, audience) {
       },
       {
         clientId: 'reporting',
-        rootUrl: 'https://example.com',
-        redirectUris: ['https://example.com/*'],
-        webOrigins: ['https://example.com'],
+        rootUrl: 'https://ntu.demo.open-rmf.org',
+        redirectUris: ['https://ntu.demo.open-rmf.org/*'],
+        webOrigins: ['https://ntu.demo.open-rmf.org'],
         publicClient: true,
       },
     );

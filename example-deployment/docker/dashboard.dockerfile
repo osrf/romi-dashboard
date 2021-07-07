@@ -7,10 +7,10 @@ RUN . /opt/rmf/setup.bash && npm config set unsafe-perm && cd /root/rmf-web && \
 
 RUN cd /root/rmf-web/packages/dashboard && \
   PUBLIC_URL='/dashboard' \
-  REACT_APP_TRAJECTORY_SERVER='ws://localhost:8006' \
-  REACT_APP_RMF_SERVER='https://example.com/rmf/api/v1' \
+  REACT_APP_TRAJECTORY_SERVER='wss://ntu.demo.open-rmf.org:8006' \
+  REACT_APP_RMF_SERVER='https://ntu.demo.open-rmf.org/rmf/api/v1' \
   REACT_APP_AUTH_PROVIDER='keycloak' \
-  REACT_APP_KEYCLOAK_CONFIG='{ "realm": "rmf-web", "clientId": "dashboard", "url": "https://example.com/auth" }' \
+  REACT_APP_KEYCLOAK_CONFIG='{ "realm": "rmf-web", "clientId": "dashboard", "url": "https://ntu.demo.open-rmf.org/auth" }' \
   npm run build
 
 ###
@@ -25,3 +25,6 @@ RUN echo -e 'server {\n\
     try_files $uri /dashboard/index.html;\n\
   }\n\
 }\n' > /etc/nginx/conf.d/dashboard.conf
+
+RUN echo -e '{"path":"/usr/share/nginx/html/dashboard/assets/icons"}' > /usr/share/nginx/html/dashboard/.resources.json
+

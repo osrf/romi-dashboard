@@ -62,7 +62,7 @@ async function post(url, data) {
   return request(url, options, postData.toString());
 }
 
-const baseUrl = 'https://example.com/auth';
+const baseUrl = 'https://ntu.demo.open-rmf.org/auth';
 const masterTokenUrl = `${baseUrl}/realms/master/protocol/openid-connect/token`;
 const user = 'admin';
 const password = 'admin';

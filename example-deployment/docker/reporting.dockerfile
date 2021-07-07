@@ -14,9 +14,9 @@ RUN npm config set unsafe-perm && cd /root/rmf-web && \
 
 RUN cd /root/rmf-web/packages/reporting && \
   PUBLIC_URL='/reporting' \
-  REACT_APP_REPORTING_SERVER='https://example.com/logserver/api/v1' \
+  REACT_APP_REPORTING_SERVER='https://ntu.demo.open-rmf.org/logserver/api/v1' \
   REACT_APP_AUTH_PROVIDER='keycloak' \
-  REACT_APP_KEYCLOAK_CONFIG='{ "realm": "rmf-web", "clientId": "reporting", "url": "https://example.com/auth" }' \
+  REACT_APP_KEYCLOAK_CONFIG='{ "realm": "rmf-web", "clientId": "reporting", "url": "https://ntu.demo.open-rmf.org/auth" }' \
   npm run build
 
 ###

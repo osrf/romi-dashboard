@@ -43,9 +43,9 @@ metadata:
 spec:
   tls:
     - hosts:
-      - example.com
+      - ntu.demo.open-rmf.org
   rules:
-    - host: example.com
+    - host: ntu.demo.open-rmf.org
       http:
         paths:
           - path: /dashboard
@@ -55,3 +55,4 @@ spec:
                 name: dashboard
                 port:
                   number: 80
+---

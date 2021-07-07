@@ -7,7 +7,6 @@ import {
   RobotTrajectoryManager,
 } from '../../managers/robot-trajectory-manager';
 import { AppConfigContext, TrajectorySocketContext } from '../app-contexts';
-import { UserContext } from '../auth/contexts';
 import {
   BuildingMapContext,
   DispenserStateContext,
@@ -223,7 +222,6 @@ function RmfHealthContextsProvider(props: React.PropsWithChildren<{}>): JSX.Elem
 }
 
 function RmfIngressProvider(props: React.PropsWithChildren<{}>) {
-  const user = React.useContext(UserContext);
   const ws = React.useContext(TrajectorySocketContext);
   const authenticator = React.useContext(AppConfigContext).authenticator;
   const [trajMgr, setTrajMgr] = React.useState<RobotTrajectoryManager | undefined>(undefined);
@@ -233,7 +231,11 @@ function RmfIngressProvider(props: React.PropsWithChildren<{}>) {
     })();
   }, [ws, authenticator]);
 
-  const rmfIngress = React.useMemo(() => new RmfIngress(user, trajMgr, ws), [user, trajMgr, ws]);
+  const rmfIngress = React.useMemo(() => new RmfIngress(authenticator, trajMgr, ws), [
+    authenticator,
+    trajMgr,
+    ws,
+  ]);
   return (
     <RmfIngressContext.Provider value={rmfIngress}>{props.children}</RmfIngressContext.Provider>
   );

@@ -59,22 +59,22 @@ To stop the minikube cluster, run
 
 ## DNS
 
-In a real deployment, you would buy a domain and configure your dns provider to point it to your public ip. For this example, we will be deploying to `example.com`, but since we don't actually own the domain we will be using the `/etc/hosts` file to resolve it to our minikube ip.
+In a real deployment, you would buy a domain and configure your dns provider to point it to your public ip. For this example, we will be deploying to `ntu.demo.open-rmf.org`, but since we don't actually own the domain we will be using the `/etc/hosts` file to resolve it to our minikube ip.
 
 ```bash
-if grep -q 'example.com' /etc/hosts; then
-  sudo sed "s/.*example.com.*/$(.bin/minikube ip) example.com/" /etc/hosts -i
+if grep -q 'ntu.demo.open-rmf.org' /etc/hosts; then
+  sudo sed "s/.*ntu.demo.open-rmf.org.*/$(.bin/minikube ip) ntu.demo.open-rmf.org/" /etc/hosts -i
 else
-  echo "$(.bin/minikube ip) example.com" | sudo tee -a /etc/hosts
+  echo "$(.bin/minikube ip) ntu.demo.open-rmf.org" | sudo tee -a /etc/hosts
 fi
 ```
 
-This will create an entry in `/etc/hosts` to point `example.com` to the minikube cluster.
+This will create an entry in `/etc/hosts` to point `ntu.demo.open-rmf.org` to the minikube cluster.
 
 Check that it works by pinging it
 
 ```bash
-ping example.com
+ping ntu.demo.open-rmf.org
 ```
 
 ## SSL Certificate
@@ -135,7 +135,7 @@ keycloak      1/1     1            1           55s
 keycloak-db   1/1     1            1           56s
 ```
 
-When keycloak is ready, test it out by going to https://example.com/auth. The superuser created by this deployment is `user=admin,password=admin`.
+When keycloak is ready, test it out by going to https://ntu.demo.open-rmf.org/auth. The superuser created by this deployment is `user=admin,password=admin`.
 
 ### Configuration
 
@@ -143,7 +143,7 @@ For this example, we will
 
 1. Create a `rmf-web` realm.
 1. Create a `dashboard` and `reporting` client.
-1. Add https://example.com to the list of allowed origins.
+1. Add https://ntu.demo.open-rmf.org to the list of allowed origins.
 1. Create an example user with user=example password=example.
 
 For brevity, you can use the provided script to automate the process.
@@ -350,16 +350,6 @@ deploy it
 .bin/minikube kubectl -- apply -f k8s/reporting.yaml
 ```
 
-## CronJobs
-
-Cronjobs are jobs that run periodically on a given schedule. You can configure the schedule following this [cron schedule syntax](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-schedule-syntax)
-
-deploy cronjobs
-
-```bash
-.bin/minikube kubectl -- apply -f k8s/cronjobs.yaml
-```
-
 ## Test the deployment
 
 If not done so already, launch the office demo
@@ -368,7 +358,7 @@ If not done so already, launch the office demo
 ros2 launch rmf_demos office.launch.xml headless:=true
 ```
 
-Go to https://example.com/dashboard, if everything works, you should see a log in screen, use user=example, password=example.
+Go to https://ntu.demo.open-rmf.org/dashboard, if everything works, you should see a log in screen, use user=example, password=example.
 
 After that, you should be presented with the dashboard, you have successfully deployed `rmf-web`! 🎉
 
@@ -451,7 +441,7 @@ It can be very useful to get a shell into the pod, kubernetes allow you to do th
 
 ## I got a blank white page
 
-The most common cause is that connection to the keycloak server is not working, see if you can open the keycloak ui at https://example.com/auth.
+The most common cause is that connection to the keycloak server is not working, see if you can open the keycloak ui at https://ntu.demo.open-rmf.org/auth.
 
 ## It is stuck in "downloading building map..."
 

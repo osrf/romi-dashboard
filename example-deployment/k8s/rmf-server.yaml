@@ -70,7 +70,7 @@ metadata:
     app: rmf-server
     tier: app
 spec:
-  type: LoadBalancer
+  #type: LoadBalancer
   selector:
     app: rmf-server
     tier: app
@@ -110,6 +110,8 @@ spec:
               name: jwt-pub-key
             - mountPath: /rmf-server-config
               name: rmf-server-config
+            - mountPath: /cyclonedds
+              name: cyclonedds
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       volumes:
@@ -119,6 +121,9 @@ spec:
         - name: rmf-server-config
           configMap:
             name: rmf-server-config
+        - name: cyclonedds
+          configMap:
+            name: cyclonedds
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -132,9 +137,9 @@ metadata:
 spec:
   tls:
     - hosts:
-      - example.com
+      - ntu.demo.open-rmf.org
   rules:
-    - host: example.com
+    - host: ntu.demo.open-rmf.org
       http:
         paths:
           - path: /rmf/api/v1(/|$)(.*)

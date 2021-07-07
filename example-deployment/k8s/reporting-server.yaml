@@ -141,9 +141,9 @@ metadata:
 spec:
   tls:
     - hosts:
-      - example.com
+      - ntu.demo.open-rmf.org
   rules:
-    - host: example.com
+    - host: ntu.demo.open-rmf.org
       http:
         paths:
           - path: /logserver/api/v1(/|$)(.*)
