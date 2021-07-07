@@ -144,6 +144,14 @@ npm run apply:migrations
 
 ![aerich](https://user-images.githubusercontent.com/11761240/122826198-d97f2e80-d2b0-11eb-813f-384f4ae61d6b.png)
 
+To change the settings for the url, user and password you can open the [default_config file](https://github.com/open-rmf/rmf-web/blob/main/packages/reporting-server/rest_server/default_config.py) and change the value of the `db_url` with the following format (E.g PostgreSQL):
+
+```bash
+postgres://<user>:<password>@<host>/<database>
+```
+
+You can also add new Tortoise's model folders and other databases on the file `rmf-web/packages/reporting-server/rest_server/aerich_config.py`. You can read more about the configuration of Aerich [here](https://tortoise-orm.readthedocs.io/en/latest/migration.html)
+
 ## PR migration rules
 
 It should only be one migration file per PR unless is strictly necessary to have multiple migrations for clarity.
