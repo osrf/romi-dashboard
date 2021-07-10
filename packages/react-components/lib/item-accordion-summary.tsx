@@ -14,7 +14,7 @@ export interface ItemAccordionSummaryProps {
   statusProps?: StatusLabelProps;
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(() => ({
   content: {
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -25,7 +25,7 @@ const useStyles = makeStyles({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
-});
+}));
 
 export const ItemAccordionSummary = (props: ItemAccordionSummaryProps): JSX.Element => {
   const classes_ = useStyles();

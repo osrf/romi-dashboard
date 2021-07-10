@@ -1,6 +1,14 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { SimpleInfo } from '../lib';
+import { makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+  background: {
+    backgroundColor: theme.palette.background.paper,
+    color: theme.palette.text.primary,
+  },
+}));
 
 export default {
   title: 'Simple Info',
@@ -28,13 +36,15 @@ export const SimpleData: Story = ({
   ...args
 }) => {
   return (
-    <SimpleInfo
-      infoData={[
-        { name: stringDisplayName, value: stringValue },
-        { name: numberDisplayName, value: numberValue },
-      ]}
-      {...args}
-    />
+    <div className={useStyles().background}>
+      <SimpleInfo
+        infoData={[
+          { name: stringDisplayName, value: stringValue },
+          { name: numberDisplayName, value: numberValue },
+        ]}
+        {...args}
+      />
+    </div>
   );
 };
 SimpleData.args = {
@@ -45,5 +55,9 @@ SimpleData.args = {
 };
 
 export const Array: Story = (args) => {
-  return <SimpleInfo infoData={[{ name: 'strings', value: ['hello', 'world'] }]} {...args} />;
+  return (
+    <div className={useStyles().background}>
+      <SimpleInfo infoData={[{ name: 'strings', value: ['hello', 'world'] }]} {...args} />
+    </div>
+  );
 };

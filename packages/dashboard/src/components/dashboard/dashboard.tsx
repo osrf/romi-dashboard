@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
       top: 80,
       right: '1%',
       bottom: '2%',
-      backgroundColor: theme.palette.background.default,
+      backgroundColor: theme.palette.background.paper,
       // put it above leaflet panes, https://leafletjs.com/reference-1.6.0.html#map-pane
       zIndex: 610,
       borderTopLeftRadius: borderRadius,
@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
       width: '100%',
       height: '35%',
       top: '65%',
-      backgroundColor: theme.palette.background.default,
+      backgroundColor: theme.palette.background.paper,
       // put it above leaflet panes, https://leafletjs.com/reference-1.6.0.html#map-pane
       zIndex: 610,
       borderTopLeftRadius: borderRadius,

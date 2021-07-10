@@ -33,6 +33,9 @@ const useStyles = makeStyles((theme) => ({
       borderBottom: 'unset',
     },
   },
+  icons: {
+    color: theme.palette.text.primary,
+  },
   phasesCell: {
     padding: `0 ${theme.spacing(1)}px`,
   },
@@ -83,7 +86,7 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
   if (robot.tasks.length === 0) {
     return (
       <>
-        <TableRow className={classes.infoRow} onClick={onClick}>
+        <TableRow onClick={onClick}>
           <TableCell>{robot.name}</TableCell>
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
@@ -145,7 +148,7 @@ export function RobotTable({
           Robots
         </Typography>
         <IconButton onClick={onRefreshClick} aria-label="Refresh">
-          <RefreshIcon />
+          <RefreshIcon className={classes.icons} />
         </IconButton>
       </Toolbar>
       <TableContainer style={{ flex: '1 1 auto' }}>

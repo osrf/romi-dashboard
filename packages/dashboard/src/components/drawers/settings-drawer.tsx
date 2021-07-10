@@ -12,10 +12,12 @@ import {
   useMediaQuery,
   Typography,
   Grid,
+  Switch,
+  FormGroup,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
-import { Settings, TrajectoryAnimation } from '../../settings';
+import { Settings, TrajectoryAnimation, ThemeMode, UseTheme } from '../../settings';
 
 export interface SettingsDrawerProps extends DrawerProps {
   settings: Readonly<Settings>;
@@ -26,10 +28,20 @@ export interface SettingsDrawerProps extends DrawerProps {
 export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactElement {
   const classes = useStyles();
   const { settings, onSettingsChange, handleCloseButton, ...otherProps } = props;
-  const { trajectoryAnimation } = settings;
+  const { trajectoryAnimation, themeMode, useTheme } = settings;
 
   const trajAnimsText = React.useMemo(
     () => Object.keys(TrajectoryAnimation).slice(Object.keys(TrajectoryAnimation).length * 0.5),
+    [],
+  );
+
+  const themeText = React.useMemo(
+    () => Object.keys(ThemeMode).slice(Object.keys(ThemeMode).length * 0.5),
+    [],
+  );
+
+  const useThemeText = React.useMemo(
+    () => Object.keys(UseTheme).slice(Object.keys(UseTheme).length * 0.5),
     [],
   );
 
@@ -41,6 +53,16 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
 
   function handleTrajectoryAnimationChange(ev: React.ChangeEvent<HTMLInputElement>): void {
     const newSettings: Settings = { ...settings, trajectoryAnimation: Number(ev.target.value) };
+    onSettingsChange && onSettingsChange(newSettings);
+  }
+
+  function handleThemeModeChange(ev: React.ChangeEvent<HTMLInputElement>): void {
+    const newSettings: Settings = { ...settings, themeMode: Number(ev.target.checked) };
+    onSettingsChange && onSettingsChange(newSettings);
+  }
+
+  function handleUseThemeChange(ev: React.ChangeEvent<HTMLInputElement>): void {
+    const newSettings: Settings = { ...settings, useTheme: Number(ev.target.value) };
     onSettingsChange && onSettingsChange(newSettings);
   }
 
@@ -89,6 +111,37 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
         </RadioGroup>
         <Divider />
       </FormControl>
+      <FormGroup className={classes.formGroup}>
+        <FormLabel component="legend" className={classes.legendLabel}>
+          Theme Mode
+        </FormLabel>
+        <RadioGroup className={classes.trajGroup} value={useTheme} onChange={handleUseThemeChange}>
+          {useThemeText.map((text, i) => (
+            <FormControlLabel
+              key={i}
+              className={classes.flexBasis}
+              value={i}
+              control={<Radio />}
+              label={text}
+              name={text}
+            />
+          ))}
+        </RadioGroup>
+        {useTheme === UseTheme.True ? (
+          <FormControlLabel
+            className={classes.swtichButton}
+            control={
+              <Switch
+                onChange={handleThemeModeChange}
+                name={'theme switch'}
+                checked={themeMode === ThemeMode.Dark}
+              />
+            }
+            label={themeText[settings.themeMode]}
+          />
+        ) : null}
+        <Divider />
+      </FormGroup>
     </Drawer>
   );
 }
@@ -125,6 +178,10 @@ const useStyles = makeStyles((theme) => ({
       paddingLeft: theme.spacing(8),
     },
   },
+  swtichButton: {
+    margin: '0 auto',
+    marginBottom: '1rem',
+  },
   flexBasis: {
     flexBasis: '40%',
   },
@@ -133,5 +190,8 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     width: '3rem',
+  },
+  formGroup: {
+    marginTop: '1rem',
   },
 }));

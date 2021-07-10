@@ -10,13 +10,14 @@ export default {
 
 export const ErrorOverlayPanel: Story = (args) => {
   // override style with userSelect disabled
-  const useStyles = makeStyles(() => ({
+  const useStyles = makeStyles((theme) => ({
     container: {
       display: 'table',
       borderCollapse: 'collapse',
       width: '100%',
       overflowX: 'auto',
       userSelect: 'none',
+      backgroundColor: theme.palette.background.paper,
     },
   }));
   const classes = useStyles();

@@ -11,6 +11,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     padding: 0,
     backgroundColor: theme.palette.background.paper,
+    color: theme.palette.text.primary,
   },
 }));
 

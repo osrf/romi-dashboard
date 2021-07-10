@@ -61,7 +61,7 @@ export const createTourSteps = (props: createTourProps) => {
 
   const theme = createMuiTheme();
   const stepStyle: stepStyling = {
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor: theme.palette.primary.main,
     color: theme.palette.info.contrastText,
     borderRadius: '5px',
   };

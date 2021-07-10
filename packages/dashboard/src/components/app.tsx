@@ -2,7 +2,6 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import { NotFoundPage } from 'react-components';
 import { BrowserRouter, Link, Redirect, Route, Switch, useLocation } from 'react-router-dom';
@@ -22,16 +21,6 @@ import { TaskPage } from './tasks';
 
 const PrivateRoute = PrivateRouteHOC(Route, Redirect, useLocation);
 const Login = LoginHOC(Redirect);
-
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: '#44497a',
-      dark: '#323558',
-      light: '#565d99',
-    },
-  },
-});
 
 function locationToTabValue(pathname: string): TabValue | null {
   switch (pathname) {
@@ -108,68 +97,66 @@ export default function App(): JSX.Element | null {
         <AuthenticatorContext.Provider value={authenticator}>
           <UserContext.Provider value={user}>
             <TrajectorySocketContext.Provider value={ws}>
-              <ThemeProvider theme={theme}>
-                <BrowserRouter>
-                  <Switch>
-                    <Route exact path={LOGIN_ROUTE}>
-                      <Login
-                        user={user}
-                        title={'Dashboard'}
-                        authenticator={authenticator}
-                        successRedirectUri={getUrl(DASHBOARD_ROUTE)}
-                      />
-                    </Route>
-                    {/* FIXME: Might not need this anymore after we changed to let each page control
+              <BrowserRouter>
+                <Switch>
+                  <Route exact path={LOGIN_ROUTE}>
+                    <Login
+                      user={user}
+                      title={'Dashboard'}
+                      authenticator={authenticator}
+                      successRedirectUri={getUrl(DASHBOARD_ROUTE)}
+                    />
+                  </Route>
+                  {/* FIXME: Might not need this anymore after we changed to let each page control
                   which topics to subscribe instead of a global context subscribing to everything.
 
                   we need this because we don't want to re-mount `AppIntrinsics` when just moving
                   from one route to another, but we want to unmount it when going "outside" the app. */}
-                    {tabValue ? (
-                      <PrivateRoute exact path={appRoutes} redirectPath={LOGIN_ROUTE} user={user}>
-                        <RmfApp>
-                          <AppBase appbarProps={{ tabValue, onTabChange }}>
-                            <Switch>
-                              <PrivateRoute
-                                exact
-                                path={DASHBOARD_ROUTE}
-                                redirectPath={LOGIN_ROUTE}
-                                user={user}
-                              >
-                                <Dashboard />
-                              </PrivateRoute>
-                              <PrivateRoute
-                                exact
-                                path={ROBOTS_ROUTE}
-                                redirectPath={LOGIN_ROUTE}
-                                user={user}
-                              >
-                                <RobotPage />
-                              </PrivateRoute>
-                              <PrivateRoute
-                                exact
-                                path={TASKS_ROUTE}
-                                redirectPath={LOGIN_ROUTE}
-                                user={user}
-                              >
-                                <TaskPage />
-                              </PrivateRoute>
-                            </Switch>
-                            {tabValue === 'building' && <Redirect to={DASHBOARD_ROUTE} />}
-                            {tabValue === 'robots' && <Redirect to={ROBOTS_ROUTE} />}
-                            {tabValue === 'tasks' && <Redirect to={TASKS_ROUTE} />}
-                          </AppBase>
-                        </RmfApp>
-                      </PrivateRoute>
-                    ) : (
-                      <Route>
-                        <NotFoundPage
-                          routeLinkComponent={<Link to={LOGIN_ROUTE}>Go to Login</Link>}
-                        />
-                      </Route>
-                    )}
-                  </Switch>
-                </BrowserRouter>
-              </ThemeProvider>
+                  {tabValue ? (
+                    <PrivateRoute exact path={appRoutes} redirectPath={LOGIN_ROUTE} user={user}>
+                      <RmfApp>
+                        <AppBase appbarProps={{ tabValue, onTabChange }}>
+                          <Switch>
+                            <PrivateRoute
+                              exact
+                              path={DASHBOARD_ROUTE}
+                              redirectPath={LOGIN_ROUTE}
+                              user={user}
+                            >
+                              <Dashboard />
+                            </PrivateRoute>
+                            <PrivateRoute
+                              exact
+                              path={ROBOTS_ROUTE}
+                              redirectPath={LOGIN_ROUTE}
+                              user={user}
+                            >
+                              <RobotPage />
+                            </PrivateRoute>
+                            <PrivateRoute
+                              exact
+                              path={TASKS_ROUTE}
+                              redirectPath={LOGIN_ROUTE}
+                              user={user}
+                            >
+                              <TaskPage />
+                            </PrivateRoute>
+                          </Switch>
+                          {tabValue === 'building' && <Redirect to={DASHBOARD_ROUTE} />}
+                          {tabValue === 'robots' && <Redirect to={ROBOTS_ROUTE} />}
+                          {tabValue === 'tasks' && <Redirect to={TASKS_ROUTE} />}
+                        </AppBase>
+                      </RmfApp>
+                    </PrivateRoute>
+                  ) : (
+                    <Route>
+                      <NotFoundPage
+                        routeLinkComponent={<Link to={LOGIN_ROUTE}>Go to Login</Link>}
+                      />
+                    </Route>
+                  )}
+                </Switch>
+              </BrowserRouter>
             </TrajectorySocketContext.Provider>
           </UserContext.Provider>
         </AuthenticatorContext.Provider>

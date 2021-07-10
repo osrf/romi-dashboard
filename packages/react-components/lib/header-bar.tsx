@@ -10,7 +10,6 @@ const useStyles = makeStyles(() =>
     root: {
       display: 'flex',
       flexDirection: 'row',
-      alignItems: 'center',
       width: '100%',
     },
   }),
@@ -21,7 +20,7 @@ export const HeaderBar = (props: HeaderBarProps): React.ReactElement => {
   const classes = useStyles();
 
   return (
-    <AppBar id="appbar" position="static" className={classes.root}>
+    <AppBar id="appbar" position="relative" className={classes.root}>
       {children}
     </AppBar>
   );

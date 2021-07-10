@@ -31,7 +31,7 @@ exports[`Dashboard Tour renders without crashing 1`] = `
         "content": [Function],
         "selector": "",
         "style": Object {
-          "backgroundColor": "#7986cb",
+          "backgroundColor": "#3f51b5",
           "borderRadius": "5px",
           "color": "#fff",
         },
@@ -41,7 +41,7 @@ exports[`Dashboard Tour renders without crashing 1`] = `
         "content": [Function],
         "selector": "[class=\\"leaflet-control-zoom leaflet-bar leaflet-control\\"]",
         "style": Object {
-          "backgroundColor": "#7986cb",
+          "backgroundColor": "#3f51b5",
           "borderRadius": "5px",
           "color": "#fff",
         },
@@ -51,7 +51,7 @@ exports[`Dashboard Tour renders without crashing 1`] = `
         "content": [Function],
         "selector": "[class= \\"leaflet-control-layers leaflet-control\\"]",
         "style": Object {
-          "backgroundColor": "#7986cb",
+          "backgroundColor": "#3f51b5",
           "borderRadius": "5px",
           "color": "#fff",
         },
@@ -61,7 +61,7 @@ exports[`Dashboard Tour renders without crashing 1`] = `
         "content": [Function],
         "selector": "[class=\\"leaflet-image-layer leaflet-zoom-animated\\"]",
         "style": Object {
-          "backgroundColor": "#7986cb",
+          "backgroundColor": "#3f51b5",
           "borderRadius": "5px",
           "color": "#fff",
         },
@@ -71,7 +71,7 @@ exports[`Dashboard Tour renders without crashing 1`] = `
         "content": [Function],
         "selector": "[id=\\"toggle-omnipanel-btn\\"]",
         "style": Object {
-          "backgroundColor": "#7986cb",
+          "backgroundColor": "#3f51b5",
           "borderRadius": "5px",
           "color": "#fff",
         },
@@ -81,7 +81,7 @@ exports[`Dashboard Tour renders without crashing 1`] = `
         "content": [Function],
         "selector": "[data-component=\\"MainMenu\\"]",
         "style": Object {
-          "backgroundColor": "#7986cb",
+          "backgroundColor": "#3f51b5",
           "borderRadius": "5px",
           "color": "#fff",
         },
@@ -91,7 +91,7 @@ exports[`Dashboard Tour renders without crashing 1`] = `
         "content": [Function],
         "selector": "[data-item=\\"Doors\\"]",
         "style": Object {
-          "backgroundColor": "#7986cb",
+          "backgroundColor": "#3f51b5",
           "borderRadius": "5px",
           "color": "#fff",
         },
@@ -101,7 +101,7 @@ exports[`Dashboard Tour renders without crashing 1`] = `
         "content": [Function],
         "selector": "[data-name=\\"main_door\\"]",
         "style": Object {
-          "backgroundColor": "#7986cb",
+          "backgroundColor": "#3f51b5",
           "borderRadius": "5px",
           "color": "#fff",
         },
@@ -111,7 +111,7 @@ exports[`Dashboard Tour renders without crashing 1`] = `
         "content": [Function],
         "selector": "[data-component=\\"LoopForm\\"]",
         "style": Object {
-          "backgroundColor": "#7986cb",
+          "backgroundColor": "#3f51b5",
           "borderRadius": "5px",
           "color": "#fff",
         },
@@ -121,7 +121,7 @@ exports[`Dashboard Tour renders without crashing 1`] = `
         "content": [Function],
         "selector": ".MuiDrawer-paper",
         "style": Object {
-          "backgroundColor": "#7986cb",
+          "backgroundColor": "#3f51b5",
           "borderRadius": "5px",
           "color": "#fff",
         },
@@ -131,7 +131,7 @@ exports[`Dashboard Tour renders without crashing 1`] = `
         "content": [Function],
         "selector": "[id=\\"show-help-btn\\"]",
         "style": Object {
-          "backgroundColor": "#7986cb",
+          "backgroundColor": "#3f51b5",
           "borderRadius": "5px",
           "color": "#fff",
         },
@@ -141,7 +141,7 @@ exports[`Dashboard Tour renders without crashing 1`] = `
         "content": [Function],
         "selector": "[id=\\"help-drawer-options\\"]",
         "style": Object {
-          "backgroundColor": "#7986cb",
+          "backgroundColor": "#3f51b5",
           "borderRadius": "5px",
           "color": "#fff",
         },

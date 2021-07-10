@@ -1,6 +1,7 @@
-import { Grid, makeStyles } from '@material-ui/core';
+import { Grid, makeStyles, ThemeProvider, createMuiTheme } from '@material-ui/core';
 import React from 'react';
-import { loadSettings, saveSettings } from '../settings';
+import { rmfDark, rmfLight, GlobalCss } from 'react-components';
+import { loadSettings, saveSettings, ThemeMode, UseTheme } from '../settings';
 import {
   AppController,
   AppControllerContext,
@@ -15,9 +16,10 @@ const useStyles = makeStyles((theme) => ({
   appBase: {
     width: '100%',
     height: '100%',
-    backgroundColor: theme.palette.background.default,
   },
 }));
+
+export const defaultTheme = createMuiTheme();
 
 export interface AppBaseProps {
   appbarProps: AppBarProps;
@@ -50,6 +52,12 @@ export function AppBase({
 
   const [showTooltips, setShowTooltips] = React.useState(false);
 
+  const theme = React.useMemo(() => {
+    if (settings.useTheme === UseTheme.False) return defaultTheme;
+    const preferDarkMode = settings.themeMode === ThemeMode.Dark;
+    return preferDarkMode ? rmfDark : rmfLight;
+  }, [settings.useTheme, settings.themeMode]);
+
   const tooltips = React.useMemo<Tooltips>(
     () => ({
       showTooltips,
@@ -74,21 +82,24 @@ export function AppBase({
   );
 
   return (
-    <SettingsContext.Provider value={settings}>
-      <TooltipsContext.Provider value={tooltips}>
-        <AppControllerContext.Provider value={appController}>
-          <Grid container direction="column" className={classes.appBase} wrap="nowrap">
-            <AppBar {...appbarProps} />
-            {children}
-            <AppDrawers
-              settings={settings}
-              showHelp={showHelp}
-              showHotkeysDialog={showHotkeysDialog}
-              showSettings={showSettings}
-            />
-          </Grid>
-        </AppControllerContext.Provider>
-      </TooltipsContext.Provider>
-    </SettingsContext.Provider>
+    <ThemeProvider theme={theme}>
+      <GlobalCss />
+      <SettingsContext.Provider value={settings}>
+        <TooltipsContext.Provider value={tooltips}>
+          <AppControllerContext.Provider value={appController}>
+            <Grid container direction="column" className={classes.appBase} wrap="nowrap">
+              <AppBar {...appbarProps} />
+              {children}
+              <AppDrawers
+                settings={settings}
+                showHelp={showHelp}
+                showHotkeysDialog={showHotkeysDialog}
+                showSettings={showSettings}
+              />
+            </Grid>
+          </AppControllerContext.Provider>
+        </TooltipsContext.Provider>
+      </SettingsContext.Provider>
+    </ThemeProvider>
   );
 }

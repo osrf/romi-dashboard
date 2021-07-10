@@ -16,8 +16,14 @@ import { HeaderBar } from 'react-components/lib/header-bar';
 import { LogoButton } from 'react-components/lib/logo-button';
 import { NavigationBar } from 'react-components/lib/navigation-bar';
 import DashboardTooltip from 'react-components/lib/tooltip';
-import { AppControllerContext, ResourcesContext, TooltipsContext } from './app-contexts';
+import {
+  AppControllerContext,
+  ResourcesContext,
+  TooltipsContext,
+  SettingsContext,
+} from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth/contexts';
+import { ThemeMode, UseTheme } from '../settings';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -50,6 +56,9 @@ export const AppBar = React.memo(
     const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipsContext);
 
+    const curTheme = React.useContext(SettingsContext).themeMode;
+    const isUseTheme = React.useContext(SettingsContext).useTheme;
+
     async function handleLogout(): Promise<void> {
       try {
         await authenticator.logout();
@@ -60,17 +69,22 @@ export const AppBar = React.memo(
 
     const brandingIconPath = React.useMemo(() => {
       const defaultIcon = 'defaultLogo.png';
+      let logoUrl: string | null;
       if (!logoResourcesContext) {
         return defaultIcon;
       }
-      const iconPath = logoResourcesContext.getIconPath('headerLogo');
-      return iconPath ? iconPath : defaultIcon;
-    }, [logoResourcesContext]);
+      const logoPath = logoResourcesContext.getIconPath('headerLogo');
+      const blueLogoPath = logoResourcesContext.getIconPath('darkThemeLogo');
+
+      if (isUseTheme === UseTheme.False) return logoPath;
+      logoUrl = curTheme === ThemeMode.Dark ? logoPath : blueLogoPath;
+      return logoUrl;
+    }, [logoResourcesContext, curTheme, isUseTheme]);
 
     return (
       <div>
         <HeaderBar>
-          <LogoButton logoPath={brandingIconPath} />
+          <LogoButton logoPath={brandingIconPath ? brandingIconPath : undefined} />
           <NavigationBar onTabChange={onTabChange} value={tabValue}>
             <Tab label="Building" value="building" aria-label="Building" />
             <Tab label="Robots" value="robots" aria-label="Robots" />

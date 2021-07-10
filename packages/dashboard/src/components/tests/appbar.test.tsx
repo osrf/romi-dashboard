@@ -7,14 +7,18 @@ import AppBar from '../appbar';
 import { AuthenticatorContext, UserContext } from '../auth/contexts';
 import FakeAuthenticator from '../auth/__mocks__/fake-authenticator';
 import { makeMockAppController } from './mock-app-controller';
+import { ThemeProvider } from '@material-ui/core';
+import { lightTheme } from 'react-components';
 
 describe('AppBar', () => {
   let appController: AppController;
   const Base = (props: React.PropsWithChildren<{}>) => {
     return (
-      <AppControllerContext.Provider value={appController}>
-        {props.children}
-      </AppControllerContext.Provider>
+      <ThemeProvider theme={lightTheme}>
+        <AppControllerContext.Provider value={appController}>
+          {props.children}
+        </AppControllerContext.Provider>
+      </ThemeProvider>
     );
   };
 

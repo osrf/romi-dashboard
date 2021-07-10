@@ -19,12 +19,10 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     position: 'relative',
     overflow: 'hidden',
-    border: `1px ${theme.palette.divider} solid`,
     borderTop: 0,
   },
   navigationButton: {
     borderRadius: 'inherit',
-    borderColor: theme.palette.divider,
   },
   navigationButtonGroup: {
     borderRadius: 'inherit',

@@ -52,7 +52,7 @@ export const ErrorOverlay = React.memo(
           }
         >
           <div>
-            <Grid container direction="row" justify="center" alignItems="center" spacing={2}>
+            <Grid container direction="row" justify="center" alignItems="center">
               <Grid item>
                 <ErrorIcon className={classes.errorIcon} />
               </Grid>

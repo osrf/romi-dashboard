@@ -57,6 +57,12 @@ const useStyles = makeStyles((theme) => ({
   buttonGroupDiv: {
     padding: '0.5rem 1rem',
   },
+  disabledButton: {
+    '&.Mui-disabled': {
+      color: colorPalette.disabled,
+      borderColor: colorPalette.disabled,
+    },
+  },
 }));
 
 interface Parameter {
@@ -360,6 +366,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
             id="reset-button"
             disabled={conflicts && Object.keys(conflicts).length === 0}
             onClick={handleResetNegotiations}
+            classes={{ disabled: classes.disabledButton }}
           >
             <RestoreIcon />
             Reset
@@ -368,6 +375,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
             id="clear-button"
             disabled={conflicts && Object.keys(conflicts).length === 0}
             onClick={handleClearAllCurrNegotiations}
+            classes={{ disabled: classes.disabledButton }}
           >
             <ClearAllIcon />
             Clear
@@ -376,6 +384,7 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
             id="restore-button"
             disabled={conflicts && Object.keys(conflicts).length === 0}
             onClick={handleRestoreNegotiations}
+            classes={{ disabled: classes.disabledButton }}
           >
             <RestoreFromTrashIcon />
             Restore

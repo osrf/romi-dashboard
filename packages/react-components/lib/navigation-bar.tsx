@@ -5,8 +5,6 @@ import React from 'react';
 const useStyles = makeStyles(() =>
   createStyles({
     tabsContainer: {
-      borderRight: '0.25px solid rgba(251, 252, 255, 0.5)',
-      borderLeft: '0.25px solid rgba(251, 252, 255, 0.5)',
       flexGrow: 4,
     },
   }),

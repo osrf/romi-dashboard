@@ -4,6 +4,13 @@ import { ExpandableMultilevelMenuProps, MultiLevelMenu } from '../../lib';
 import SearchIcon from '@material-ui/icons/Search';
 import AndroidIcon from '@material-ui/icons/Android';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
+import { makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+  container: {
+    backgroundColor: theme.palette.background.paper,
+  },
+}));
 
 export default {
   title: 'Multi level menu',
@@ -38,5 +45,7 @@ const menuStructure = [
 ] as ExpandableMultilevelMenuProps[];
 
 export const MultiLevelMenuStory: Story = (args) => (
-  <MultiLevelMenu menuStructure={menuStructure} {...args} />
+  <div className={useStyles().container}>
+    <MultiLevelMenu menuStructure={menuStructure} {...args} />
+  </div>
 );

@@ -3,7 +3,14 @@ import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
 import { ColorContext, robotHash } from 'react-components';
-import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
+import {
+  AttributionControl,
+  ImageOverlay,
+  LayersControl,
+  Map as LMap,
+  Pane,
+  ZoomControl,
+} from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import {
@@ -24,12 +31,20 @@ import WaypointsOverlay from './waypoints-overlay';
 
 const debug = Debug('ScheduleVisualizer');
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   map: {
     height: '100%',
     width: '100%',
     margin: 0,
     padding: 0,
+    backgroundColor: theme.palette.background.default,
+  },
+  leafletControl: {
+    color: `${theme.palette.text.primary} !important`,
+    backgroundColor: `${theme.palette.background.paper} !important`,
+  },
+  mapImg: {
+    filter: theme.mapClass,
   },
 }));
 
@@ -63,10 +78,14 @@ export function calcMaxBounds(
 
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
+  const classes = useStyles();
   const { buildingMap, negotiationTrajStore, mapFloorSort, showTrajectories } = props;
   const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
 
   const authenticator = React.useContext(AppConfigContext).authenticator;
+
+  const [curMapTheme, setCurMapTheme] = React.useState(classes.mapImg);
+  const [curLayerTheme, setCurLayerTheme] = React.useState(classes.leafletControl);
 
   const mapFloorLayerSorted = React.useMemo(
     () =>
@@ -75,8 +94,6 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
         : buildingMap.levels.map((level) => level.name),
     [mapFloorSort, buildingMap.levels],
   );
-
-  const classes = useStyles();
 
   const [mapFloorLayers, setMapFloorLayers] = React.useState<
     Readonly<Record<string, MapFloorLayer>>
@@ -236,11 +253,50 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   }
 
   const sortedMapFloorLayers = mapFloorLayerSorted.map((x) => mapFloorLayers[x]);
-  const ref = React.useRef<ImageOverlay>(null);
+  const refs = React.useRef(
+    [...Array(sortedMapFloorLayers.length)].map(() => React.createRef<ImageOverlay>()),
+  );
   const mapRef = React.useRef<LMap>(null);
+  const zoomRef = React.useRef<ZoomControl>(null);
+  const layerRef = React.useRef<LayersControl>(null);
 
-  if (ref.current) {
-    ref.current.leafletElement.setZIndex(0);
+  if (refs.current) {
+    sortedMapFloorLayers.forEach((map, i) => {
+      if (sortedMapFloorLayers.every((x) => x) && map.level.name === curLevelName) {
+        const ref = refs.current[i];
+        ref.current?.leafletElement.setZIndex(0);
+        const img = ref.current?.leafletElement.getElement();
+        // remove previous class only if classlist contains existing class
+        // and when a new theme class is rendered
+        if (img?.classList.contains(curMapTheme) && curMapTheme !== classes.mapImg)
+          img?.classList.remove(curMapTheme);
+        img?.classList.add(classes.mapImg);
+        // update current map theme when a new theme is rendered
+        if (curMapTheme !== classes.mapImg) setCurMapTheme(classes.mapImg);
+      }
+    });
+  }
+
+  if (zoomRef.current) {
+    const zoomButtons = zoomRef.current.leafletElement.getContainer();
+    if (zoomButtons) {
+      Array.from(zoomButtons.children).forEach((child) => {
+        // remove previous theme class in zoom control
+        if (child.classList.contains(curLayerTheme) && curLayerTheme !== classes.leafletControl)
+          child.classList.remove(curLayerTheme);
+        child.classList.add(classes.leafletControl);
+      });
+    }
+  }
+
+  if (layerRef.current) {
+    const layer = layerRef.current.leafletElement.getContainer();
+    // remove previous theme class in control layer
+    if (layer?.classList.contains(curLayerTheme) && curLayerTheme !== classes.leafletControl)
+      layer?.classList.remove(curLayerTheme);
+    layer?.classList.add(classes.leafletControl);
+    // update current control theme when a new theme is rendered
+    if (curLayerTheme !== classes.leafletControl) setCurLayerTheme(classes.leafletControl);
   }
 
   React.useEffect(() => {
@@ -300,9 +356,11 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
       maxBounds={maxBounds}
       onbaselayerchange={handleBaseLayerChange}
       ref={mapRef}
+      zoomControl={false}
     >
+      <ZoomControl position={'topleft'} ref={zoomRef} />
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
-      <LayersControl position="topleft">
+      <LayersControl position="topleft" ref={layerRef}>
         {sortedMapFloorLayers.every((x) => x) &&
           sortedMapFloorLayers.map((floorLayer, i) => (
             <LayersControl.BaseLayer
@@ -310,7 +368,11 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
               name={floorLayer.level.name}
               key={floorLayer.level.name}
             >
-              <ImageOverlay bounds={floorLayer.bounds} url={floorLayer.imageUrl} ref={ref} />
+              <ImageOverlay
+                bounds={floorLayer.bounds}
+                url={floorLayer.imageUrl}
+                ref={refs.current[i]}
+              />
             </LayersControl.BaseLayer>
           ))}
 

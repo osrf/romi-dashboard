@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.warning.main,
   },
   cardHeader: {
-    backgroundColor: theme.palette.grey[100],
+    backgroundColor: theme.palette.background.paper,
   },
 }));
 

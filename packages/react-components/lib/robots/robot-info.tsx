@@ -16,15 +16,8 @@ import { VerboseRobot } from './utils';
 import { rosTimeToJs } from '../utils';
 import { TaskProgress } from 'api-client';
 
-const useStyles = makeStyles((theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
-    root: {
-      '&$disabled': {
-        color: theme.palette.primary.main,
-        borderColor: theme.palette.primary.main,
-      },
-    },
-    disabled: {},
     logo: {
       maxWidth: 120,
       opacity: 1,
@@ -131,12 +124,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Typography>
         </Grid>
         <Grid container item xs={12} justify="center">
-          <Button
-            disableElevation
-            variant="outlined"
-            classes={{ root: classes.root, disabled: classes.disabled }}
-            disabled
-          >
+          <Button disableElevation variant="outlined" disabled>
             {taskDetails ? taskDetails.assignedTasks : '-'}
           </Button>
         </Grid>
@@ -151,24 +139,12 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Typography>
         </Grid>
         <Grid item xs={6}>
-          <Button
-            size="small"
-            disableElevation
-            variant="outlined"
-            classes={{ root: classes.root, disabled: classes.disabled }}
-            disabled
-          >
+          <Button size="small" disableElevation variant="outlined" disabled>
             {taskDetails ? taskDetails.location : '-'}
           </Button>
         </Grid>
         <Grid item xs={6}>
-          <Button
-            size="small"
-            disableElevation
-            variant="outlined"
-            classes={{ root: classes.root, disabled: classes.disabled }}
-            disabled
-          >
+          <Button size="small" disableElevation variant="outlined" disabled>
             {taskDetails ? taskDetails.destination : '-'}
           </Button>
         </Grid>
@@ -192,25 +168,13 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             </CircularProgressBar>
           )}
           {!currentTask && (
-            <Button
-              size="small"
-              disableElevation
-              variant="outlined"
-              classes={{ root: classes.root, disabled: classes.disabled }}
-              disabled
-            >
+            <Button size="small" disableElevation variant="outlined" disabled>
               -
             </Button>
           )}
         </Grid>
         <Grid item xs={6}>
-          <Button
-            size="small"
-            disableElevation
-            variant="outlined"
-            classes={{ root: classes.root, disabled: classes.disabled }}
-            disabled
-          >
+          <Button size="small" disableElevation variant="outlined" disabled>
             {currentTask
               ? rosTimeToJs(currentTask.task_summary.end_time).toLocaleTimeString()
               : '-'}

@@ -7,10 +7,9 @@ import { RmfIngressContext } from '../rmf-app';
 
 const useStyles = makeStyles((theme) => ({
   robotPanel: {
-    margin: `${theme.spacing(4)}px auto`,
-    width: '100%',
+    padding: `${theme.spacing(4)}px`,
     height: '100%',
-    maxWidth: 1600,
+    backgroundColor: theme.palette.background.default,
   },
 }));
 

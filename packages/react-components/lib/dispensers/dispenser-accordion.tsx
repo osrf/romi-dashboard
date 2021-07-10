@@ -58,7 +58,6 @@ const overrideStyles = makeStyles(() => ({
     display: 'table',
     borderCollapse: 'collapse',
     width: '100%',
-    overflowX: 'auto',
     userSelect: 'none',
   },
 }));

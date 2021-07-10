@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
   phasesCell: {
     padding: `0 ${theme.spacing(1)}px`,
+    borderBottom: 'none',
   },
   phasesRow: {
     marginBottom: theme.spacing(1),
