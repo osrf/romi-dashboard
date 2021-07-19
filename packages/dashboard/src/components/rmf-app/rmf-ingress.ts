@@ -11,10 +11,12 @@ import {
   TasksApi,
 } from 'api-client';
 import axios from 'axios';
-import { Authenticator } from 'rmf-auth';
 import appConfig from '../../app-config';
 import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
-import { RobotTrajectoryManager } from '../../managers/robot-trajectory-manager';
+import {
+  DefaultTrajectoryManager,
+  RobotTrajectoryManager,
+} from '../../managers/robot-trajectory-manager';
 
 export class RmfIngress {
   sioClient: SioClient;
@@ -27,12 +29,19 @@ export class RmfIngress {
   tasksApi: TasksApi;
   adminApi: AdminApi;
   negotiationStatusManager: NegotiationStatusManager;
-  trajectoryManager?: RobotTrajectoryManager;
+  trajectoryManager: RobotTrajectoryManager;
 
-  constructor(authenticator: Authenticator, trajMgr?: RobotTrajectoryManager, ws?: WebSocket) {
-    this.negotiationStatusManager = new NegotiationStatusManager(ws, appConfig.authenticator);
+  constructor() {
+    const authenticator = appConfig.authenticator;
+
+    if (!authenticator.user) {
+      throw new Error(
+        'user is undefined, RmfIngress should only be initialized after the authenticator is ready',
+      );
+    }
+
     this.sioClient = (() => {
-      const token = appConfig.authenticator.token;
+      const token = authenticator.token;
       const url = new URL(appConfig.rmfServerUrl);
       const path = url.pathname === '/' ? '' : url.pathname;
 
@@ -71,6 +80,9 @@ export class RmfIngress {
     this.fleetsApi = new FleetsApi(apiConfig, undefined, axiosInst);
     this.tasksApi = new TasksApi(apiConfig, undefined, axiosInst);
     this.adminApi = new AdminApi(apiConfig, undefined, axiosInst);
-    this.trajectoryManager = trajMgr;
+
+    const ws = new WebSocket(appConfig.trajServerUrl);
+    this.trajectoryManager = new DefaultTrajectoryManager(ws, authenticator);
+    this.negotiationStatusManager = new NegotiationStatusManager(ws, authenticator);
   }
 }

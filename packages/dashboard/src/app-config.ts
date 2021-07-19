@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { Authenticator } from 'rmf-auth';
 import KeycloakAuthenticator from 'rmf-auth/lib/keycloak';
 import StubAuthenticator from 'rmf-auth/lib/stub';

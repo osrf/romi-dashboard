@@ -1,12 +1,9 @@
 import { Fleet } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
+import appConfig from '../../app-config';
 import RmfHealthStateManager from '../../managers/rmf-health-state-manager';
-import {
-  DefaultTrajectoryManager,
-  RobotTrajectoryManager,
-} from '../../managers/robot-trajectory-manager';
-import { AppConfigContext, TrajectorySocketContext } from '../app-contexts';
+import { AppConfigContext } from '../app-contexts';
 import { User, UserContext } from '../auth/contexts';
 import {
   BuildingMapContext,
@@ -222,21 +219,17 @@ function RmfHealthContextsProvider(props: React.PropsWithChildren<{}>): JSX.Elem
   );
 }
 
-function RmfIngressProvider(props: React.PropsWithChildren<{}>) {
-  const ws = React.useContext(TrajectorySocketContext);
-  const authenticator = React.useContext(AppConfigContext).authenticator;
-  const [trajMgr, setTrajMgr] = React.useState<RobotTrajectoryManager | undefined>(undefined);
-  React.useEffect(() => {
-    (async () => {
-      if (ws) setTrajMgr(new DefaultTrajectoryManager(ws, authenticator));
-    })();
-  }, [ws, authenticator]);
+function RmfIngressProvider(props: React.PropsWithChildren<{}>): JSX.Element {
+  const authenticator = appConfig.authenticator;
+  const [rmfIngress, setRmfIngress] = React.useState<RmfIngress | undefined>(() => {
+    if (authenticator.user) {
+      return new RmfIngress();
+    } else {
+      authenticator.once('userChanged', () => setRmfIngress(new RmfIngress()));
+      return undefined;
+    }
+  });
 
-  const rmfIngress = React.useMemo(() => new RmfIngress(authenticator, trajMgr, ws), [
-    authenticator,
-    trajMgr,
-    ws,
-  ]);
   return (
     <RmfIngressContext.Provider value={rmfIngress}>{props.children}</RmfIngressContext.Provider>
   );

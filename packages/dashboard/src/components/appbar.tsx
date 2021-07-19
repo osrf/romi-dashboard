@@ -13,8 +13,9 @@ import HelpIcon from '@material-ui/icons/Help';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
 import { HeaderBar, LogoButton, NavigationBar, Tooltip } from 'react-components';
+import appConfig from '../app-config';
 import { AppControllerContext, ResourcesContext, TooltipsContext } from './app-contexts';
-import { AuthenticatorContext, UserContext } from './auth/contexts';
+import { UserContext } from './auth/contexts';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -43,7 +44,7 @@ export const AppBar = React.memo(
     const logoResourcesContext = React.useContext(ResourcesContext)?.logos;
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const classes = useStyles();
-    const authenticator = React.useContext(AuthenticatorContext);
+    const authenticator = appConfig.authenticator;
     const user = React.useContext(UserContext);
     const { showTooltips } = React.useContext(TooltipsContext);
 
