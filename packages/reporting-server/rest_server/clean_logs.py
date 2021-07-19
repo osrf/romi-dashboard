@@ -8,7 +8,7 @@ import sys
 from datetime import datetime, timedelta
 
 from dependencies import logger
-from models import (
+from models.tortoise_models import (
     AuthEvents,
     DispenserState,
     DoorState,
@@ -71,7 +71,7 @@ async def delete_logs():
 async def run():
     await Tortoise.init(
         db_url=app_config.db_url,
-        modules={"models": ["models"]},
+        modules={"models": ["models.tortoise_models"]},
     )
     await Tortoise.generate_schemas()
     await delete_logs()

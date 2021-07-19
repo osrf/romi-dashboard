@@ -5,6 +5,7 @@ import unittest
 
 from fastapi.testclient import TestClient
 from rest_server.__mocks__.raw_data import mock_keycloak_login_error
+from rest_server.test_utils import start_test_database
 from tortoise import Tortoise
 
 from ..app import get_app
@@ -14,11 +15,7 @@ app = get_app()
 
 class TestRawLogRoute(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        await Tortoise.init(
-            db_url="sqlite://:memory:",
-            modules={"models": ["models"]},
-        )
-        await Tortoise.generate_schemas()
+        await start_test_database()
         self.client = TestClient(app)
 
     async def asyncTearDown(self):
@@ -42,11 +39,7 @@ class TestRawLogRoute(unittest.IsolatedAsyncioTestCase):
 
 class TestRmfServerLogRoute(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        await Tortoise.init(
-            db_url="sqlite://:memory:",
-            modules={"models": ["models"]},
-        )
-        await Tortoise.generate_schemas()
+        await start_test_database()
         self.client = TestClient(app)
 
     async def asyncTearDown(self):
@@ -85,11 +78,7 @@ class TestRmfServerLogRoute(unittest.IsolatedAsyncioTestCase):
 
 class TestKeycloakRoute(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        await Tortoise.init(
-            db_url="sqlite://:memory:",
-            modules={"models": ["models"]},
-        )
-        await Tortoise.generate_schemas()
+        await start_test_database()
         self.client = TestClient(app)
 
     async def asyncTearDown(self):

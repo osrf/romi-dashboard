@@ -21,7 +21,7 @@ for (let i = 0; i < 110; i++) {
     message: 'Test' + i,
     level: getRandomLogLevel().toUpperCase(),
     created: format(timestamp, 'MMM dd yyyy hh:mm aaa'),
-    container_name: 'container',
+    container: { id: 1, name: 'container' },
   });
 }
 
@@ -89,7 +89,7 @@ describe('Applies styles to labels correctly', () => {
       message: 'Test' + i,
       level: logLevels[i].toUpperCase(),
       created: format(timestamp, 'MMM dd yyyy hh:mm aaa'),
-      container_name: 'test_container',
+      container: { id: 1, name: 'container' },
     });
   }
 

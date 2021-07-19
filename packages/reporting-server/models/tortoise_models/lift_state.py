@@ -1,9 +1,6 @@
 from enum import Enum
 
 from tortoise import fields, models
-from tortoise.contrib.pydantic import pydantic_model_creator
-
-from .door_state import DoorStateEnum
 
 
 class LiftStateEnum(str, Enum):
@@ -65,7 +62,9 @@ class LiftStateService:
 
 class LiftState(models.Model):
     id = fields.IntField(pk=True)
-    name = fields.CharField(max_length=200)
+    lift = fields.ForeignKeyField(
+        "models.Lift", related_name="lift_states", on_delete="CASCADE"
+    )
     door_state: LiftDoorStateEmun = fields.CharEnumField(
         LiftDoorStateEmun, default=LiftDoorStateEmun.DOOR_CLOSED
     )
@@ -81,6 +80,3 @@ class LiftState(models.Model):
     created = fields.DatetimeField(auto_now_add=True)
 
     service = LiftStateService()
-
-
-LiftState_Pydantic = pydantic_model_creator(LiftState, name="LiftStates")

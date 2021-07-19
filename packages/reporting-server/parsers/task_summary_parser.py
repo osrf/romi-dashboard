@@ -1,6 +1,6 @@
 import json
 
-from models.task_summary import TaskSummary
+from models.tortoise_models.task_summary import TaskSummary
 
 
 async def task_summary_parser(fullstring: str):

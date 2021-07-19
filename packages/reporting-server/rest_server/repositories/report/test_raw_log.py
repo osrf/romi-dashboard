@@ -4,7 +4,8 @@ import unittest
 
 from fastapi.testclient import TestClient
 from rest_server.app import get_app
-from rest_server.repositories.log_creation_handler import create_raw_log
+from rest_server.repositories.log_creation_handler import RawLogHandler
+from rest_server.test_utils import start_test_database
 from tortoise import Tortoise
 
 from .raw_log import get_containers
@@ -14,11 +15,7 @@ app = get_app()
 
 class TestRmfServerLogRoute(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        await Tortoise.init(
-            db_url="sqlite://:memory:",
-            modules={"models": ["models"]},
-        )
-        await Tortoise.generate_schemas()
+        await start_test_database()
         self.client = TestClient(app)
 
     async def asyncTearDown(self):
@@ -43,6 +40,6 @@ class TestRmfServerLogRoute(unittest.IsolatedAsyncioTestCase):
             },
         ]
 
-        await create_raw_log(data)
+        await RawLogHandler.create_raw_log(data)
         containers = await get_containers()
         self.assertEqual(len(containers), 2)

@@ -1,6 +1,6 @@
 import unittest
 
-from models.raw_log import LogLevel
+from models.tortoise_models.raw_log import LogLevel
 
 from .log_type_parser import get_log_type
 

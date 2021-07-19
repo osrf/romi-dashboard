@@ -10,7 +10,8 @@ import * as RmfModels from 'rmf-models';
 
 export type TaskSummaryRowsType = {
   created: string; //date
-  fleet_name: string;
+  fleet: { id: number; name: string };
+  robot: { id: number; name: string; model?: string };
   task_id: string;
   task_profile: RmfModels.TaskProfile;
   state: string;
@@ -18,7 +19,6 @@ export type TaskSummaryRowsType = {
   submission_time: RmfModels.Time;
   start_time: RmfModels.Time;
   end_time: RmfModels.Time;
-  robot_name: string;
 }[];
 
 export interface TaskSummaryReportTable extends DefaultLogTableProps {
@@ -46,7 +46,7 @@ export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.Rea
           field: 'fleet_name',
           type: 'string',
           render: (rowData) => {
-            return <Typography>{rowData.fleet_name}</Typography>;
+            return <Typography>{rowData.fleet.name}</Typography>;
           },
         },
         {
@@ -54,7 +54,7 @@ export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.Rea
           field: 'robot_name',
           type: 'string',
           render: (rowData) => {
-            return <Typography>{rowData.robot_name}</Typography>;
+            return <Typography>{rowData.robot.name}</Typography>;
           },
         },
         {

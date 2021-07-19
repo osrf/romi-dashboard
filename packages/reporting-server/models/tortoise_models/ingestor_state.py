@@ -1,7 +1,6 @@
 from enum import Enum
 
 from tortoise import fields, models
-from tortoise.contrib.pydantic import pydantic_model_creator
 
 
 class IngestorStateEnum(str, Enum):
@@ -29,6 +28,3 @@ class IngestorState(models.Model):
     created = fields.DatetimeField(auto_now_add=True)
 
     service = IngestorStateService()
-
-
-IngestorState_Pydantic = pydantic_model_creator(IngestorState, name="IngestorState")

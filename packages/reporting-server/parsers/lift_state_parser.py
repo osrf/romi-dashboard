@@ -1,6 +1,6 @@
 import json
 
-from models.lift_state import LiftState
+from models.tortoise_models.lift_state import LiftState
 
 
 async def lift_state_parser(fullstring: str):

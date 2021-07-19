@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 export type LiftStateRowsType = {
   created: string; //date
   state: string;
+  lift?: { id: number; name: string };
   door_state: string;
   destination_floor: string;
   motion_state: string;

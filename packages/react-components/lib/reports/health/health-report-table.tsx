@@ -7,8 +7,7 @@ import { format } from 'date-fns';
 
 export type HealthRowsType = {
   created: string; //date
-  device: string;
-  actor_id: string;
+  device: { id?: number; type: string; actor: string };
   health_status: string;
   health_message: string;
 }[];
@@ -30,7 +29,7 @@ export const HealthReportTable = (props: HealthReportTable): React.ReactElement 
           field: 'device',
           type: 'string',
           render: (rowData) => {
-            return <Typography>{rowData.device}</Typography>;
+            return <Typography>{rowData.device.type}</Typography>;
           },
         },
         {
@@ -38,7 +37,7 @@ export const HealthReportTable = (props: HealthReportTable): React.ReactElement 
           field: 'actor_id',
           type: 'string',
           render: (rowData) => {
-            return <Typography>{rowData.actor_id}</Typography>;
+            return <Typography>{rowData.device.actor}</Typography>;
           },
         },
         {

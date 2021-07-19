@@ -1,6 +1,6 @@
 import json
 
-from models.dispenser_state import DispenserState
+from models.tortoise_models.dispenser_state import DispenserState
 
 
 async def dispenser_state_parser(fullstring: str):

@@ -1,6 +1,6 @@
 import unittest
 
-from models.lift_state import LiftState
+from models.tortoise_models.lift_state import LiftState
 from rest_server.__mocks__.parsed_data import mock_lift_state
 
 from .lift_state_parser import lift_state_parser

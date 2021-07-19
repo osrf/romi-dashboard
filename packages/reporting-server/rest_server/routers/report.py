@@ -1,15 +1,16 @@
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from fastapi import APIRouter
-from models.auth_events import AuthEvents_Pydantic
-from models.dispenser_state import DispenserState_Pydantic
-from models.door_state import DoorState_Pydantic
-from models.fleet_state import FleetState_Pydantic
-from models.health import HealthStatus_Pydantic
-from models.ingestor_state import IngestorState_Pydantic
-from models.lift_state import LiftState_Pydantic
-from models.raw_log import RawLog_Pydantic
-from models.task_summary import TaskSummary_Pydantic
+from models.pydantic_models import (
+    AuthEvents_Pydantic,
+    DispenserState_Pydantic,
+    DoorState_Pydantic,
+    FleetState_Pydantic,
+    HealthStatus_Pydantic,
+    IngestorState_Pydantic,
+    LiftState_Pydantic,
+    TaskSummary_Pydantic,
+)
 from rest_server.repositories.report import (
     get_all_raw_logs,
     get_containers,
@@ -32,7 +33,7 @@ router = APIRouter()
 LIMIT = 500
 
 
-@router.get("/raw_logs/", tags=["raw_logs"], response_model=List[RawLog_Pydantic])
+@router.get("/raw_logs/", tags=["raw_logs"], response_model=List[Any])
 async def raw_logs_report(
     toLogDate: Optional[str] = None,
     fromLogDate: Optional[str] = None,

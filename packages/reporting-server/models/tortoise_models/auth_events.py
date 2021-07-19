@@ -1,5 +1,4 @@
 from tortoise import fields, models
-from tortoise.contrib.pydantic import pydantic_model_creator
 
 
 class AuthEvents(models.Model):
@@ -15,6 +14,3 @@ class AuthEvents(models.Model):
 
     def __str__(self):
         return str(self.event_type)
-
-
-AuthEvents_Pydantic = pydantic_model_creator(AuthEvents, name="AuthEvents")

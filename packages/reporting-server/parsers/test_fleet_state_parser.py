@@ -1,6 +1,6 @@
 import unittest
 
-from models.fleet_state import FleetState
+from models.tortoise_models.fleet_state import FleetState
 from rest_server.__mocks__.parsed_data import mock_fleet_state
 
 from .fleet_state_parser import fleet_state_parser

@@ -1,7 +1,6 @@
 from enum import Enum
 
 from tortoise import fields, models
-from tortoise.contrib.pydantic import pydantic_model_creator
 
 
 class DoorStateEnum(str, Enum):
@@ -30,14 +29,10 @@ class DoorStateService:
 
 class DoorState(models.Model):
     id = fields.IntField(pk=True)
-    # JSONField https://tortoise-orm.readthedocs.io/en/latest/fields.html#tortoise.fields.data.IntField.field_type
     state: DoorStateEnum = fields.CharEnumField(
         DoorStateEnum, default=DoorStateEnum.UNKNOWN
     )
-    name = fields.CharField(max_length=200)
+    door = fields.ForeignKeyField("models.Door", related_name="door_states", null=True)
     created = fields.DatetimeField(auto_now_add=True)
 
     service = DoorStateService()
-
-
-DoorState_Pydantic = pydantic_model_creator(DoorState, name="DoorState")

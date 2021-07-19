@@ -1,6 +1,6 @@
 import unittest
 
-from models.dispenser_state import DispenserState
+from models.tortoise_models.dispenser_state import DispenserState
 from rest_server.__mocks__.parsed_data import mock_dispenser_state
 
 from .dispenser_state_parser import dispenser_state_parser

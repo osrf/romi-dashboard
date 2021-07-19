@@ -1,4 +1,4 @@
-from models.raw_log import LogLevel
+from models.tortoise_models.raw_log import LogLevel
 
 
 def get_log_type(fullstring, stream_type="stdout"):

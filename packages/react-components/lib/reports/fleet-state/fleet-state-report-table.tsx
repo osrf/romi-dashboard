@@ -7,13 +7,11 @@ import { format } from 'date-fns';
 
 export type FleetStateRowsType = {
   created: string; //date
-  fleet_name: string;
-  robots: string;
+  fleet: { id: number; name: string };
+  robot: { id: number; name: string; model?: string };
   robot_battery_percent: string;
   robot_location: string;
   robot_mode: string;
-  robot_model: string;
-  robot_name: string;
   robot_seq: number;
   robot_task_id: string;
 }[];
@@ -35,7 +33,7 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
           field: 'fleet_name',
           type: 'string',
           render: (rowData) => {
-            return <Typography>{rowData.fleet_name}</Typography>;
+            return <Typography>{rowData.fleet.name}</Typography>;
           },
         },
         {
@@ -43,7 +41,7 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
           field: 'robot_name',
           type: 'string',
           render: (rowData) => {
-            return <Typography>{rowData.robot_name}</Typography>;
+            return <Typography>{rowData.robot.name}</Typography>;
           },
         },
         {
@@ -67,7 +65,7 @@ export const FleetStateReportTable = (props: FleetStateReportTable): React.React
           field: 'robot_model',
           type: 'string',
           render: (rowData) => {
-            return <Typography>{rowData.robot_model}</Typography>;
+            return <Typography>{rowData.robot.model}</Typography>;
           },
         },
         {

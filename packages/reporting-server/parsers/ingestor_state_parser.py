@@ -1,6 +1,6 @@
 import json
 
-from models.ingestor_state import IngestorState
+from models.tortoise_models.ingestor_state import IngestorState
 
 
 async def ingestor_state_parser(fullstring: str):

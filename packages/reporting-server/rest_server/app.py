@@ -8,10 +8,10 @@ import sys
 from dependencies import auth_scheme, logger
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from rest_server.database import setup_database
 from rest_server.routers import log_router, report_router
-from tortoise.contrib.fastapi import register_tortoise
 
-from .app_config import SystemMode, app_config
+from .app_config import SystemMode
 
 logger = logging.getLogger("rest_app")
 handler = logging.StreamHandler(sys.stdout)
@@ -26,6 +26,7 @@ logger.info("started app")
 
 
 def get_app(run_config=SystemMode.ALL):
+
     app = FastAPI()
 
     app.add_middleware(
@@ -47,12 +48,8 @@ def get_app(run_config=SystemMode.ALL):
             dependencies=[Depends(auth_scheme)],
         )
 
-    register_tortoise(
-        app,
-        db_url=app_config.db_url,
-        modules={"models": ["models"]},
-        generate_schemas=run_config in (SystemMode.ALL, SystemMode.FLUENTD),
-        add_exception_handlers=True,
+    setup_database(
+        app, generate_schemas=run_config in (SystemMode.ALL, SystemMode.FLUENTD)
     )
 
     return app

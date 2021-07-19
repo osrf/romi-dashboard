@@ -1,6 +1,6 @@
 import unittest
 
-from models.door_state import DoorState
+from models.tortoise_models.door_state import DoorState
 from rest_server.__mocks__.parsed_data import mock_door_state
 
 from .doors_state_parser import doors_state_parser

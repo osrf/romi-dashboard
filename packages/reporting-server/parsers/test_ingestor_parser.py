@@ -1,6 +1,6 @@
 import unittest
 
-from models.ingestor_state import IngestorState
+from models.tortoise_models.ingestor_state import IngestorState
 from rest_server.__mocks__.parsed_data import mock_ingestor_state
 
 from .ingestor_state_parser import ingestor_state_parser

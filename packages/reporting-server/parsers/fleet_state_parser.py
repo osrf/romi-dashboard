@@ -1,6 +1,6 @@
 import json
 
-from models import FleetState
+from models.tortoise_models import FleetState
 
 
 async def fleet_state_parser(fullstring: str) -> list:
@@ -16,7 +16,6 @@ async def fleet_state_parser(fullstring: str) -> list:
         fleet_list.append(
             {
                 "fleet_name": state_json["name"],
-                "robots": state_json["robots"],
                 "robot_battery_percent": robot["battery_percent"],
                 "robot_location": robot["location"],
                 "robot_mode": FleetState.service.get_robot_state_name(

@@ -2,7 +2,8 @@ from datetime import timezone
 from typing import Optional
 
 from dateutil import parser
-from models.auth_events import AuthEvents, AuthEvents_Pydantic
+from models.pydantic_models import AuthEvents_Pydantic
+from models.tortoise_models.auth_events import AuthEvents
 
 
 async def get_user_login_report(

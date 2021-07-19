@@ -27,7 +27,7 @@ const getLogs = () => {
       message: 'Test' + i,
       level: 'Debug',
       created: randomDate(new Date(2012, 0, 1), new Date()).toISOString(),
-      container_name: 'container_test',
+      container: { id: 1, name: 'container_test' },
     });
   }
   return rows;
@@ -60,13 +60,13 @@ export const SimpleLogTable: Story = (args) => {
     npm ERR!     /home/ekumen/.npm/_logs/2021-01-18T21_20_07_480Z-debug.log`,
     level: 'Error',
     created: timestamp,
-    container_name: 'container_test',
+    container: { id: 1, name: 'container_test' },
   });
   logs.unshift({
     message: `long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long msg`,
     level: 'Debug',
     created: timestamp,
-    container_name: 'container_test',
+    container: { id: 1, name: 'container_test' },
   });
 
   return <LogTable rows={logs} {...args} />;

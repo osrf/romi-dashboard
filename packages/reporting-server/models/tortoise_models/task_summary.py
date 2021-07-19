@@ -109,20 +109,20 @@ class TaskProfile:
 class TaskSummary(models.Model):
     id = fields.IntField(pk=True)
     created = fields.DatetimeField(auto_now_add=True)
-    fleet_name = fields.CharField(max_length=50)
+    fleet = fields.ForeignKeyField(
+        "models.Fleet", related_name="task_summary", null=True
+    )
+    robot = fields.ForeignKeyField(
+        "models.Robot", related_name="task_summary", null=True
+    )
     task_id = fields.CharField(max_length=50)
     task_profile: TaskProfile = fields.JSONField()
     state: TaskStateEnum = fields.CharEnumField(
         TaskStateEnum, default=TaskStateEnum.STATE_PENDING
     )
-    fleet_name = fields.CharField(max_length=50)
     status = fields.CharField(max_length=50, null=True)
     submission_time: Time = fields.JSONField()
     start_time: Time = fields.JSONField()
     end_time: Time = fields.JSONField()
-    robot_name = fields.CharField(max_length=50)
 
     service = TaskSummaryService()
-
-
-TaskSummary_Pydantic = pydantic_model_creator(TaskSummary, name="TaskSummary")

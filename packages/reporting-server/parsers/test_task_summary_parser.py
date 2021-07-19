@@ -1,6 +1,6 @@
 import unittest
 
-from models.task_summary import TaskSummary
+from models.tortoise_models.task_summary import TaskSummary
 from rest_server.__mocks__.parsed_data import mock_task_summary
 
 from .task_summary_parser import task_summary_parser

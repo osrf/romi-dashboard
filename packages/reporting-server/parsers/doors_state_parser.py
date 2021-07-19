@@ -1,6 +1,6 @@
 import json
 
-from models.door_state import DoorState
+from models.tortoise_models.door_state import DoorState
 
 
 async def doors_state_parser(fullstring: str):

@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core';
 import { Column, EditCellColumnDef } from 'material-table';
 import React from 'react';
+import { ContainerType } from './log-table';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -23,7 +24,7 @@ const MenuProps = {
 
 export interface CustomLookupFilterParserProps {
   // Prop RowData from material-table is not exported so unknown
-  columnDef: Column<{ level: string; message: string; created: string; container_name: string }>;
+  columnDef: Column<{ level: string; message: string; created: string; container: ContainerType }>;
   onFilterChanged: (rowId: string, value: string | number | unknown) => void;
 }
 

@@ -9,6 +9,3 @@ class User(models.Model):
 
     def __str__(self):
         return str(self.username)
-
-
-User_Pydantic = pydantic_model_creator(User, name="User")
