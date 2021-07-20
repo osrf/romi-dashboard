@@ -29,6 +29,7 @@ import type {
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { PositiveIntField } from '../form-inputs';
+import Scheduler from './scheduler/scheduler';
 
 type TaskDescription = CleanTaskDescription | LoopTaskDescription | DeliveryTaskDescription;
 
@@ -560,6 +561,31 @@ export function CreateTaskForm({
                     />
                   </Grid>
                 </Grid>
+                <Grid container wrap="nowrap">
+                  <Grid style={{ flexGrow: 1 }}>
+                    <Scheduler currentDate={new Date(task.start_time * 1000)}></Scheduler>
+                  </Grid>
+                  {/* <Grid
+                    style={{
+                      flex: '0 1 5em',
+                      marginLeft: theme.spacing(2),
+                      marginRight: theme.spacing(2),
+                    }}
+                  >
+                    <PositiveIntField
+                      id="priority"
+                      label="Priority"
+                      margin="normal"
+                      value={priorityInput}
+                      onChange={(ev) => {
+                        task.priority = parseInt(ev.target.value) || 0;
+                        updateTasks();
+                        setPriorityInput(ev.target.value);
+                      }}
+                    />
+                  </Grid> */}
+                </Grid>
+
                 {renderTaskDescriptionForm()}
               </Grid>
               {taskTitles.length > 1 && (
