@@ -1,5 +1,4 @@
-FROM ubuntu:20.04
-ENV TZ=Asia/Singapore
+FROM python:3.8.11-buster
 
 RUN apt-get update && apt-get install -y curl && \
   curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
@@ -15,8 +14,7 @@ RUN npm config set unsafe-perm && \
   cd packages/reporting-server && \
   npm run prepack
 
-FROM ubuntu:20.04
-ENV TZ=Asia/Singapore
+FROM python:3.8.11-buster
 
 RUN apt-get update && apt-get install -y python3-pip
 RUN pip3 install pipenv

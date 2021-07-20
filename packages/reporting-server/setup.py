@@ -22,7 +22,7 @@ setup(
         "tortoise-orm~=0.16.21",
         "pyjwt[crypto]~=2.0",
         "pydantic~=1.8",
-        "aerich~=0.5.3",
+        "aerich~=0.5.4",
         "python-dateutil~=2.8.1",
     ],
     extras_require={

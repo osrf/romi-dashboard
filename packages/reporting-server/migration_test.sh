@@ -8,7 +8,6 @@ if [ ! "$(docker ps -q -f name=reporting-server-migration-test)" ]; then
         # cleanup
         docker rm reporting-server-migration-test
     fi
-    # run your container
     echo "running the container"
     docker run -d --name reporting-server-migration-test rmf-web/reporting-server-migration-test:latest
 fi
@@ -20,6 +19,8 @@ if [ "$(docker ps -q -f name=reporting-server-migration-test)" ]; then
   docker exec -it reporting-server-migration-test ./migrate.sh
 fi
 
-echo "stopping reporting-server-migration-test"
+echo "stopping"
 docker stop reporting-server-migration-test
+
+echo "removing"
 docker rm reporting-server-migration-test
