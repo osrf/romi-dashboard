@@ -16,7 +16,11 @@ describe('RobotPanel', () => {
   it('shows empty information when robot is clicked when there are no assigned tasks', () => {
     const robots = [makeRandomRobot('test_robot1', 'test_fleet', 2)];
     const root = render(
-      <RobotPanel verboseRobots={robots} fetchVerboseRobots={makeFetchRobots(robots)} />,
+      <RobotPanel
+        autoRefresh={false}
+        verboseRobots={robots}
+        fetchVerboseRobots={makeFetchRobots(robots)}
+      />,
     );
     userEvent.click(root.getByText('test_robot1'));
     expect(root.getByRole('heading', { name: 'test_robot1' })).toBeTruthy();
@@ -31,6 +35,7 @@ describe('RobotPanel', () => {
       <RobotPanel
         verboseRobots={verboseRobot}
         fetchVerboseRobots={makeFetchRobots(verboseRobot)}
+        autoRefresh={false}
       />,
     );
     userEvent.click(root.getByText('test_robot1'));

@@ -72,6 +72,17 @@ class TasksRouter(FastIORouter):
         async def get_task_summary(task_summary: TaskSummary):
             return {"task_id": task_summary.task_id.replace("/", "__")}, task_summary
 
+        @self.watch(
+            "/{task_id}/summary/progress",
+            target=rmf_events.task_summaries,
+            response_model=TaskProgress,
+            data_store=TaskSummaryDataStore(),
+            param_docs={"task_id": "task_id with '/' replaced with '__'"},
+        )
+        async def get_task_summary_progress(task_summary: TaskSummary):
+            task_progress = convert_task_status_msg(task_summary, rmf_gateway_dep())
+            return {"task_id": task_summary.task_id.replace("/", "__")}, task_progress
+
         class GetTasksResponse(Pagination.response_model(TaskProgress)):
             pass
 

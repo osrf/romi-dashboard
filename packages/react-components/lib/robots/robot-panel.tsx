@@ -1,7 +1,16 @@
 import React from 'react';
-import { Grid, makeStyles, Paper, Typography, TablePagination } from '@material-ui/core';
+import {
+  Grid,
+  IconButton,
+  makeStyles,
+  Paper,
+  Typography,
+  TablePagination,
+  Toolbar,
+} from '@material-ui/core';
 import { RobotInfo } from './robot-info';
 import { RobotTable } from './robot-table';
+import { Autorenew as AutorenewIcon, Refresh as RefreshIcon } from '@material-ui/icons';
 import { VerboseRobot } from './utils';
 
 const useStyles = makeStyles((theme) => ({
@@ -15,6 +24,12 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
+  },
+  title: {
+    flex: '1 1 100%',
+  },
+  enabledToggleButton: {
+    background: theme.palette.action.selected,
   },
 }));
 
@@ -31,22 +46,25 @@ function NoSelectedRobot() {
 export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
   paginationOptions?: Omit<React.ComponentPropsWithoutRef<typeof TablePagination>, 'component'>;
   verboseRobots: VerboseRobot[];
-  fetchVerboseRobots: () => Promise<VerboseRobot[]>;
+  onAutoRefresh?: React.Dispatch<React.SetStateAction<boolean>>;
+  onRefresh?: () => Promise<VerboseRobot[]>;
 }
 
 export function RobotPanel({
   paginationOptions,
   verboseRobots,
-  fetchVerboseRobots,
+  onRefresh,
+  onAutoRefresh,
   ...divProps
 }: RobotPanelProps): JSX.Element {
   const classes = useStyles();
   const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
+  const [autoRefresh, setAutoRefresh] = React.useState(true);
 
   const handleRefresh = async (selectedRobot?: VerboseRobot) => {
     (async () => {
-      const result = await fetchVerboseRobots();
-      result.forEach((robot) => {
+      const result = await (onRefresh && onRefresh());
+      result?.forEach((robot) => {
         if (selectedRobot && robot.name === selectedRobot.name) {
           setSelectedRobot(robot);
         }
@@ -54,17 +72,43 @@ export function RobotPanel({
     })();
   };
 
+  React.useEffect(() => {
+    verboseRobots.forEach((robot) => {
+      if (selectedRobot && robot.name === selectedRobot.name) {
+        setSelectedRobot(robot);
+      }
+    });
+  }),
+    [selectedRobot, verboseRobots];
+
   return (
     <div {...divProps}>
       <Grid container wrap="nowrap" justify="center" style={{ height: 'inherit' }}>
         <Grid style={{ flex: '1 1 auto' }}>
-          <RobotTable
-            className={classes.robotTable}
-            robots={verboseRobots}
-            paginationOptions={paginationOptions}
-            onRobotClick={(_ev, robot) => setSelectedRobot(robot)}
-            onRefreshClick={() => handleRefresh(selectedRobot)}
-          />
+          <Paper className={classes.robotTable}>
+            <Toolbar>
+              <Typography className={classes.title} variant="h6">
+                Robots
+              </Typography>
+              <IconButton
+                className={autoRefresh ? classes.enabledToggleButton : undefined}
+                onClick={() => {
+                  setAutoRefresh((prev) => !prev);
+                  onAutoRefresh && onAutoRefresh(!autoRefresh);
+                }}
+              >
+                <AutorenewIcon />
+              </IconButton>
+              <IconButton onClick={() => handleRefresh(selectedRobot)} aria-label="Refresh">
+                <RefreshIcon />
+              </IconButton>
+            </Toolbar>
+            <RobotTable
+              robots={verboseRobots}
+              paginationOptions={paginationOptions}
+              onRobotClick={(_ev, robot) => setSelectedRobot(robot)}
+            />
+          </Paper>
         </Grid>
         <Paper className={classes.detailPanelContainer}>
           {selectedRobot ? <RobotInfo robot={selectedRobot} /> : <NoSelectedRobot />}

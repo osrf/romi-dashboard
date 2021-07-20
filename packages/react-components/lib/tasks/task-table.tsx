@@ -1,4 +1,12 @@
-import { makeStyles, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
+import {
+  makeStyles,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@material-ui/core';
 import clsx from 'clsx';
 import { formatDistanceToNow } from 'date-fns';
 import React from 'react';
@@ -20,6 +28,10 @@ const useStyles = makeStyles((theme) => ({
   },
   phasesCell: {
     padding: `0 ${theme.spacing(1)}px`,
+    boxShadow: `${theme.shadows[1]}`,
+    '&:last-child': {
+      paddingRight: `${theme.spacing(1)}px`,
+    },
   },
   phasesRow: {
     marginBottom: theme.spacing(1),
@@ -43,11 +55,21 @@ function TaskRow({ task, onClick }: TaskRowProps) {
         onMouseOver={() => setHover(true)}
         onMouseOut={() => setHover(false)}
       >
-        <TableCell>{task.task_id}</TableCell>
-        <TableCell>{task.robot_name}</TableCell>
-        <TableCell>{toRelativeDate(task.start_time)}</TableCell>
-        <TableCell>{toRelativeDate(task.end_time)}</TableCell>
-        <TableCell>{taskStateToStr(task.state)}</TableCell>
+        <TableCell>
+          <Typography variant="body1">{task.task_id}</Typography>
+        </TableCell>
+        <TableCell>
+          <Typography variant="body1">{task.robot_name}</Typography>
+        </TableCell>
+        <TableCell>
+          <Typography variant="body1">{toRelativeDate(task.start_time)}</Typography>
+        </TableCell>
+        <TableCell>
+          <Typography variant="body1">{toRelativeDate(task.end_time)}</Typography>
+        </TableCell>
+        <TableCell>
+          <Typography variant="body1">{taskStateToStr(task.state)}</Typography>
+        </TableCell>
       </TableRow>
       <TableRow
         className={clsx(hover && classes.taskRowHover)}

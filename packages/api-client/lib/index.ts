@@ -14,6 +14,7 @@ import {
   TaskSummary,
 } from 'rmf-models';
 import { io, Socket } from 'socket.io-client';
+import { TaskProgress } from './openapi/models';
 
 const debug = Debug('rmf-client');
 
@@ -109,6 +110,11 @@ export class SioClient {
   subscribeTaskSummary(taskId: string, listener: Listener<TaskSummary>): Listener<TaskSummary> {
     const encoded = taskId.replace('/', '__');
     return this.subscribe<TaskSummary>(`/tasks/${encoded}/summary`, listener);
+  }
+
+  subscribeTaskProgress(taskId: string, listener: Listener<TaskProgress>): Listener<TaskProgress> {
+    const encoded = taskId.replace('/', '__');
+    return this.subscribe<TaskProgress>(`/tasks/${encoded}/summary/progress`, listener);
   }
 }
 

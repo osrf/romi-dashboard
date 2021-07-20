@@ -2,8 +2,9 @@
 
 import { makeStyles } from '@material-ui/core';
 import React from 'react';
-import { RobotPanel, VerboseRobot } from 'react-components';
+import { RobotPanel, RobotPanelProps } from 'react-components';
 import { RmfIngressContext } from '../rmf-app';
+import { useAutoRefresh } from './auto-refresh';
 
 const useStyles = makeStyles((theme) => ({
   robotPanel: {
@@ -16,11 +17,12 @@ const useStyles = makeStyles((theme) => ({
 
 export function RobotPage() {
   const classes = useStyles();
-  const { fleetsApi } = React.useContext(RmfIngressContext) || {};
+  const { fleetsApi, sioClient } = React.useContext(RmfIngressContext) || {};
 
   const [totalCount, setTotalCount] = React.useState(0);
   const [page, setPage] = React.useState(0);
-  const [verboseRobots, setVerboseRobots] = React.useState<VerboseRobot[]>([]);
+  const [autoRefreshState, autoRefreshDispatcher] = useAutoRefresh(sioClient);
+
   const fetchVerboseRobots = React.useCallback(async () => {
     if (!fleetsApi) {
       setTotalCount(0);
@@ -33,19 +35,26 @@ export function RobotPage() {
       page * 10,
       'fleet_name,robot_name',
     );
+
     setTotalCount(resp.data.total_count);
-    setVerboseRobots(resp.data.items);
     return resp.data.items;
   }, [fleetsApi, page]);
 
+  const handleRefresh = React.useCallback<Required<RobotPanelProps>['onRefresh']>(async () => {
+    const verboseRobots = await fetchVerboseRobots();
+    autoRefreshDispatcher.setVerboseRobots(verboseRobots);
+    return verboseRobots;
+  }, [fetchVerboseRobots, autoRefreshDispatcher]);
+
   React.useEffect(() => {
-    fetchVerboseRobots();
-  }, [fetchVerboseRobots]);
+    handleRefresh();
+  }, [handleRefresh]);
 
   return (
     <RobotPanel
       className={classes.robotPanel}
-      fetchVerboseRobots={fetchVerboseRobots}
+      onRefresh={handleRefresh}
+      onAutoRefresh={autoRefreshDispatcher.setEnabled}
       paginationOptions={{
         count: totalCount,
         rowsPerPage: 10,
@@ -53,7 +62,7 @@ export function RobotPage() {
         page,
         onChangePage: (_ev, newPage) => setPage(newPage),
       }}
-      verboseRobots={verboseRobots}
+      verboseRobots={autoRefreshState.verboseRobots}
     />
   );
 }

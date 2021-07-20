@@ -1,7 +1,5 @@
 import {
-  IconButton,
   makeStyles,
-  Paper,
   PaperProps,
   Table,
   TableBody,
@@ -10,11 +8,9 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Toolbar,
-  Typography,
 } from '@material-ui/core';
-import { Refresh as RefreshIcon } from '@material-ui/icons';
 import React from 'react';
+import clsx from 'clsx';
 import { taskTypeToStr } from '../tasks/utils';
 import { robotModeToString, VerboseRobot } from './utils';
 
@@ -29,12 +25,10 @@ const useStyles = makeStyles((theme) => ({
     background: theme.palette.action.hover,
   },
   infoRow: {
+    boxShadow: `${theme.shadows[1]}`,
     '& > *': {
       borderBottom: 'unset',
     },
-  },
-  phasesCell: {
-    padding: `0 ${theme.spacing(1)}px`,
   },
 }));
 
@@ -79,11 +73,17 @@ const returnLocationCells = (robot: VerboseRobot) => {
 
 function RobotRow({ robot, onClick }: RobotRowProps) {
   const classes = useStyles();
+  const [hover, setHover] = React.useState(false);
 
   if (robot.tasks.length === 0) {
     return (
       <>
-        <TableRow className={classes.infoRow} onClick={onClick}>
+        <TableRow
+          className={clsx(classes.infoRow, hover && classes.taskRowHover)}
+          onClick={onClick}
+          onMouseOver={() => setHover(true)}
+          onMouseOut={() => setHover(false)}
+        >
           <TableCell>{robot.name}</TableCell>
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
@@ -96,7 +96,12 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
   } else {
     return (
       <>
-        <TableRow className={classes.infoRow} onClick={onClick}>
+        <TableRow
+          className={clsx(classes.infoRow, hover && classes.taskRowHover)}
+          onClick={onClick}
+          onMouseOver={() => setHover(true)}
+          onMouseOut={() => setHover(false)}
+        >
           <TableCell>{robot.name}</TableCell>
           {returnLocationCells(robot)}
           <TableCell>
@@ -125,29 +130,18 @@ export interface RobotTableProps extends PaperProps {
    */
   robots: VerboseRobot[];
   paginationOptions?: PaginationOptions;
-  onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
   onRobotClick?(ev: React.MouseEvent<HTMLDivElement>, robot: VerboseRobot): void;
 }
 
 export function RobotTable({
   robots,
   paginationOptions,
-  onRefreshClick,
   onRobotClick,
-  ...paperProps
 }: RobotTableProps): JSX.Element {
   const classes = useStyles();
 
   return (
-    <Paper {...paperProps}>
-      <Toolbar>
-        <Typography className={classes.title} variant="h6">
-          Robots
-        </Typography>
-        <IconButton onClick={onRefreshClick} aria-label="Refresh">
-          <RefreshIcon />
-        </IconButton>
-      </Toolbar>
+    <React.Fragment>
       <TableContainer style={{ flex: '1 1 auto' }}>
         <Table className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
           <TableHead>
@@ -175,6 +169,6 @@ export function RobotTable({
       {paginationOptions && (
         <TablePagination component="div" {...paginationOptions} style={{ flex: '0 0 auto' }} />
       )}
-    </Paper>
+    </React.Fragment>
   );
 }
