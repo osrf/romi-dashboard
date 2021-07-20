@@ -349,15 +349,7 @@ docker save rmf-web/reporting-server-migrations | bash -c 'eval $(.bin/minikube 
 Once the `reporting-server` is deployed and we have the migrations, we can run the migration job. We can do that by running:
 
 ```bash
-./run-reporting-sever-migrations.sh
-```
-
-this script will check if we have a reporting-server instance running, run the job, and it'll kill the job automatically when it's done.
-
-Or you can run it manually:
-
-```bash
-.bin/minikube kubectl -- apply -f k8s/jobs/run-reporting-sever-migrations.yaml
+.bin/minikube kubectl -- apply -f k8s/jobs/reporting-server-migrations-job.yaml
 ```
 
 ## Reporting
