@@ -103,16 +103,6 @@ done
 echo 'running reporting-server-migrations-job...'
 .bin/minikube kubectl -- apply -f k8s/jobs/reporting-server-migrations-job.yaml
 
-# if the migration is finished kill the job
-until kubectl get jobs reporting-server-migrations-job -o jsonpath='{.status.conditions[?(@.type=="Complete")].status}' | grep True ;
-do 
-  echo "wait for migration job to finish"
-  sleep 1; 
-done
-
-echo 'killing reporting-server-migrations-job...'
-.bin/minikube kubectl  -- delete -f k8s/reporting-server-migrations-job.yaml
-
 
 echo 'building reporting image...'
 docker build -t rmf-web/reporting -f docker/reporting.dockerfile $rmf_web_ws
