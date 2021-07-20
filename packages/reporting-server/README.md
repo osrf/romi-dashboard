@@ -98,11 +98,84 @@ Open a terminal and run:
 sudo apt update && sudo apt install postgresql postgresql-contrib
 ```
 
-Once PostgreSQL is installed, you can run the following command to create a database:
+### Create a database
+
+You can run the following command to create a database:
 
 ``` bash
 sudo -u postgres createdb <database>
 # E.g: sudo -u postgres createdb reporting
+```
+
+### Set PostgreSQL user (skip this step if you wish to use the default postgres user)
+
+By default, Postgres uses a concept called “roles” to handle authentication and authorization.
+
+Upon installation, Postgres is set up to use ident authentication, meaning that it associates Postgres roles with a matching Unix/Linux system account. If a role exists within Postgres, a Unix/Linux username with the same name is able to sign in as that role.
+
+The installation procedure created a user account called postgres that is associated with the default Postgres role. There are a few ways to utilize this account to access Postgres. One way is to switch over to the postgres account on your server by typing
+
+``` bash
+sudo -i -u postgres
+```
+
+Then you can access the Postgres prompt by typing:
+
+``` bash
+psql
+```
+
+This will log you into the PostgreSQL prompt, and from here you are free to interact with the database management system right away.
+
+We can create new user with the following command
+
+``` bash
+create user <youruser> with encrypted password <yourpassword>;
+
+# E.G: create user myuser with encrypted password 'mypassword';
+```
+
+After the user is created we need to assign the db roles to the user:
+
+``` bash
+grant all privileges on database <yourdatabase> to <youruser>;
+
+# E.G: grant all privileges on database reporting to myuser;
+```
+
+### Set/change user PostgreSQL password
+
+``` bash
+sudo -i -u postgres
+```
+
+Then you can access the Postgres prompt by typing:
+
+``` bash
+psql
+```
+
+To change your password you run the following command:
+
+``` bash
+\password <user>
+# E.g: \password postgres
+```
+
+To exit out of the PostgreSQL prompt, run the following:
+
+``` bash
+\q
+```
+
+
+
+### PostgresSQL URL
+
+Once the above steps are finished you can build your bd_url:
+
+``` 
+postgres://<user>:<password>@<host>/<database>
 ```
 
 For more information you can check [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart)
@@ -129,6 +202,7 @@ npm run start:dev
 ```
 
 # Developers
+
 ## Migration
 We are using [aerich](https://github.com/tortoise/aerich) as our database migration tool. That means that the changes to made to the model will not be reflected in the database automatically. You must run the aerich migration command to create a new migration with the changes:
 
