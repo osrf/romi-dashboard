@@ -24,7 +24,7 @@ jobs:
           registry: docker.pkg.github.com
           repository: ${{ github.repository }}/reporting-server
           tags: nightly
-          path: packages/reporting-e2e/docker/reporting-server
+          file: packages/reporting-e2e/docker/reporting-server/Dockerfile
           working-directory: .
   # e2e-tests:
   #   name: End-to-End Tests
