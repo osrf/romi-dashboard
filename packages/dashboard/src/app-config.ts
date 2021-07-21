@@ -34,7 +34,7 @@ export const appConfig: AppConfig = (() => {
         }
         return new KeycloakAuthenticator(
           JSON.parse(process.env.REACT_APP_KEYCLOAK_CONFIG),
-          `${BasePath}/silent-check-sso.html`,
+          `${window.location.origin}${BasePath}/silent-check-sso.html`,
         );
       case 'stub':
         return new StubAuthenticator();

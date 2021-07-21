@@ -9,6 +9,7 @@ import { LoginHOC, PrivateRouteHOC } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
 import { AdminRoute, DashboardRoute, LoginRoute, RobotsRoute, TasksRoute } from '../util/url';
+import { UserListPage } from './admin';
 import { AppBase } from './app-base';
 import { ResourcesContext } from './app-contexts';
 import './app.css';
@@ -32,18 +33,13 @@ const theme = createMuiTheme({
 });
 
 function locationToTabValue(pathname: string): TabValue | undefined {
-  switch (pathname) {
-    case DashboardRoute:
-      return 'building';
-    case TasksRoute:
-      return 'tasks';
-    case RobotsRoute:
-      return 'robots';
-    case AdminRoute:
-      return 'admin';
-    default:
-      return undefined;
-  }
+  pathname = pathname === '/' ? '' : pathname;
+  // `DashboardRoute` being the root, it is a prefix to all routes, so we need to check exactly.
+  if (pathname === DashboardRoute) return 'building';
+  if (pathname.startsWith(TasksRoute)) return 'tasks';
+  if (pathname.startsWith(RobotsRoute)) return 'robots';
+  if (pathname.startsWith(AdminRoute)) return 'admin';
+  return undefined;
 }
 
 export default function App(): JSX.Element | null {
@@ -115,6 +111,9 @@ export default function App(): JSX.Element | null {
                   <PrivateRoute exact path={TasksRoute} redirectPath={LoginRoute} user={user}>
                     <TaskPage />
                   </PrivateRoute>
+                  <PrivateRoute path={AdminRoute} redirectPath={LoginRoute} user={user}>
+                    <UserListPage />
+                  </PrivateRoute>
                   <PrivateRoute redirectPath={LoginRoute} user={user}>
                     <Redirect to={DashboardRoute} />
                   </PrivateRoute>
@@ -122,6 +121,7 @@ export default function App(): JSX.Element | null {
                 {tabValue === 'building' && <Redirect to={DashboardRoute} />}
                 {tabValue === 'robots' && <Redirect to={RobotsRoute} />}
                 {tabValue === 'tasks' && <Redirect to={TasksRoute} />}
+                {tabValue === 'admin' && <Redirect to={AdminRoute} />}
               </AppBase>
             </RmfApp>
           ) : (
