@@ -37,7 +37,7 @@ export interface Robot {
   state: any;
   /**
    *
-   * @type {Array&lt;TaskSummary&gt;}
+   * @type {Array&lt;Task&gt;}
    * @memberof Robot
    */
   tasks?: any;

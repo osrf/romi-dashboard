@@ -1,7 +1,7 @@
 import rclpy.qos
 from rmf_building_map_msgs.msg import BuildingMap as RmfBuildingMap
 
-from .test_fixtures import RouteFixture, try_until
+from ..test.test_fixtures import RouteFixture, try_until
 
 
 class TestBuildingMapRoute(RouteFixture):

@@ -44,7 +44,7 @@ interface RobotRowProps {
 }
 
 const returnLocationCells = (robot: VerboseRobot) => {
-  const taskDescription = robot.tasks[0].task_summary.task_profile.description;
+  const taskDescription = robot.tasks[0].summary.task_profile.description;
   switch (taskTypeToStr(taskDescription.task_type.type)) {
     case 'Loop':
       return (
@@ -101,8 +101,7 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
           {returnLocationCells(robot)}
           <TableCell>
             {robot.tasks
-              ? robot.tasks[0].task_summary.end_time.sec -
-                robot.tasks[0].task_summary.start_time.sec
+              ? robot.tasks[0].summary.end_time.sec - robot.tasks[0].summary.start_time.sec
               : '-'}
           </TableCell>
           <TableCell>{robot.state.battery_percent.toFixed(2)}%</TableCell>

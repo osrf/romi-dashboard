@@ -13,6 +13,7 @@ class AppConfig:
     public_url: urllib.parse.ParseResult
     static_directory: str
     log_level: str
+    builtin_admin: str
     jwt_public_key: Optional[str]
     oidc_url: Optional[str]
     aud: str

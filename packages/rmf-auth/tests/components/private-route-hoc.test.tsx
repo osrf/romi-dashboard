@@ -2,12 +2,12 @@ import { cleanup, render, waitFor } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import { BrowserRouter, Redirect, Route, Router, Switch, useLocation } from 'react-router-dom';
-import { PrivateRouteHOC, User } from '../../lib';
+import { PrivateRouteHOC } from '../../lib';
 
 describe('PrivateRoute', () => {
   let history: MemoryHistory;
   let PrivateRoute: ReturnType<typeof PrivateRouteHOC>;
-  let user: User;
+  let user: string;
   const LOGIN_ROUTE = '/login';
 
   beforeEach(() => {
@@ -15,10 +15,7 @@ describe('PrivateRoute', () => {
     history.location.pathname = '/private';
 
     PrivateRoute = PrivateRouteHOC(Route, Redirect, useLocation);
-    user = {
-      username: 'test',
-      token: '',
-    };
+    user = 'test';
   });
 
   afterEach(() => {

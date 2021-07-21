@@ -6,7 +6,7 @@ from rmf_fleet_msgs.msg import RobotState as RmfRobotState
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 
 from ..models import tortoise_models as ttm
-from .test_fixtures import RouteFixture, try_until
+from ..test.test_fixtures import RouteFixture, try_until
 
 
 class TestFleetsRoute(RouteFixture):
@@ -74,8 +74,7 @@ class TestFleetsRoute(RouteFixture):
         resp = self.session.get(f"{self.base_url}/fleets?fleet_name=fleet_1")
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        self.assertEqual(resp_json["total_count"], 1)
-        self.assertEqual(len(resp_json["items"]), 1)
+        self.assertEqual(len(resp_json), 1)
 
     def test_get_robots(self):
         resp = self.session.get(
@@ -83,9 +82,8 @@ class TestFleetsRoute(RouteFixture):
         )
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        self.assertEqual(resp_json["total_count"], 1)
-        self.assertEqual(len(resp_json["items"]), 1)
-        self.assertEqual(len(resp_json["items"][0]["tasks"]), 2)
+        self.assertEqual(len(resp_json), 1)
+        self.assertEqual(len(resp_json[0]["tasks"]), 2)
 
 
 class TestFleetsRoute_RMF(RouteFixture):

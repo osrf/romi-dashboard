@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import type { Task } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { makeTask } from '../tasks/test-data.spec';
@@ -14,7 +15,12 @@ describe('RobotInfo', () => {
     deliveryTask.task_profile.description.delivery.pickup_dispenser = 'test_dispenser';
     deliveryTask.task_profile.description.delivery.dropoff_place_name = 'test_waypoint_2';
     deliveryTask.task_profile.description.delivery.dropoff_ingestor = 'test_ingestor';
-    const task = { task_summary: deliveryTask, progress: 10 };
+    const task: Task = {
+      summary: deliveryTask,
+      progress: 10,
+      owner: 'test',
+      task_id: 'delivery_task',
+    };
 
     const robot1 = { ...robot, tasks: [task] };
 

@@ -1,16 +1,17 @@
-from typing import Awaitable, Callable, Dict, Optional, TypeVar
+from typing import Callable, Dict, Optional, TypeVar
 
 from fastapi import Query
 from tortoise.queryset import QuerySet
 
-from ..models import Pagination
 from .auth import auth_scheme
 
 ResultT = TypeVar("ResultT")
-WithBaseQuery = Callable[[QuerySet], Awaitable[Pagination[ResultT]]]
+AddPaginationQuery = Callable[[QuerySet[ResultT]], QuerySet[ResultT]]
 
 
-def base_query_params(field_mapping: Dict[str, str] = None) -> WithBaseQuery[ResultT]:
+def pagination_query(
+    field_mapping: Dict[str, str] = None
+) -> AddPaginationQuery[ResultT]:
     """
     :param field_mapping: A dict mapping the order fields to the fields used to build the
         query. e.g. a url of `?order_by=order_field` and a field mapping of `{"order_field": "db_field"}`
@@ -25,9 +26,8 @@ def base_query_params(field_mapping: Dict[str, str] = None) -> WithBaseQuery[Res
             None,
             description="common separated list of fields to order by, prefix with '-' to sort descendingly.",
         ),
-    ) -> WithBaseQuery[ResultT]:
-        async def do_query(query: QuerySet):
-            count = await query.count()
+    ) -> AddPaginationQuery[ResultT]:
+        def add_pagination(query: QuerySet):
             query = query.limit(limit).offset(offset)
             if order_by is not None:
                 order_fields = []
@@ -41,9 +41,8 @@ def base_query_params(field_mapping: Dict[str, str] = None) -> WithBaseQuery[Res
                     else:
                         order_fields.append(field_mapping.get(v, v))
                 query = query.order_by(*order_fields)
-            items = await query
-            return Pagination.construct(total_count=count, items=items)
+            return query
 
-        return do_query
+        return add_pagination
 
     return dep

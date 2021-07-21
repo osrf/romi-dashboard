@@ -1,12 +1,12 @@
 import EventEmitter from 'eventemitter3';
-import { Authenticator, AuthenticatorEventType, User } from 'rmf-auth';
+import { Authenticator, AuthenticatorEventType } from 'rmf-auth';
 
 export class FakeAuthenticator
   extends EventEmitter<AuthenticatorEventType>
   implements Authenticator {
-  user?: User;
+  user?: string;
 
-  constructor(user?: User) {
+  constructor(user?: string) {
     super();
     this.user = user;
   }

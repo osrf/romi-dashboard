@@ -1,6 +1,6 @@
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
-import { cleanup, render, waitFor, screen } from '@testing-library/react';
 import { BrowserRouter, Redirect, Router, Switch } from 'react-router-dom';
 import PrivateRouteBase from '../../lib/components/private-route-base';
 
@@ -20,7 +20,7 @@ describe('PrivateRoute', () => {
     const root = render(
       <BrowserRouter>
         <PrivateRouteBase
-          user={{ username: 'test', token: '' }}
+          user="test"
           unauthorized={<h1>unauthorized</h1>}
           redirect={<Redirect to={{ pathname: '/test', state: { from: location } }} />}
         />
@@ -49,7 +49,7 @@ describe('PrivateRoute', () => {
       <Router history={history}>
         <Switch>
           <PrivateRouteBase
-            user={{ username: 'test', token: '' }}
+            user="test"
             unauthorized={<h1>unauthorized</h1>}
             redirect={<Redirect to={{ pathname: '/login', state: { from: location } }} />}
           />
@@ -65,7 +65,7 @@ describe('PrivateRoute', () => {
       <BrowserRouter>
         <PrivateRouteBase
           noRedirectToLogin={true}
-          user={{ username: 'test', token: '' }}
+          user="test"
           unauthorized={<h1>unauthorized</h1>}
           redirect={<Redirect to={{ pathname: '/login', state: { from: location } }} />}
         />

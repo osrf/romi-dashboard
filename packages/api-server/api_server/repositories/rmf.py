@@ -1,5 +1,7 @@
 from typing import List, Optional
 
+from tortoise.queryset import QuerySet
+
 from ..models import (
     BuildingMap,
     Dispenser,
@@ -16,10 +18,11 @@ from ..models import (
     LiftHealth,
     LiftState,
     RobotHealth,
-    Task,
     TaskSummary,
+    User,
 )
 from ..models import tortoise_models as ttm
+from ..permissions import Enforcer, RmfAction
 
 
 class RmfRepository:
@@ -182,7 +185,7 @@ class RmfRepository:
     async def query_ingestor_health(self, **queries) -> List[IngestorHealth]:
         return await ttm.IngestorHealth.filter(**queries)
 
-    async def save_ingestor_health(self, ingestor_health: IngestorHealth):
+    async def save_ingestor_health(self, ingestor_health: IngestorHealth) -> None:
         dic = ingestor_health.dict()
         del dic["id_"]
         await ttm.IngestorHealth.update_or_create(dic, id_=ingestor_health.id_)
@@ -199,7 +202,7 @@ class RmfRepository:
             for fleet_state in await ttm.FleetState.filter(**queries)
         ]
 
-    async def save_fleet_state(self, fleet_state: FleetState):
+    async def save_fleet_state(self, fleet_state: FleetState) -> None:
         await ttm.FleetState.update_or_create(
             {"data": fleet_state.dict()},
             id_=fleet_state.name,
@@ -213,17 +216,17 @@ class RmfRepository:
     async def query_robot_health(self, **queries) -> List[RobotHealth]:
         return await ttm.DoorHealth.filter(**queries)
 
-    async def save_robot_health(self, robot_health: RobotHealth):
+    async def save_robot_health(self, robot_health: RobotHealth) -> None:
         dic = robot_health.dict()
         del dic["id_"]
         await ttm.RobotHealth.update_or_create(dic, id_=robot_health.id_)
 
-    async def get_task_summary(self, task_id: str):
+    async def get_task_summary(self, task_id: str) -> TaskSummary:
         task_summary = await ttm.TaskSummary.get_or_none(id_=task_id).values("data")
         if not task_summary:
             return None
         return TaskSummary(**task_summary[0]["data"])
 
-    async def get_tasks(self):
-        task_summaries = await ttm.TaskSummary.all()
-        return [Task(task_id=ts.data["task_id"]) for ts in task_summaries]
+    @staticmethod
+    def query_tasks(user: User) -> QuerySet[ttm.TaskSummary]:
+        return Enforcer.query(user, ttm.TaskSummary, RmfAction.TaskRead)

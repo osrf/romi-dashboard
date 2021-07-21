@@ -2,7 +2,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from api_server.models.tasks import TaskProgress
+from api_server.models.tasks import Task
 
 from .health import BasicHealth
 from .ros_pydantic import rmf_fleet_msgs
@@ -23,4 +23,4 @@ class Robot(BaseModel):
     fleet: str
     name: str
     state: RobotState
-    tasks: List[TaskProgress] = []
+    tasks: List[Task] = []

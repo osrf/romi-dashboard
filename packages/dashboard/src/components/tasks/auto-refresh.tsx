@@ -1,14 +1,13 @@
-import { SioClient, Subscription } from 'api-client';
+import { SioClient, Subscription, Task } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
 
 export interface AutoRefreshState {
-  tasks: RmfModels.TaskSummary[];
+  tasks: Task[];
   enabled: boolean;
 }
 
 export interface AutoRefreshDispatcher {
-  setTasks: React.Dispatch<React.SetStateAction<RmfModels.TaskSummary[]>>;
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
   setEnabled: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -26,12 +25,12 @@ export interface AutoRefreshDispatcher {
  */
 export function useAutoRefresh(
   sioClient?: SioClient,
-  initalTasks: RmfModels.TaskSummary[] | (() => RmfModels.TaskSummary[]) = [],
+  initalTasks: Task[] | (() => Task[]) = [],
   initialAutoRefresh: boolean | (() => boolean) = true,
 ): [AutoRefreshState, AutoRefreshDispatcher] {
   //TODO: See if it is possible to refactor this to be item agnostic, so it can be used for other components.
 
-  const [tasks, setTasks] = React.useState<RmfModels.TaskSummary[]>(initalTasks);
+  const [tasks, setTasks] = React.useState<Task[]>(initalTasks);
   const [taskIds, setTaskIds] = React.useState<string[]>(() => tasks.map((t) => t.task_id));
   const [enabled, setEnabled] = React.useState(initialAutoRefresh);
 
@@ -45,7 +44,10 @@ export function useAutoRefresh(
     taskIds.forEach((taskId, idx) => {
       subscriptions.push(
         sioClient.subscribeTaskSummary(taskId, (newTask) =>
-          setTasks((prev) => [...prev.slice(0, idx), newTask, ...prev.slice(idx + 1)]),
+          setTasks((prev) => {
+            prev[idx].summary = newTask;
+            return [...prev];
+          }),
         ),
       );
     });

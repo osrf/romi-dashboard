@@ -1,6 +1,7 @@
 from typing import Optional
 
 from builtin_interfaces.msg import Time as RosTime
+from fastapi import HTTPException
 from rmf_task_msgs.msg import Delivery as RmfDelivery
 from rmf_task_msgs.msg import Loop as RmfLoop
 from rmf_task_msgs.msg import TaskType as RmfTaskType
@@ -13,6 +14,7 @@ from ..models import (
     SubmitTask,
     TaskTypeEnum,
 )
+from ..models import tortoise_models as ttm
 from ..ros_time import convert_to_rmf_time
 
 
@@ -62,3 +64,10 @@ def convert_task_request(task_request: SubmitTask, sim_time: Optional[RosTime] =
     rmf_start_time = convert_to_rmf_time(task_request.start_time, sim_time)
     req_msg.description.start_time = rmf_start_time
     return req_msg, ""
+
+
+async def get_db_task(task_id: str) -> ttm.TaskSummary:
+    task = await ttm.TaskSummary.get_or_none(id_=task_id)
+    if task is None:
+        raise HTTPException(404)
+    return task

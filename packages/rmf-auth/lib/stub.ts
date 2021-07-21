@@ -1,14 +1,10 @@
 import EventEmitter from 'eventemitter3';
 import { Authenticator, AuthenticatorEventType } from './authenticator';
-import { User } from './user';
 
 export default class StubAuthenticator
   extends EventEmitter<AuthenticatorEventType>
   implements Authenticator {
-  readonly user: User = {
-    username: 'stub',
-    token: '',
-  };
+  readonly user = 'stub';
 
   readonly token?: string = undefined;
 

@@ -429,11 +429,13 @@
             "index": "pypi",
             "version": "==2.8.3"
         },
-        "pypika": {
+        "pypika-tortoise": {
             "hashes": [
-                "sha256:316839144d3ad7656405a10cdd26d2181f16bb8ff7e256d616ffb50335ca1fcb"
+                "sha256:6831d0a56e5e0ecefac3307dd9bdb3e5073fdac5d617401601d3a6713e059f3c",
+                "sha256:860020094e01058ea80602c90d4a843d0a42cffefcf4f3cb1a7f2c18b880c638"
             ],
-            "version": "==0.44.1"
+            "markers": "python_version >= '3.7' and python_version < '4.0'",
+            "version": "==0.1.1"
         },
         "python-dotenv": {
             "hashes": [
@@ -458,10 +460,10 @@
         },
         "pytz": {
             "hashes": [
-                "sha256:16962c5fb8db4a8f63a26646d8886e9d769b6c511543557bc84e9569fb9a9cb4",
-                "sha256:180befebb1927b16f6b57101720075a984c019ac16b1b7575673bea42c6c3da5"
+                "sha256:83a4a90894bf38e243cf052c8b58f381bfe9a7a483f6a9cab140bc7f702ac4da",
+                "sha256:eb10ce3e7736052ed3623d49975ce333bcd712c7bb19a58b9e2089d4057d0798"
             ],
-            "version": "==2020.5"
+            "version": "==2021.1"
         },
         "pyyaml": {
             "hashes": [
@@ -585,11 +587,11 @@
         },
         "tortoise-orm": {
             "hashes": [
-                "sha256:9729eac3eb58e59c32e2815d5ff1941a71e1eecd63834ae7199b6084c1a454b5",
-                "sha256:f36aa16d07bab69b141e91f8791c0f878fbcc0acfffa3c671ea10a6ad73c54ed"
+                "sha256:8314a9ae63d3f009bac5da3e7d1f7e3f2de8f9bad43ce1efcd3e059209cd3f9d",
+                "sha256:f052b6089e30748afec88669f1a1cf01a3662cdac81cf5427dfb338839ad6027"
             ],
-            "markers": "python_version >= '3.7' and python_version < '4'",
-            "version": "==0.16.21"
+            "markers": "python_version >= '3.7' and python_version < '4.0'",
+            "version": "==0.17.4"
         },
         "typed-ast": {
             "hashes": [

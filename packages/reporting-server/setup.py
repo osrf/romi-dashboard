@@ -19,7 +19,7 @@ setup(
     install_requires=[
         "fastapi~=0.65.2",
         "uvicorn[standard]~=0.13.4",
-        "tortoise-orm~=0.16.21",
+        "tortoise-orm~=0.17.4",
         "pyjwt[crypto]~=2.0",
         "pydantic~=1.8",
     ],

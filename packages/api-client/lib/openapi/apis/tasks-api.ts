@@ -17,11 +17,11 @@ import { Configuration } from '../configuration';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 import { CancelTask } from '../models';
-import { GetTasksResponse } from '../models';
 import { HTTPValidationError } from '../models';
 import { ModelObject } from '../models';
 import { SubmitTask } from '../models';
 import { SubmitTaskResponse } from '../models';
+import { Task } from '../models';
 import { TaskSummary } from '../models';
 /**
  * TasksApi - axios parameter creator
@@ -401,7 +401,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
       offset?: number,
       order_by?: string,
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetTasksResponse>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Task>>> {
       const localVarAxiosArgs = await TasksApiAxiosParamCreator(configuration).getTasksTasksGet(
         task_id,
         fleet_name,
@@ -516,7 +516,7 @@ export const TasksApiFactory = function (
       offset?: number,
       order_by?: string,
       options?: any,
-    ): AxiosPromise<GetTasksResponse> {
+    ): AxiosPromise<Array<Task>> {
       return TasksApiFp(configuration)
         .getTasksTasksGet(
           task_id,

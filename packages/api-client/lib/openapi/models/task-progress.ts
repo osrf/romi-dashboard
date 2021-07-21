@@ -19,14 +19,8 @@
 export interface TaskProgress {
   /**
    *
-   * @type {TaskSummary}
-   * @memberof TaskProgress
-   */
-  task_summary: any;
-  /**
-   *
    * @type {string}
    * @memberof TaskProgress
    */
-  progress: any;
+  status: any;
 }

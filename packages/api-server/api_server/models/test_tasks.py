@@ -6,7 +6,7 @@ from rmf_task_msgs.msg import TaskType as RmfTaskType
 from .tasks import SubmitTask
 
 
-class TestSubmitTask(unittest.TestCase):
+class TestSubmitTaskModel(unittest.TestCase):
     @staticmethod
     def validate_task(task_type: int, desc):
         SubmitTask.validate(
@@ -41,9 +41,12 @@ class TestSubmitTask(unittest.TestCase):
             for desc in task_types.values():
                 # success when task type matches description
                 if task_types[task_type] is desc:
-                    TestSubmitTask.validate_task(task_type, desc)
+                    TestSubmitTaskModel.validate_task(task_type, desc)
                 else:
                     # fails when sending description with wrong task type
                     self.assertRaises(
-                        ValidationError, TestSubmitTask.validate_task, task_type, desc
+                        ValidationError,
+                        TestSubmitTaskModel.validate_task,
+                        task_type,
+                        desc,
                     )

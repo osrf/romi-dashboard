@@ -2,9 +2,10 @@ import { act, renderHook } from '@testing-library/react-hooks';
 import { Listener, SioClient } from 'api-client';
 import * as RmfModels from 'rmf-models';
 import { useAutoRefresh } from '../auto-refresh';
+import { makeTask } from '../tests/make-tasks';
 
 function makeTasks(...taskIds: string[]) {
-  return taskIds.map((id) => new RmfModels.TaskSummary({ task_id: id }));
+  return taskIds.map((id) => makeTask(id, 1, 1));
 }
 
 describe('auto refresh hook', () => {
@@ -80,20 +81,18 @@ describe('auto refresh hook', () => {
   });
 
   it('update tasks when on new task summary', () => {
-    const task = new RmfModels.TaskSummary({
-      task_id: 'task1',
-      state: RmfModels.TaskSummary.STATE_PENDING,
-    });
+    const task = makeTask('task1', 1, 1);
+    task.summary.state = RmfModels.TaskSummary.STATE_PENDING;
 
     mockSubscribe = jest.fn().mockImplementation((_, listener: Listener<RmfModels.TaskSummary>) => {
-      listener({ ...task, state: RmfModels.TaskSummary.STATE_QUEUED });
+      listener({ ...task.summary, state: RmfModels.TaskSummary.STATE_QUEUED });
     });
     sioClient.subscribeTaskSummary = mockSubscribe;
 
     const { result } = renderHook(() => useAutoRefresh(sioClient, [task], true));
     const state = result.current[0];
     expect(state.tasks).toHaveLength(1);
-    expect(state.tasks[0].state).toBe(RmfModels.TaskSummary.STATE_QUEUED);
+    expect(state.tasks[0].summary.state).toBe(RmfModels.TaskSummary.STATE_QUEUED);
     // check that no extra subscribe/unsubscribe is made when task is updated.
     expect(mockSubscribe).toHaveBeenCalledTimes(1);
     expect(mockUnsub).not.toHaveBeenCalled();

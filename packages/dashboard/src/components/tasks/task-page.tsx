@@ -1,13 +1,12 @@
 /* istanbul ignore file */
 
 import { makeStyles } from '@material-ui/core';
-import type { TaskProgress } from 'api-client';
+import type { Task } from 'api-client';
 import type { AxiosError } from 'axios';
 import React from 'react';
-import { TaskPanel, TaskPanelProps } from 'react-components';
-import * as RmfModels from 'rmf-models';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
 import { useAutoRefresh } from './auto-refresh';
+import { TaskPanel, TaskPanelProps } from './task-panel';
 
 const useStyles = makeStyles((theme) => ({
   taskPanel: {
@@ -23,14 +22,13 @@ export function TaskPage() {
   const { tasksApi, sioClient } = React.useContext(RmfIngressContext) || {};
   const [autoRefreshState, autoRefreshDispatcher] = useAutoRefresh(sioClient);
   const [page, setPage] = React.useState(0);
-  const [totalCount, setTotalCount] = React.useState(0);
+  const [hasMore, setHasMore] = React.useState(true);
   const places = React.useContext(PlacesContext);
   const placeNames = places.map((p) => p.vertex.name);
 
   const fetchTasks = React.useCallback(
     async (page: number) => {
       if (!tasksApi) {
-        setTotalCount(0);
         return [];
       }
       const resp = await tasksApi.getTasksTasksGet(
@@ -43,13 +41,13 @@ export function TaskPage() {
         undefined,
         undefined,
         undefined,
-        10,
+        11,
         page * 10,
         '-priority,-start_time',
       );
-      setTotalCount(resp.data.total_count);
-      const taskProgresses: TaskProgress[] = resp.data.items;
-      return taskProgresses.map((t) => t.task_summary) as RmfModels.TaskSummary[];
+      const tasks = resp.data as Task[];
+      setHasMore(tasks.length > 10);
+      return tasks.slice(0, 10);
     },
     [tasksApi],
   );
@@ -99,7 +97,7 @@ export function TaskPage() {
       tasks={autoRefreshState.tasks}
       paginationOptions={{
         page,
-        count: totalCount,
+        count: hasMore ? -1 : page * 10 + autoRefreshState.tasks.length,
         rowsPerPage: 10,
         rowsPerPageOptions: [10],
         onChangePage: (_ev, newPage) => setPage(newPage),

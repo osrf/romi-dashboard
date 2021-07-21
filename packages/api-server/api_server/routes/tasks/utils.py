@@ -1,16 +1,16 @@
+import rclpy.node
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 
-from ...gateway import RmfGateway
 from ...models.tasks import TaskProgress, TaskSummary
 
 
-def convert_task_status_msg(
-    task_summary: TaskSummary, rmf_gateway: RmfGateway
+def get_task_progress(
+    task_summary: TaskSummary, ros_node: rclpy.node.Node
 ) -> TaskProgress:
     """
     convert rmf task summary msg to a task
     """
-    now = rmf_gateway.get_clock().now().to_msg().sec  # only use sec
+    now = ros_node.get_clock().now().to_msg().sec  # only use sec
     # Generate a progress percentage
     duration = abs(task_summary.end_time.sec - task_summary.start_time.sec)
     # check if is completed
@@ -27,4 +27,4 @@ def convert_task_status_msg(
             progress = "Delayed"
         else:
             progress = f"{percent}%"
-    return TaskProgress(task_summary=task_summary, progress=progress)
+    return TaskProgress(status=progress)

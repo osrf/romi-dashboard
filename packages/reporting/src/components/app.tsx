@@ -6,7 +6,7 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import { NotFoundPage } from 'react-components';
 import { BrowserRouter, Link, Redirect, Route, Switch, useLocation } from 'react-router-dom';
-import { getUrl, LoginHOC, PrivateRouteHOC, User } from 'rmf-auth';
+import { getUrl, LoginHOC, PrivateRouteHOC } from 'rmf-auth';
 import appConfig from '../app-config';
 import { DASHBOARD_ROUTE, LOGIN_ROUTE } from '../util/url';
 import { AppConfigContext } from './app-contexts';
@@ -26,14 +26,14 @@ const theme = createMuiTheme({
 export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
   const [authInitialized, setAuthInitialized] = React.useState(!!authenticator.user);
-  const [user, setUser] = React.useState<User | null>(authenticator.user || null);
+  const [user, setUser] = React.useState<string | null>(authenticator.user || null);
   const appRoutes = [DASHBOARD_ROUTE];
 
   React.useEffect(() => {
     if (user) {
       return;
     }
-    const onUserChanged = (newUser: User | null) => setUser(newUser);
+    const onUserChanged = (newUser: string | null) => setUser(newUser);
     authenticator.on('userChanged', onUserChanged);
     (async () => {
       await authenticator.init();

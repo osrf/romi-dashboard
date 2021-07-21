@@ -19,10 +19,6 @@ class TaskStateEnum(IntEnum):
     QUEUED = RmfTaskSummary.STATE_QUEUED
 
 
-class Task(BaseModel):
-    task_id: str
-
-
 class CleanTaskDescription(BaseModel):
     cleaning_zone: str
 
@@ -52,8 +48,14 @@ class TaskTypeEnum(IntEnum):
 
 
 class TaskProgress(BaseModel):
-    task_summary: TaskSummary
-    progress: str
+    status: str
+
+
+class Task(BaseModel):
+    task_id: str
+    authz_grp: str
+    summary: TaskSummary
+    progress: TaskProgress
 
 
 class SubmitTask(BaseModel):

@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { TaskInfo } from './task-info';
@@ -31,13 +30,5 @@ describe('TaskInfo', () => {
         <TaskInfo task={deliveryTask} />
       </>,
     );
-  });
-
-  it('onCancelTaskClick is called when cancel task button is clicked', () => {
-    const task = makeTask('clean_task', 1, 1);
-    const spy = jasmine.createSpy();
-    const root = render(<TaskInfo task={task} onCancelTaskClick={spy} />);
-    userEvent.click(root.getByLabelText('Cancel Task'));
-    expect(spy).toHaveBeenCalledTimes(1);
   });
 });

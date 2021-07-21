@@ -1,12 +1,6 @@
 import DateFnsUtils from '@date-io/date-fns';
 import {
   Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogProps,
-  DialogTitle,
   Divider,
   Grid,
   List,
@@ -15,7 +9,6 @@ import {
   makeStyles,
   MenuItem,
   TextField,
-  Typography,
   useTheme,
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
@@ -28,6 +21,7 @@ import type {
 } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
+import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
 
 type TaskDescription = CleanTaskDescription | LoopTaskDescription | DeliveryTaskDescription;
@@ -74,22 +68,15 @@ function FormToolbar({ onSelectFileClick }: FormToolbarProps) {
   const classes = useStyles();
 
   return (
-    <Grid container wrap="nowrap" alignItems="center">
-      <Grid style={{ flexGrow: 1 }}>
-        <Typography variant="h6">Create Task</Typography>
-      </Grid>
-      <Grid>
-        <Button
-          aria-label="Select File"
-          className={classes.selectFileBtn}
-          variant="contained"
-          color="primary"
-          onClick={onSelectFileClick}
-        >
-          Select File
-        </Button>
-      </Grid>
-    </Grid>
+    <Button
+      aria-label="Select File"
+      className={classes.selectFileBtn}
+      variant="contained"
+      color="primary"
+      onClick={onSelectFileClick}
+    >
+      Select File
+    </Button>
   );
 }
 
@@ -360,7 +347,8 @@ function defaultTask(): SubmitTask {
   };
 }
 
-export interface CreateTaskFormProps extends DialogProps {
+export interface CreateTaskFormProps
+  extends Omit<ConfirmationDialogProps, 'onConfirmClick' | 'toolbar'> {
   /**
    * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
    */
@@ -374,7 +362,6 @@ export interface CreateTaskFormProps extends DialogProps {
   tasksFromFile?(): Promise<SubmitTask[]> | SubmitTask[];
   onSuccess?(tasks: SubmitTask[]): void;
   onFail?(error: Error, tasks: SubmitTask[]): void;
-  onCancelClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 export function CreateTaskForm({
@@ -388,7 +375,7 @@ export function CreateTaskForm({
   onSuccess,
   onFail,
   onCancelClick,
-  ...dialogProps
+  ...otherProps
 }: CreateTaskFormProps): JSX.Element {
   const theme = useTheme();
   const classes = useStyles();
@@ -462,24 +449,22 @@ export function CreateTaskForm({
   };
 
   // no memo because deps would likely change
-  const handleSubmit: React.MouseEventHandler<HTMLButtonElement> = (ev) => {
+  const handleSubmit: React.MouseEventHandler = async (ev) => {
     ev.preventDefault();
-    (async () => {
-      if (!submitTasks) {
-        onSuccess && onSuccess(tasks);
-        return;
-      }
+    if (!submitTasks) {
+      onSuccess && onSuccess(tasks);
+      return;
+    }
+    setSubmitting(true);
+    try {
       setSubmitting(true);
-      try {
-        setSubmitting(true);
-        await submitTasks(tasks);
-        onSuccess && onSuccess(tasks);
-      } catch (e) {
-        onFail && onFail(e, tasks);
-      } finally {
-        setSubmitting(false);
-      }
-    })();
+      await submitTasks(tasks);
+      setSubmitting(false);
+      onSuccess && onSuccess(tasks);
+    } catch (e) {
+      setSubmitting(false);
+      onFail && onFail(e, tasks);
+    }
   };
 
   const handleSelectFileClick: React.MouseEventHandler<HTMLButtonElement> = () => {
@@ -500,127 +485,96 @@ export function CreateTaskForm({
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Dialog {...dialogProps} maxWidth="md" fullWidth={tasks.length > 1}>
-        <form>
-          <DialogTitle>
-            <FormToolbar onSelectFileClick={handleSelectFileClick} />
-          </DialogTitle>
-          <Divider />
-          <DialogContent>
-            <Grid container direction="row" wrap="nowrap">
-              <Grid>
-                <TextField
-                  select
-                  id="task-type"
-                  label="Task Type"
-                  variant="outlined"
-                  fullWidth
+      <ConfirmationDialog
+        title="Create Task"
+        loading={submitting}
+        confirmText={submitText}
+        maxWidth="md"
+        fullWidth={tasks.length > 1}
+        toolbar={<FormToolbar onSelectFileClick={handleSelectFileClick} />}
+        onSubmit={handleSubmit}
+        onCancelClick={onCancelClick}
+        {...otherProps}
+      >
+        <Grid container direction="row" wrap="nowrap">
+          <Grid>
+            <TextField
+              select
+              id="task-type"
+              label="Task Type"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={task.task_type !== -1 ? task.task_type : ''}
+              onChange={handleTaskTypeChange}
+            >
+              <MenuItem value={RmfModels.TaskType.TYPE_CLEAN}>Clean</MenuItem>
+              <MenuItem value={RmfModels.TaskType.TYPE_LOOP}>Loop</MenuItem>
+              <MenuItem value={RmfModels.TaskType.TYPE_DELIVERY}>Delivery</MenuItem>
+            </TextField>
+            <Grid container wrap="nowrap">
+              <Grid style={{ flexGrow: 1 }}>
+                <KeyboardDateTimePicker
+                  id="start-time"
+                  value={new Date(task.start_time * 1000)}
+                  onChange={(date) => {
+                    if (!date) {
+                      return;
+                    }
+                    // FIXME: needed because dateio typings default to moment
+                    task.start_time = Math.floor(((date as unknown) as Date).getTime() / 1000);
+                    updateTasks();
+                  }}
+                  label="Start Time"
                   margin="normal"
-                  value={task.task_type !== -1 ? task.task_type : ''}
-                  onChange={handleTaskTypeChange}
-                >
-                  <MenuItem value={RmfModels.TaskType.TYPE_CLEAN}>Clean</MenuItem>
-                  <MenuItem value={RmfModels.TaskType.TYPE_LOOP}>Loop</MenuItem>
-                  <MenuItem value={RmfModels.TaskType.TYPE_DELIVERY}>Delivery</MenuItem>
-                </TextField>
-                <Grid container wrap="nowrap">
-                  <Grid style={{ flexGrow: 1 }}>
-                    <KeyboardDateTimePicker
-                      id="start-time"
-                      value={new Date(task.start_time * 1000)}
-                      onChange={(date) => {
-                        if (!date) {
-                          return;
-                        }
-                        // FIXME: needed because dateio typings default to moment
-                        task.start_time = Math.floor(((date as unknown) as Date).getTime() / 1000);
-                        updateTasks();
-                      }}
-                      label="Start Time"
-                      margin="normal"
-                      fullWidth
-                    />
-                  </Grid>
-                  <Grid
-                    style={{
-                      flex: '0 1 5em',
-                      marginLeft: theme.spacing(2),
-                      marginRight: theme.spacing(2),
-                    }}
-                  >
-                    <PositiveIntField
-                      id="priority"
-                      label="Priority"
-                      margin="normal"
-                      value={task.priority || 0}
-                      onChange={(_ev, val) => {
-                        task.priority = val;
-                        updateTasks();
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-                {renderTaskDescriptionForm()}
+                  fullWidth
+                />
               </Grid>
-              {taskTitles.length > 1 && (
-                <>
-                  <Divider
-                    orientation="vertical"
-                    flexItem
-                    style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
-                  />
-                  <List dense className={classes.taskList} aria-label="Tasks List">
-                    {taskTitles.map((title, idx) => (
-                      <ListItem
-                        key={idx}
-                        button
-                        onClick={() => setSelectedTaskIdx(idx)}
-                        className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
-                        role="listitem button"
-                      >
-                        <ListItemText primary={title} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </>
-              )}
-            </Grid>
-          </DialogContent>
-          <Divider />
-          <DialogActions>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={submitting}
-              onClick={onCancelClick}
-              aria-label="Cancel"
-            >
-              Cancel
-            </Button>
-            <Button
-              style={{ margin: theme.spacing(1) }}
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={submitting}
-              onClick={handleSubmit}
-              aria-label={submitText}
-            >
-              <Typography
-                style={{ visibility: submitting ? 'hidden' : 'visible' }}
-                variant="button"
+              <Grid
+                style={{
+                  flex: '0 1 5em',
+                  marginLeft: theme.spacing(2),
+                  marginRight: theme.spacing(2),
+                }}
               >
-                {submitText}
-              </Typography>
-              <CircularProgress
-                style={{ position: 'absolute', visibility: submitting ? 'visible' : 'hidden' }}
-                color="inherit"
-                size="1.8em"
+                <PositiveIntField
+                  id="priority"
+                  label="Priority"
+                  margin="normal"
+                  value={task.priority || 0}
+                  onChange={(_ev, val) => {
+                    task.priority = val;
+                    updateTasks();
+                  }}
+                />
+              </Grid>
+            </Grid>
+            {renderTaskDescriptionForm()}
+          </Grid>
+          {taskTitles.length > 1 && (
+            <>
+              <Divider
+                orientation="vertical"
+                flexItem
+                style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
               />
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
+              <List dense className={classes.taskList} aria-label="Tasks List">
+                {taskTitles.map((title, idx) => (
+                  <ListItem
+                    key={idx}
+                    button
+                    onClick={() => setSelectedTaskIdx(idx)}
+                    className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
+                    role="listitem button"
+                  >
+                    <ListItemText primary={title} />
+                  </ListItem>
+                ))}
+              </List>
+            </>
+          )}
+        </Grid>
+      </ConfirmationDialog>
     </MuiPickersUtilsProvider>
   );
 }

@@ -22,7 +22,7 @@ setup(
         "uvicorn[standard]~=0.13.4",
         "python-socketio~=5.1",
         "rx~=3.1",
-        "tortoise-orm~=0.16.21",
+        "tortoise-orm~=0.17.4",
         "pyjwt[crypto]~=2.0",
         "pydantic~=1.8",
     ],

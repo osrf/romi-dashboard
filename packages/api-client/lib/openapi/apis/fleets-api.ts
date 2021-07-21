@@ -17,10 +17,10 @@ import { Configuration } from '../configuration';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 import { BasicHealth } from '../models';
+import { Fleet } from '../models';
 import { FleetState } from '../models';
-import { GetFleetsResponse } from '../models';
-import { GetRobotsResponse } from '../models';
 import { HTTPValidationError } from '../models';
+import { Robot } from '../models';
 /**
  * FleetsApi - axios parameter creator
  * @export
@@ -320,7 +320,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
       offset?: number,
       order_by?: string,
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetFleetsResponse>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Fleet>>> {
       const localVarAxiosArgs = await FleetsApiAxiosParamCreator(configuration).getFleetsFleetsGet(
         fleet_name,
         limit,
@@ -378,7 +378,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
       offset?: number,
       order_by?: string,
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetRobotsResponse>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Robot>>> {
       const localVarAxiosArgs = await FleetsApiAxiosParamCreator(
         configuration,
       ).getRobotsFleetsRobotsGet(fleet_name, robot_name, limit, offset, order_by, options);
@@ -431,7 +431,7 @@ export const FleetsApiFactory = function (
       offset?: number,
       order_by?: string,
       options?: any,
-    ): AxiosPromise<GetFleetsResponse> {
+    ): AxiosPromise<Array<Fleet>> {
       return FleetsApiFp(configuration)
         .getFleetsFleetsGet(fleet_name, limit, offset, order_by, options)
         .then((request) => request(axios, basePath));
@@ -471,7 +471,7 @@ export const FleetsApiFactory = function (
       offset?: number,
       order_by?: string,
       options?: any,
-    ): AxiosPromise<GetRobotsResponse> {
+    ): AxiosPromise<Array<Robot>> {
       return FleetsApiFp(configuration)
         .getRobotsFleetsRobotsGet(fleet_name, robot_name, limit, offset, order_by, options)
         .then((request) => request(axios, basePath));

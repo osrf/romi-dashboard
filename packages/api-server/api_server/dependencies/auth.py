@@ -1,28 +1,22 @@
 from typing import Optional
 
-from fastapi import Depends, HTTPException
-from fastapi.security import OpenIdConnect
-
-from ..authenticator import AuthenticationError, JwtAuthenticator
+from ..authenticator import JwtAuthenticator
+from ..models import User
 
 
 def auth_scheme(
-    authenticator: Optional[JwtAuthenticator] = None, oidc_url: Optional[str] = None
+    authenticator: Optional[JwtAuthenticator] = None,
+    oidc_url: Optional[str] = None,
 ):
+    """
+    Returns a tuple containing an authentication and user dependency. The authentication
+    dependency should be applied app-wide or router-wide to verify a token. The user
+    dependency should be applied on each endpoint that requires the user info.
+    """
     if not authenticator:
-        return lambda: None  # no authentication
+        # no authentication
+        return lambda: User(username="stub", is_admin=True)
 
     oidc_url = oidc_url or ""
 
-    security_scheme = OpenIdConnect(openIdConnectUrl=oidc_url)
-
-    def dep(auth_header: str = Depends(security_scheme)):
-        parts = auth_header.split(" ")
-        if len(parts) != 2 or parts[0].lower() != "bearer":
-            raise HTTPException(401, "invalid bearer format")
-        try:
-            authenticator.verify_token(parts[1])
-        except AuthenticationError as e:
-            raise HTTPException(401, str(e)) from e
-
-    return dep
+    return authenticator.fastapi_dep(oidc_url)

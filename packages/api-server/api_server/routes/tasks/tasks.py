@@ -1,40 +1,40 @@
-import asyncio
 from datetime import datetime
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict, List, Optional
 
 from fastapi import Depends, HTTPException
 from fastapi.param_functions import Query
 from fastapi.responses import JSONResponse
-from rx import operators as rx_ops
 
-from ...dependencies import WithBaseQuery, base_query_params
+from ...dependencies import AddPaginationQuery, pagination_query
 from ...fast_io import DataStore, FastIORouter
 from ...gateway import RmfGateway
 from ...models import (
     CancelTask,
-    Pagination,
     SubmitTask,
     SubmitTaskResponse,
-    TaskProgress,
+    Task,
     TaskStateEnum,
+    TaskSummary,
     TaskTypeEnum,
+    User,
 )
 from ...models import tortoise_models as ttm
-from ...models.tasks import TaskSummary
-from ...rmf_io import RmfBookKeeperEvents, RmfEvents
+from ...repositories import RmfRepository
+from ...rmf_io import RmfEvents
 from ...services.tasks import convert_task_request
 from .dispatcher import DispatcherClient
-from .utils import convert_task_status_msg
+from .utils import get_task_progress
 
 
 class TasksRouter(FastIORouter):
     def __init__(
         self,
+        user_dep: Callable[[], User],
+        rmf_repo: RmfRepository,
         rmf_events: RmfEvents,
-        bookkeeper_events: RmfBookKeeperEvents,
         rmf_gateway_dep: Callable[[], RmfGateway],
     ):
-        super().__init__(tags=["Tasks"])
+        super().__init__(tags=["Tasks"], user_dep=user_dep)
         _dispatcher_client: Optional[DispatcherClient] = None
 
         def dispatcher_client_dep():
@@ -48,10 +48,11 @@ class TasksRouter(FastIORouter):
                 self,
                 key: str,
                 path_params: Dict[str, str],
+                user: User,
             ):
                 # FIXME: This would fail if task_id contains "_/"
                 task_id = path_params["task_id"].replace("__", "/")
-                data = await ttm.TaskSummary.get_or_none(id_=task_id)
+                data = await rmf_repo.query_tasks(user).get_or_none(id_=task_id)
                 if data is None:
                     return None
                 return TaskSummary(**data.data)
@@ -72,13 +73,23 @@ class TasksRouter(FastIORouter):
         async def get_task_summary(task_summary: TaskSummary):
             return {"task_id": task_summary.task_id.replace("/", "__")}, task_summary
 
-        class GetTasksResponse(Pagination.response_model(TaskProgress)):
-            pass
+        def to_task(tt_summary: ttm.TaskSummary):
+            py_summary = tt_summary.to_pydantic()
+            return Task.construct(
+                task_id=py_summary.task_id,
+                authz_grp=tt_summary.authz_grp,
+                progress=get_task_progress(
+                    py_summary,
+                    rmf_gateway_dep(),
+                ),
+                summary=py_summary,
+            )
 
-        @self.get("", response_model=GetTasksResponse)
+        @self.get("", response_model=List[Task])
         async def get_tasks(
-            with_base_query: WithBaseQuery[ttm.TaskSummary] = Depends(
-                base_query_params({"task_id": "id_"})
+            user: User = Depends(user_dep),
+            add_pagination: AddPaginationQuery[ttm.TaskSummary] = Depends(
+                pagination_query({"task_id": "id_"})
             ),
             task_id: Optional[str] = Query(
                 None, description="comma separated list of task ids"
@@ -130,16 +141,14 @@ class TasksRouter(FastIORouter):
             if priority is not None:
                 filter_params["priority"] = priority
 
-            results = await with_base_query(ttm.TaskSummary.filter(**filter_params))
-            results.items = [
-                convert_task_status_msg(item.to_pydantic(), rmf_gateway_dep())
-                for item in results.items
-            ]
-            return results
+            q = rmf_repo.query_tasks(user).filter(**filter_params)
+            task_summaries = await add_pagination(q)
+            return [to_task(ts) for ts in task_summaries]
 
         @self.post("/submit_task", response_model=SubmitTaskResponse)
         async def submit_task(
             submit_task_params: SubmitTask,
+            user: User = Depends(user_dep),
             dispatcher_client: DispatcherClient = Depends(dispatcher_client_dep),
         ):
             req_msg, err_msg = convert_task_request(
@@ -149,31 +158,17 @@ class TasksRouter(FastIORouter):
             if err_msg:
                 raise HTTPException(422, err_msg)
 
-            rmf_resp = await dispatcher_client.submit_task_request(req_msg)
+            rmf_resp = await dispatcher_client.submit_task_request(user, req_msg)
             if not rmf_resp.success:
                 raise HTTPException(422, rmf_resp.message)
-
-            # wait for the new task summary to be written to db so that subsequent calls
-            # to `/tasks` will include the new task.
-            fut = asyncio.Future()
-            sub = bookkeeper_events.task_summary_written.pipe(
-                rx_ops.filter(lambda t: sub.dispose() or t.task_id == rmf_resp.task_id)
-            ).subscribe(fut.set_result)
-            try:
-                # there is a slight chance that the new task is written to db before
-                # the ros service call returns. So we put a timeout and ignore the error.
-                await asyncio.wait_for(fut, 5)
-            except asyncio.TimeoutError:
-                pass
-            finally:
-                sub.dispose()
 
             return {"task_id": rmf_resp.task_id}
 
         @self.post("/cancel_task")
         async def cancel_task(
             task: CancelTask,
+            user: User = Depends(user_dep),
             dispatcher_client: DispatcherClient = Depends(dispatcher_client_dep),
         ):
-            cancel_status = await dispatcher_client.cancel_task_request(task)
+            cancel_status = await dispatcher_client.cancel_task_request(task, user)
             return JSONResponse(content={"success": cancel_status})

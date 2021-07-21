@@ -1,9 +1,10 @@
-import asyncio
 import logging
 import unittest
 
 from rmf_door_msgs.msg import DoorMode
 from tortoise import Tortoise
+
+from api_server.test import init_db
 
 from ..models import (
     DispenserHealth,
@@ -18,16 +19,13 @@ from ..models import tortoise_models as ttm
 from ..repositories import RmfRepository
 from ..rmf_io import RmfEvents
 from ..test import test_data
+from ..test.test_fixtures import async_try_until
 from .book_keeper import RmfBookKeeper
 
 
 class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        await Tortoise.init(
-            db_url="sqlite://:memory:",
-            modules={"models": ["api_server.models.tortoise_models"]},
-        )
-        await Tortoise.generate_schemas()
+        await init_db()
 
         self.rmf = RmfEvents()
         self.repo = RmfRepository()
@@ -44,16 +42,20 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         state = test_data.make_door_state("test_door")
         state.current_mode.value = DoorMode.MODE_OPEN
         self.rmf.door_states.on_next(state)
-        await asyncio.sleep(0)
-        result = await self.repo.get_door_state("test_door")
+
+        async def get():
+            return await self.repo.get_door_state("test_door")
+
+        result = await async_try_until(get, lambda x: x is not None, 1, 0.02)
         self.assertIsNotNone(result)
         self.assertEqual(result.current_mode.value, DoorMode.MODE_OPEN)
 
         state = test_data.make_door_state("test_door")
         state.current_mode.value = DoorMode.MODE_CLOSED
         self.rmf.door_states.on_next(state)
-        await asyncio.sleep(0)
-        result = await self.repo.get_door_state("test_door")
+        result = await async_try_until(
+            get, lambda x: x.current_mode.value == DoorMode.MODE_CLOSED, 1, 0.02
+        )
         self.assertIsNotNone(result)
         self.assertEqual(result.current_mode.value, DoorMode.MODE_CLOSED)
 
@@ -64,8 +66,11 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
                 health_status=HealthStatus.HEALTHY,
             )
         )
-        await asyncio.sleep(0)
-        health = await self.repo.get_door_health("test_door")
+
+        async def get():
+            return await self.repo.get_door_health("test_door")
+
+        health = await async_try_until(get, lambda x: x is not None, 1, 0.02)
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
 
@@ -75,8 +80,9 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
                 health_status=HealthStatus.UNHEALTHY,
             )
         )
-        await asyncio.sleep(0)
-        health = await self.repo.get_door_health("test_door")
+        health = await async_try_until(
+            get, lambda x: x.health_status == HealthStatus.UNHEALTHY, 1, 0.02
+        )
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.UNHEALTHY)
 
@@ -85,8 +91,11 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         state.available_floors = ["L1", "L2"]
         state.current_floor = "L1"
         self.rmf.lift_states.on_next(state)
-        await asyncio.sleep(0)
-        result = await self.repo.get_lift_state("test_lift")
+
+        async def get():
+            return await self.repo.get_lift_state("test_lift")
+
+        result = await async_try_until(get, lambda x: x is not None, 1, 0.02)
         self.assertIsNotNone(result)
         self.assertEqual(result.current_floor, "L1")
 
@@ -94,8 +103,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         state.available_floors = ["L1", "L2"]
         state.current_floor = "L2"
         self.rmf.lift_states.on_next(state)
-        await asyncio.sleep(0)
-        result = await self.repo.get_lift_state("test_lift")
+        result = await async_try_until(get, lambda x: x.current_floor == "L2", 1, 0.02)
         self.assertIsNotNone(result)
         self.assertEqual(result.current_floor, "L2")
 
@@ -106,8 +114,12 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
                 health_status=HealthStatus.HEALTHY,
             )
         )
-        await asyncio.sleep(0)
-        health = await (await ttm.LiftHealth.get(id_="test_lift")).to_pydantic()
+
+        async def get():
+            result = await ttm.LiftHealth.get_or_none(id_="test_lift")
+            return await result.to_pydantic() if result is not None else None
+
+        health = await async_try_until(get, lambda x: x is not None, 1, 0.02)
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
 
@@ -117,8 +129,9 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
                 health_status=HealthStatus.UNHEALTHY,
             )
         )
-        await asyncio.sleep(0)
-        health = await (await ttm.LiftHealth.get(id_="test_lift")).to_pydantic()
+        health = await async_try_until(
+            get, lambda x: x.health_status == HealthStatus.UNHEALTHY, 1, 0.02
+        )
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.UNHEALTHY)
 
@@ -126,16 +139,20 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         state = test_data.make_dispenser_state("test_dispenser")
         state.seconds_remaining = 2.0
         self.rmf.dispenser_states.on_next(state)
-        await asyncio.sleep(0)
-        result = await self.repo.get_dispenser_state("test_dispenser")
+
+        async def get_state():
+            return await self.repo.get_dispenser_state("test_dispenser")
+
+        result = await async_try_until(get_state, lambda x: x is not None, 1, 0.02)
         self.assertIsNotNone(result)
         self.assertEqual(result.seconds_remaining, 2.0)
 
         state = test_data.make_dispenser_state("test_dispenser")
         state.seconds_remaining = 1.0
         self.rmf.dispenser_states.on_next(state)
-        await asyncio.sleep(0)
-        result = await self.repo.get_dispenser_state("test_dispenser")
+        result = await async_try_until(
+            get_state, lambda x: x.seconds_remaining == 1.0, 1, 0.02
+        )
         self.assertIsNotNone(result)
         self.assertEqual(result.seconds_remaining, 1.0)
 
@@ -146,10 +163,12 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
                 health_status=HealthStatus.HEALTHY,
             )
         )
-        await asyncio.sleep(0)
-        health = await (
-            await ttm.DispenserHealth.get(id_="test_dispenser")
-        ).to_pydantic()
+
+        async def get():
+            result = await ttm.DispenserHealth.get_or_none(id_="test_dispenser")
+            return await result.to_pydantic() if result is not None else None
+
+        health = await async_try_until(get, lambda x: x is not None, 1, 0.02)
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
 
@@ -159,10 +178,9 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
                 health_status=HealthStatus.UNHEALTHY,
             )
         )
-        await asyncio.sleep(0)
-        health = await (
-            await ttm.DispenserHealth.get(id_="test_dispenser")
-        ).to_pydantic()
+        health = await async_try_until(
+            get, lambda x: x.health_status == HealthStatus.UNHEALTHY, 1, 0.02
+        )
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.UNHEALTHY)
 
@@ -170,16 +188,20 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         state = test_data.make_ingestor_state("test_ingestor")
         state.seconds_remaining = 2.0
         self.rmf.ingestor_states.on_next(state)
-        await asyncio.sleep(0)
-        result = await self.repo.get_ingestor_state("test_ingestor")
+
+        async def get():
+            return await self.repo.get_ingestor_state("test_ingestor")
+
+        result = await async_try_until(get, lambda x: x is not None, 1, 0.02)
         self.assertIsNotNone(result)
         self.assertEqual(result.seconds_remaining, 2.0)
 
         state = test_data.make_ingestor_state("test_ingestor")
         state.seconds_remaining = 1.0
         self.rmf.ingestor_states.on_next(state)
-        await asyncio.sleep(0)
-        result = await self.repo.get_ingestor_state("test_ingestor")
+        result = await async_try_until(
+            get, lambda x: x.seconds_remaining == 1.0, 1, 0.02
+        )
         self.assertIsNotNone(result)
         self.assertEqual(result.seconds_remaining, 1.0)
 
@@ -190,8 +212,12 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
                 health_status=HealthStatus.HEALTHY,
             )
         )
-        await asyncio.sleep(0)
-        health = await (await ttm.IngestorHealth.get(id_="test_ingestor")).to_pydantic()
+
+        async def get():
+            result = await ttm.IngestorHealth.get_or_none(id_="test_ingestor")
+            return await result.to_pydantic() if result is not None else None
+
+        health = await async_try_until(get, lambda x: x is not None, 1, 0.02)
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
 
@@ -201,8 +227,9 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
                 health_status=HealthStatus.UNHEALTHY,
             )
         )
-        await asyncio.sleep(0)
-        health = await (await ttm.IngestorHealth.get(id_="test_ingestor")).to_pydantic()
+        health = await async_try_until(
+            get, lambda x: x.health_status == HealthStatus.UNHEALTHY, 1, 0.02
+        )
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.UNHEALTHY)
 
@@ -210,16 +237,18 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         state = test_data.make_fleet_state("test_fleet")
         state.robots = [test_data.make_robot_state()]
         self.rmf.fleet_states.on_next(state)
-        await asyncio.sleep(0)
-        result = await self.repo.get_fleet_state("test_fleet")
+
+        async def get():
+            return await self.repo.get_fleet_state("test_fleet")
+
+        result = await async_try_until(get, lambda x: x is not None, 1, 0.02)
         self.assertIsNotNone(result)
         self.assertEqual(len(result.robots), 1)
 
         state = test_data.make_fleet_state("test_fleet")
         state.robots = []
         self.rmf.fleet_states.on_next(state)
-        await asyncio.sleep(0)
-        result = await self.repo.get_fleet_state("test_fleet")
+        result = await async_try_until(get, lambda x: len(x.robots) == 0, 1, 0.02)
         self.assertIsNotNone(result)
         self.assertEqual(len(result.robots), 0)
 
@@ -230,10 +259,12 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
                 health_status=HealthStatus.HEALTHY,
             )
         )
-        await asyncio.sleep(0)
-        health = await (
-            await ttm.RobotHealth.get(id_="test_fleet/test_robot")
-        ).to_pydantic()
+
+        async def get():
+            result = await ttm.RobotHealth.get_or_none(id_="test_fleet/test_robot")
+            return await result.to_pydantic() if result is not None else None
+
+        health = await async_try_until(get, lambda x: x is not None, 1, 0.02)
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
 
@@ -243,8 +274,9 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
                 health_status=HealthStatus.UNHEALTHY,
             )
         )
-        await asyncio.sleep(0)
-        health = await ttm.RobotHealth.get(id_="test_fleet/test_robot")
+        health = await async_try_until(
+            get, lambda x: x.health_status == HealthStatus.UNHEALTHY, 1, 0.02
+        )
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.UNHEALTHY)
 
@@ -252,15 +284,19 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         task = TaskSummary(task_id="test_task")
         task.status = "test_status"
         self.rmf.task_summaries.on_next(task)
-        await asyncio.sleep(0)
-        result = await self.repo.get_task_summary("test_task")
+
+        async def get():
+            return await self.repo.get_task_summary("test_task")
+
+        result = await async_try_until(get, lambda x: x is not None, 1, 0.02)
         self.assertIsNotNone(result)
         self.assertEqual(result.status, "test_status")
 
         task = TaskSummary(task_id="test_task")
         task.status = "test_status_2"
         self.rmf.task_summaries.on_next(task)
-        await asyncio.sleep(0)
-        result = await self.repo.get_task_summary("test_task")
+        result = await async_try_until(
+            get, lambda x: x.status == "test_status_2", 1, 0.02
+        )
         self.assertIsNotNone(result)
         self.assertEqual(result.status, "test_status_2")

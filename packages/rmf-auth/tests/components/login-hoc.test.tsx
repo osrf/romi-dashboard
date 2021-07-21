@@ -2,22 +2,18 @@ import { cleanup, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { BrowserRouter, Redirect } from 'react-router-dom';
-import { User } from '../../lib';
 import { Authenticator } from '../../lib/authenticator';
 import { LoginHOC } from '../../lib/components/login-hoc';
 import { FakeAuthenticator } from '../fake-authenticator';
 
 describe('Login page', () => {
   let Login: ReturnType<typeof LoginHOC>;
-  let user: User;
+  let user: string;
   let authenticator: Authenticator;
 
   beforeEach(() => {
     Login = LoginHOC(Redirect);
-    user = {
-      username: 'test',
-      token: '',
-    };
+    user = 'test';
     authenticator = new FakeAuthenticator();
   });
 
@@ -55,7 +51,7 @@ describe('Login page', () => {
   });
 
   test('performs login when login button is clicked', () => {
-    const authenticator = new FakeAuthenticator({ username: 'fakeUser', token: '' });
+    const authenticator = new FakeAuthenticator('fakeUser');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const spy = jest.spyOn(authenticator, 'login').mockImplementation(() => undefined as any);
 

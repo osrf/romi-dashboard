@@ -1,9 +1,9 @@
 import React from 'react';
-import { Authenticator, LoginBase, User } from '..';
+import { Authenticator, LoginBase } from '..';
 import { Redirect } from 'react-router-dom';
 
 export interface LoginProps {
-  user: User | null;
+  user: string | null;
   authenticator: Authenticator;
   successRedirectUri: string;
   title: string;

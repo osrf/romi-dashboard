@@ -19,6 +19,7 @@ from .authenticator import JwtAuthenticator
 from .dependencies import auth_scheme
 from .fast_io import FastIO
 from .gateway import RmfGateway
+from .models import tortoise_models as ttm
 from .repositories import RmfRepository, StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfEvents
 
@@ -44,11 +45,12 @@ class App(FastIO):
             else None
         )
 
+        auth_dep = auth_scheme(authenticator, app_config.oidc_url)
         super().__init__(
             authenticator=authenticator,
             logger=logger,
             title="RMF API Server",
-            dependencies=[Depends(auth_scheme(authenticator, app_config.oidc_url))],
+            dependencies=[Depends(auth_dep)],
         )
 
         self.fapi.add_middleware(
@@ -128,7 +130,7 @@ class App(FastIO):
                 ready = self.rmf_gateway.get_tasks_srv.wait_for_service(1)
                 if not ready:
                     raise HTTPException(503, "ros service not ready")
-                await self.rmf_gateway.update_tasks(rmf_repo)
+                await self.rmf_gateway.update_tasks()
             except HTTPException as e:
                 logger.error(f"failed to update tasks from RMF ({e.detail})")
 
@@ -147,6 +149,7 @@ class App(FastIO):
         def rmf_gateway_dep():
             return self.rmf_gateway
 
+        self.fapi.include_router(routes.main_router(auth_dep))
         self.include_router(
             routes.BuildingMapRouter(self.rmf_events), prefix="/building_map"
         )
@@ -160,7 +163,10 @@ class App(FastIO):
         )
         self.include_router(
             routes.TasksRouter(
-                self.rmf_events, rmf_bookkeeper.bookkeeper_events, rmf_gateway_dep
+                auth_dep,
+                self.rmf_repo,
+                self.rmf_events,
+                rmf_gateway_dep,
             ),
             prefix="/tasks",
         )
@@ -175,6 +181,7 @@ class App(FastIO):
             routes.FleetsRouter(self.rmf_events, rmf_gateway_dep, logger=logger),
             prefix="/fleets",
         )
+        self.fapi.include_router(routes.admin_router(auth_dep), prefix="/admin")
 
         @self.fapi.on_event("startup")
         async def on_startup():
@@ -209,6 +216,10 @@ class App(FastIO):
             )
             await Tortoise.generate_schemas()
             shutdown_cbs.append(Tortoise.close_connections())
+
+            await ttm.User.update_or_create(
+                {"is_admin": True}, username=app_config.builtin_admin
+            )
 
             use_sim_time_env = os.environ.get("RMF_SERVER_USE_SIM_TIME", None)
             if use_sim_time_env:

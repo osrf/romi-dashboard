@@ -9,6 +9,8 @@ config = {
     "public_url": "http://localhost:8000",
     "static_directory": "static",  # The directory where static files should be stored.
     "log_level": "WARNING",  # https://docs.python.org/3.8/library/logging.html#levels
+    # a user that is automatically given admin privileges, note that this does not guarantee that the user exists in the identity provider.
+    "builtin_admin": "admin",
     # path to a PEM encoded RSA public key which is used to verify JWT tokens, if the path is relative, it is based on the working dir.
     "jwt_public_key": None,
     # url to the oidc endpoint, used to authenticate rest requests, it should point to the well known endpoint, e.g.

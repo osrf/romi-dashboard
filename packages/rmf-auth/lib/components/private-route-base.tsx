@@ -1,7 +1,6 @@
 import Debug from 'debug';
 import React from 'react';
 import { RouteProps } from 'react-router-dom';
-import { User } from '../user';
 
 const debug = Debug('PrivateRoute');
 
@@ -9,7 +8,7 @@ export interface PrivateRouteBaseProps extends React.PropsWithChildren<RouteProp
   // if true, do not redirect to login url if not authenticated
   noRedirectToLogin?: boolean;
   unauthorized?: React.ReactElement | null;
-  user?: User | null;
+  user?: string | null;
   redirect: React.ReactElement;
 }
 

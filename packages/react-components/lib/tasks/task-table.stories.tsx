@@ -40,6 +40,8 @@ export default {
 
 export const Table: Story<TaskTableProps> = (args) => {
   const [page, setPage] = React.useState(0);
+  const count = page >= args.tasks.length / 10 - 1 ? args.tasks.length : -1;
+
   return (
     <Paper>
       <TableContainer>
@@ -47,7 +49,7 @@ export const Table: Story<TaskTableProps> = (args) => {
       </TableContainer>
       <TablePagination
         component="div"
-        count={args.tasks.length}
+        count={count}
         rowsPerPage={10}
         rowsPerPageOptions={[10]}
         page={page}

@@ -1,5 +1,7 @@
 import {
+  AdminApi,
   Configuration,
+  DefaultApi,
   DispensersApi,
   DoorsApi,
   FleetsApi,
@@ -16,12 +18,14 @@ import { RobotTrajectoryManager } from '../../managers/robot-trajectory-manager'
 
 export class RmfIngress {
   sioClient: SioClient;
+  defaultApi: DefaultApi;
   doorsApi: DoorsApi;
   liftsApi: LiftsApi;
   dispensersApi: DispensersApi;
   ingestorsApi: IngestorsApi;
   fleetsApi: FleetsApi;
   tasksApi: TasksApi;
+  adminApi: AdminApi;
   negotiationStatusManager: NegotiationStatusManager;
   trajectoryManager?: RobotTrajectoryManager;
 
@@ -55,16 +59,18 @@ export class RmfIngress {
       return req;
     });
     const apiConfig: Configuration = {
-      accessToken: authenticator.user?.token,
+      accessToken: authenticator.token,
       basePath: appConfig.rmfServerUrl,
     };
 
+    this.defaultApi = new DefaultApi(apiConfig, undefined, axiosInst);
     this.doorsApi = new DoorsApi(apiConfig, undefined, axiosInst);
     this.liftsApi = new LiftsApi(apiConfig, undefined, axiosInst);
     this.dispensersApi = new DispensersApi(apiConfig, undefined, axiosInst);
     this.ingestorsApi = new IngestorsApi(apiConfig, undefined, axiosInst);
     this.fleetsApi = new FleetsApi(apiConfig, undefined, axiosInst);
     this.tasksApi = new TasksApi(apiConfig, undefined, axiosInst);
+    this.adminApi = new AdminApi(apiConfig, undefined, axiosInst);
     this.trajectoryManager = trajMgr;
   }
 }

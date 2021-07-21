@@ -1,6 +1,6 @@
-import React from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { LoginBase } from '../../lib/components/login-base';
 import FakeAuthenticator from '../fake-authenticator';
@@ -32,7 +32,7 @@ describe('Login page', () => {
   });
 
   it('performs login when login button is clicked', () => {
-    const authenticator = new FakeAuthenticator({ username: 'fakeUser', token: '' });
+    const authenticator = new FakeAuthenticator('fakeUser');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const spy = jest.spyOn(authenticator, 'login').mockImplementation(() => undefined as any);
 

@@ -1,13 +1,13 @@
 import React from 'react';
-import { Redirect, RouteProps, useLocation, Route } from 'react-router-dom';
-import { PrivateRouteBase, User } from '..';
+import { Redirect, Route, RouteProps, useLocation } from 'react-router-dom';
+import { PrivateRouteBase } from '..';
 
 export interface PrivateRouteProps extends React.PropsWithChildren<RouteProps> {
   // if true, do not redirect to login url if not authenticated
   noRedirectToLogin?: boolean;
   redirectPath: string;
   unauthorized?: React.ReactElement | null;
-  user: User | null;
+  user: string | null;
 }
 
 export const PrivateRouteHOC = (

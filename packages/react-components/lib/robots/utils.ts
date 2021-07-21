@@ -1,4 +1,4 @@
-import { TaskProgress } from 'api-client';
+import type { Task } from 'api-client';
 import * as RmfModels from 'rmf-models';
 
 /**
@@ -35,5 +35,5 @@ export interface VerboseRobot {
   fleet: string;
   name: string;
   state: RmfModels.RobotState;
-  tasks: TaskProgress[];
+  tasks: Task[];
 }

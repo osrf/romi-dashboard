@@ -6,6 +6,7 @@ import * as RmfModels from 'rmf-models';
 import { rosTimeToJs } from '../utils';
 import { TaskPhases } from './task-phases';
 import { taskStateToStr } from './utils';
+
 const useStyles = makeStyles((theme) => ({
   table: {
     minWidth: 650,

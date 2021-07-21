@@ -2,7 +2,6 @@ import Debug from 'debug';
 import EventEmitter from 'eventemitter3';
 import Keycloak_, { KeycloakInstance } from 'keycloak-js';
 import { AuthConfig, Authenticator, AuthenticatorEventType } from './authenticator';
-import { User } from './user';
 import { BASE_PATH, getUrl } from './utils/url';
 
 const debug = Debug('authenticator');
@@ -10,7 +9,7 @@ const debug = Debug('authenticator');
 export default class KeycloakAuthenticator
   extends EventEmitter<AuthenticatorEventType>
   implements Authenticator {
-  get user(): User | undefined {
+  get user(): string | undefined {
     return this._user;
   }
 
@@ -24,6 +23,11 @@ export default class KeycloakAuthenticator
     this._redirectUri = redirectUri;
   }
 
+  private _getUser(): string {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (this._inst.idTokenParsed as any).preferred_username;
+  }
+
   async init(): Promise<void> {
     if (this._initialized) {
       debug('already initialized');
@@ -33,12 +37,8 @@ export default class KeycloakAuthenticator
     debug('initializing authenticator');
 
     this._inst.onAuthSuccess = async () => {
-      this._user = {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        username: (this._inst.idTokenParsed as any).preferred_username,
-        token: this._inst.token || '',
-      };
-      debug('authenticated as', this._user.username);
+      this._user = this._getUser();
+      debug('authenticated as', this._user);
       this.emit('userChanged', this._user);
     };
 
@@ -60,11 +60,7 @@ export default class KeycloakAuthenticator
       debug('token not refreshed');
     }
 
-    this._user = this._inst.tokenParsed && {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      username: (this._inst.idTokenParsed as any).preferred_username,
-      token: this._inst.token || '',
-    };
+    this._user = this._inst.tokenParsed && this._getUser();
     this._initialized = true;
   }
 
@@ -73,11 +69,7 @@ export default class KeycloakAuthenticator
     if (this._initialized) {
       const refreshed = await this._inst.updateToken(5);
       if (refreshed) {
-        this._user = {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          username: (this._inst.idTokenParsed as any).preferred_username,
-          token: this._inst.token || '',
-        };
+        this._user = this._getUser();
         this.emit('tokenRefresh', null);
       } else {
         debug('token not refreshed');
@@ -101,5 +93,5 @@ export default class KeycloakAuthenticator
   private _initialized = false;
   private _inst: KeycloakInstance;
   private _redirectUri?: string;
-  private _user?: User;
+  private _user?: string;
 }

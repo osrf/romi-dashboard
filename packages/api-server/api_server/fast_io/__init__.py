@@ -21,13 +21,14 @@ from urllib.parse import unquote as url_unquote
 
 import pydantic
 import socketio
-from fastapi import APIRouter, FastAPI, Path, Request
+from fastapi import APIRouter, Depends, FastAPI, Path, Request
 from fastapi.exceptions import HTTPException
 from fastapi.types import DecoratedCallable
 from rx import Observable
 from starlette.routing import compile_path, replace_params
 
 from ..authenticator import AuthenticationError, JwtAuthenticator
+from ..models import User
 from .errors import *
 
 T = TypeVar("T")
@@ -35,7 +36,9 @@ T = TypeVar("T")
 
 class DataStore(ABC, Generic[T]):
     @abstractmethod
-    async def get(self, key: str, path_params: Dict[str, str]) -> Union[T, None]:
+    async def get(
+        self, key: str, path_params: Dict[str, str], user: User
+    ) -> Union[T, None]:
         pass
 
     @abstractmethod
@@ -62,7 +65,7 @@ class MemoryDataStore(DataStore[T]):
     def __init__(self):
         self._store = {}
 
-    async def get(self, key: str, path_params: Dict[str, str]):
+    async def get(self, key: str, path_params: Dict[str, str], user: User):
         return self._store.get(key, None)
 
     async def set(self, key: str, path_params: Dict[str, str], data: T):
@@ -115,8 +118,9 @@ class FastIORouter(APIRouter):
         uvicorn.run(app)
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, user_dep: Optional[Callable[..., User]] = None, **kwargs):
         super().__init__(*args, **kwargs)
+        self.user_dep = user_dep or (lambda: User(username="stub", is_admin=True))
         self.watches = cast(List[Watch], [])
         self._loop: Optional[asyncio.AbstractEventLoop] = None
 
@@ -161,8 +165,8 @@ class FastIORouter(APIRouter):
             prefixed_path = self.prefix + path
             _, _, convertors = compile_path(prefixed_path)
 
-            async def on_subscribe(path: str, path_params: Dict[str, str]):
-                return await data_store.get(path, path_params)
+            async def on_subscribe(path: str, path_params: Dict[str, str], user: User):
+                return await data_store.get(path, path_params, user)
 
             async def on_data(data):
                 if asyncio.iscoroutinefunction(func):
@@ -188,10 +192,10 @@ class FastIORouter(APIRouter):
             )
             self.watches.append(watch)
 
-            async def get_func(**path_params):
+            async def get_func(user: User = Depends(self.user_dep), **path_params):
                 orig_path_params = copy(path_params)
                 room_id, _ = replace_params(path, convertors, path_params)
-                data = await data_store.get(room_id, orig_path_params)
+                data = await data_store.get(room_id, orig_path_params, user)
                 if data is None:
                     raise HTTPException(404)
                 return data
@@ -200,9 +204,19 @@ class FastIORouter(APIRouter):
             get_func.__doc__ = "**Available in socket.io**\n\n" + (func.__doc__ or "")
             params = [
                 inspect.Parameter(
-                    "req", inspect.Parameter.KEYWORD_ONLY, annotation=Request
+                    "user",
+                    inspect.Parameter.KEYWORD_ONLY,
+                    annotation=User,
+                    default=Depends(self.user_dep),
                 )
             ]
+            params.extend(
+                [
+                    inspect.Parameter(
+                        "req", inspect.Parameter.KEYWORD_ONLY, annotation=Request
+                    )
+                ]
+            )
 
             def make_param(name: str):
                 docs = param_docs.get(name, None)
@@ -228,12 +242,17 @@ class FastIORouter(APIRouter):
 
 
 def make_sio(authenticator: Optional[JwtAuthenticator], logger: logging.Logger):
-    def on_connect(sid: str, environ: dict, auth: Optional[dict] = None):
+    sio = socketio.AsyncServer(
+        async_mode="asgi", cors_allowed_origins="*", logger=logger
+    )
+
+    async def on_connect(sid: str, environ: dict, auth: Optional[dict] = None):
         logger.info(
             f'[{sid}] new connection from "{environ["REMOTE_ADDR"]}:{environ["REMOTE_PORT"]}"'
         )
 
         if not authenticator:
+            await sio.save_session(sid, {"user": User(username="stub", is_admin=True)})
             return True
 
         try:
@@ -241,15 +260,13 @@ def make_sio(authenticator: Optional[JwtAuthenticator], logger: logging.Logger):
                 raise AuthenticationError("no auth options provided")
             if "token" not in auth:
                 raise AuthenticationError("no token provided")
-            authenticator.verify_token(auth["token"])
+            user = await authenticator.verify_token(auth["token"])
+            await sio.save_session(sid, {"user": user})
             return True
         except AuthenticationError as e:
             logger.error(f"authentication failed: {e}")
             return False
 
-    sio = socketio.AsyncServer(
-        async_mode="asgi", cors_allowed_origins="*", logger=logger
-    )
     sio.on("connect", on_connect)
 
     return sio
@@ -267,6 +284,7 @@ class FastIO(socketio.ASGIApp):
         :param authenticator: Authenticator used to verify socket.io connections, for
             FastAPI endpoints, a dependency must be provided.
         """
+        self.authenticator = authenticator
         self.logger = logger or logging.getLogger(self.__class__.__name__)
         self.sio = make_sio(authenticator, self.logger)
         self.fapi = FastAPI(**fast_api_args)
@@ -330,7 +348,8 @@ class FastIO(socketio.ASGIApp):
 
         await self.sio.emit("subscribe", {"success": True}, sid)
         stripped_path = sub.path[len(watch.prefix) :]
-        current = await watch.on_subscribe(stripped_path, path_params)
+        user = (await self.sio.get_session(sid))["user"]
+        current = await watch.on_subscribe(stripped_path, path_params, user)
         if current is None:
             return
         if isinstance(current, pydantic.BaseModel):

@@ -1,4 +1,4 @@
-import type { SubmitTask, TaskProgress } from 'api-client';
+import type { SubmitTask, Task } from 'api-client';
 import * as RmfModels from 'rmf-models';
 
 export function makeTask(
@@ -43,7 +43,7 @@ export function makeDefinedTask(
   id: string,
   numberOfPhases: number,
   currentPhase: number,
-): TaskProgress {
+): Task {
   let status = '';
   for (let i = 0; i < numberOfPhases; i++) {
     if (currentPhase === i + 1) {
@@ -129,5 +129,5 @@ export function makeDefinedTask(
 
   const progress = Math.floor(Math.random() * 100);
 
-  return { task_summary: taskSummary, progress: progress };
+  return { task_id: id, authz_grp: 'test_group', summary: taskSummary, progress: progress };
 }
