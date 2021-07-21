@@ -13,7 +13,6 @@ import { UserListPage } from './admin';
 import { AppBase } from './app-base';
 import { ResourcesContext } from './app-contexts';
 import './app.css';
-import { TabValue } from './appbar';
 import Dashboard from './dashboard/dashboard';
 import { RmfApp } from './rmf-app';
 import { RobotPage } from './robots';
@@ -32,28 +31,10 @@ const theme = createMuiTheme({
   },
 });
 
-function locationToTabValue(pathname: string): TabValue | undefined {
-  pathname = pathname === '/' ? '' : pathname;
-  // `DashboardRoute` being the root, it is a prefix to all routes, so we need to check exactly.
-  if (pathname === DashboardRoute) return 'building';
-  if (pathname.startsWith(TasksRoute)) return 'tasks';
-  if (pathname.startsWith(RobotsRoute)) return 'robots';
-  if (pathname.startsWith(AdminRoute)) return 'admin';
-  return undefined;
-}
-
 export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
   const [authInitialized, setAuthInitialized] = React.useState(!!appConfig.authenticator.user);
   const [user, setUser] = React.useState<string | null>(null);
-  const [tabValue, setTabValue] = React.useState<TabValue | undefined>(() =>
-    locationToTabValue(window.location.pathname),
-  );
-
-  const onTabChange = React.useCallback(
-    (_ev: React.ChangeEvent<unknown>, newValue: TabValue) => setTabValue(newValue),
-    [],
-  );
 
   React.useEffect(() => {
     let cancel = false;
@@ -97,7 +78,7 @@ export default function App(): JSX.Element | null {
         <BrowserRouter>
           {user ? (
             <RmfApp>
-              <AppBase appbarProps={{ tabValue, onTabChange }}>
+              <AppBase>
                 <Switch>
                   <Route exact path={LoginRoute}>
                     <Redirect to={DashboardRoute} />
@@ -118,10 +99,6 @@ export default function App(): JSX.Element | null {
                     <Redirect to={DashboardRoute} />
                   </PrivateRoute>
                 </Switch>
-                {tabValue === 'building' && <Redirect to={DashboardRoute} />}
-                {tabValue === 'robots' && <Redirect to={RobotsRoute} />}
-                {tabValue === 'tasks' && <Redirect to={TasksRoute} />}
-                {tabValue === 'admin' && <Redirect to={AdminRoute} />}
               </AppBase>
             </RmfApp>
           ) : (
