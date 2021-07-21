@@ -13,7 +13,7 @@ jobs:
   build-docker-images:
     name: Push Docker images to GitHub Packages
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule'
+    # if: github.event_name == 'schedule'
     steps:
       - uses: actions/checkout@v2
       - name: Push reporting image to GitHub Packages
