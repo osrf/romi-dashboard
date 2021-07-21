@@ -1,57 +1,57 @@
-# name: Reporting Server Migration tests
-# on:
-#   pull_request:
-#     paths:
-#       - 'packages/reporting-server/**'
-#   push:
-#     branches:
-#       - main
-# jobs:
-#   # Label of the container job
-#   migrations:
-#     # Containers must run in Linux based operating systems
-#     runs-on: ubuntu-latest
-#     # Service containers to run with `container-job`
-#     services:
-#       # Label used to access the service container
-#       postgres:
-#         # Docker Hub image
-#         image: postgres:latest
-#         ports:
-#           - 5432:5432
-#         # Provide the password for postgres
-#         env:
-#           POSTGRES_PASSWORD: postgres
-#           POSTGRES_USER: postgres
-#         # Set health checks to wait until postgres has started
-#         options: >-
-#           --health-cmd pg_isready
-#           --health-interval 10s
-#           --health-timeout 5s
-#           --health-retries 5
+name: Reporting Server Migration tests
+on:
+  pull_request:
+    paths:
+      - 'packages/reporting-server/**'
+  push:
+    branches:
+      - main
+jobs:
+  # Label of the container job
+  migrations:
+    # Containers must run in Linux based operating systems
+    runs-on: ubuntu-latest
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
-#     steps:
-#       # Downloads a copy of the code in your repository before running CI tests
-#       - name: Check out repository code
-#         uses: actions/checkout@v2
+    steps:
+      # Downloads a copy of the code in your repository before running CI tests
+      - name: Check out repository code
+        uses: actions/checkout@v2
       
-#       - uses: actions/setup-python@v2
-#         with:
-#           python-version: '3.x'
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
 
-#       - name: Install python dependencies
-#         run: pip3 install tortoise-orm pydantic aerich asyncpg 
+      - name: Install python dependencies
+        run: pip3 install tortoise-orm pydantic aerich asyncpg 
  
-#       - name: Connect to PostgreSQL and run migrations
-#         # Runs a script that creates a PostgreSQL table, populates
-#         # the table with data, and then retrieves the data.
-#         run: cd packages/reporting-server/migrations/ && aerich upgrade && aerich downgrade --yes -v 0
-#         # Environment variables used by the `client.js` script to create a new PostgreSQL table.
-#         env:
-#           # The hostname used to communicate with the PostgreSQL service container
-#           POSTGRES_HOST: 127.0.0.1
-#           POSTGRES_PASSWORD: postgres
-#           POSTGRES_USER: postgres
-#           POSTGRES_PORT: 5432
-#           POSTGRES_DB: postgres
+      - name: Connect to PostgreSQL and run migrations
+        # Runs a script that creates a PostgreSQL table, populates
+        # the table with data, and then retrieves the data.
+        run: cd packages/reporting-server/migrations/ && aerich upgrade && aerich downgrade --yes -v 0
+        # Environment variables used by the `client.js` script to create a new PostgreSQL table.
+        env:
+          # The hostname used to communicate with the PostgreSQL service container
+          POSTGRES_HOST: 127.0.0.1
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PORT: 5432
+          POSTGRES_DB: postgres
 
