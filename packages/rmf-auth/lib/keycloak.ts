@@ -1,8 +1,7 @@
 import Debug from 'debug';
 import EventEmitter from 'eventemitter3';
-import Keycloak_, { KeycloakInstance } from 'keycloak-js';
-import { AuthConfig, Authenticator, AuthenticatorEventType } from './authenticator';
-import { BASE_PATH, getUrl } from './utils/url';
+import Keycloak, { KeycloakInstance } from 'keycloak-js';
+import { Authenticator, AuthenticatorEventType } from './authenticator';
 
 const debug = Debug('authenticator');
 
@@ -17,10 +16,17 @@ export default class KeycloakAuthenticator
     return this._inst.token;
   }
 
-  constructor(config: AuthConfig, redirectUri?: string) {
+  /**
+   *
+   * @param config
+   * @param redirectUri
+   * @param silentCheckSsoRedirectUri If provided, enable silent check sso with the provided uri,
+   * see https://www.keycloak.org/docs/13.0/securing_apps/index.html#_javascript_adapter for more information.
+   */
+  constructor(config: Keycloak.KeycloakConfig | string, silentCheckSsoRedirectUri?: string) {
     super();
-    this._inst = Keycloak_(config);
-    this._redirectUri = redirectUri;
+    this._inst = Keycloak(config);
+    this._silentCheckSsoRedirectUri = silentCheckSsoRedirectUri;
   }
 
   private _getUser(): string {
@@ -50,8 +56,7 @@ export default class KeycloakAuthenticator
 
     await this._inst.init({
       onLoad: 'check-sso',
-      silentCheckSsoRedirectUri: getUrl(`${BASE_PATH}/silent-check-sso.html`),
-      redirectUri: this._redirectUri,
+      silentCheckSsoRedirectUri: this._silentCheckSsoRedirectUri,
     });
     try {
       const refreshed = await this._inst.updateToken(30);
@@ -92,6 +97,6 @@ export default class KeycloakAuthenticator
 
   private _initialized = false;
   private _inst: KeycloakInstance;
-  private _redirectUri?: string;
+  private _silentCheckSsoRedirectUri?: string;
   private _user?: string;
 }

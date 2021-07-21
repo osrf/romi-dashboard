@@ -5,7 +5,7 @@ import '@fontsource/roboto/700.css';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import { BrowserRouter, Redirect, Route, Switch, useLocation } from 'react-router-dom';
-import { getUrl, LoginHOC, PrivateRouteHOC } from 'rmf-auth';
+import { LoginHOC, PrivateRouteHOC } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
 import { AdminRoute, DashboardRoute, LoginRoute, RobotsRoute, TasksRoute } from '../util/url';
@@ -131,7 +131,7 @@ export default function App(): JSX.Element | null {
                   user={user}
                   title={'Dashboard'}
                   authenticator={authenticator}
-                  successRedirectUri={getUrl(DashboardRoute)}
+                  successRedirectUri={`${window.location.origin}${DashboardRoute}`}
                 />
               </Route>
               <Route>
