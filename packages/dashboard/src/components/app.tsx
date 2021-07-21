@@ -8,7 +8,7 @@ import { BrowserRouter, Redirect, Route, Switch, useLocation } from 'react-route
 import { getUrl, LoginHOC, PrivateRouteHOC } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
-import { ADMIN_ROUTE, DASHBOARD_ROUTE, LOGIN_ROUTE, ROBOTS_ROUTE, TASKS_ROUTE } from '../util/url';
+import { AdminRoute, DashboardRoute, LoginRoute, RobotsRoute, TasksRoute } from '../util/url';
 import { AppBase } from './app-base';
 import { ResourcesContext } from './app-contexts';
 import './app.css';
@@ -33,13 +33,13 @@ const theme = createMuiTheme({
 
 function locationToTabValue(pathname: string): TabValue | undefined {
   switch (pathname) {
-    case DASHBOARD_ROUTE:
+    case DashboardRoute:
       return 'building';
-    case TASKS_ROUTE:
+    case TasksRoute:
       return 'tasks';
-    case ROBOTS_ROUTE:
+    case RobotsRoute:
       return 'robots';
-    case ADMIN_ROUTE:
+    case AdminRoute:
       return 'admin';
     default:
       return undefined;
@@ -103,39 +103,39 @@ export default function App(): JSX.Element | null {
             <RmfApp>
               <AppBase appbarProps={{ tabValue, onTabChange }}>
                 <Switch>
-                  <Route exact path={LOGIN_ROUTE}>
-                    <Redirect to={DASHBOARD_ROUTE} />
+                  <Route exact path={LoginRoute}>
+                    <Redirect to={DashboardRoute} />
                   </Route>
-                  <PrivateRoute exact path={DASHBOARD_ROUTE} redirectPath={LOGIN_ROUTE} user={user}>
+                  <PrivateRoute exact path={DashboardRoute} redirectPath={LoginRoute} user={user}>
                     <Dashboard />
                   </PrivateRoute>
-                  <PrivateRoute exact path={ROBOTS_ROUTE} redirectPath={LOGIN_ROUTE} user={user}>
+                  <PrivateRoute exact path={RobotsRoute} redirectPath={LoginRoute} user={user}>
                     <RobotPage />
                   </PrivateRoute>
-                  <PrivateRoute exact path={TASKS_ROUTE} redirectPath={LOGIN_ROUTE} user={user}>
+                  <PrivateRoute exact path={TasksRoute} redirectPath={LoginRoute} user={user}>
                     <TaskPage />
                   </PrivateRoute>
-                  <PrivateRoute redirectPath={LOGIN_ROUTE} user={user}>
-                    <Redirect to={DASHBOARD_ROUTE} />
+                  <PrivateRoute redirectPath={LoginRoute} user={user}>
+                    <Redirect to={DashboardRoute} />
                   </PrivateRoute>
                 </Switch>
-                {tabValue === 'building' && <Redirect to={DASHBOARD_ROUTE} />}
-                {tabValue === 'robots' && <Redirect to={ROBOTS_ROUTE} />}
-                {tabValue === 'tasks' && <Redirect to={TASKS_ROUTE} />}
+                {tabValue === 'building' && <Redirect to={DashboardRoute} />}
+                {tabValue === 'robots' && <Redirect to={RobotsRoute} />}
+                {tabValue === 'tasks' && <Redirect to={TasksRoute} />}
               </AppBase>
             </RmfApp>
           ) : (
             <Switch>
-              <Route exact path={LOGIN_ROUTE}>
+              <Route exact path={LoginRoute}>
                 <Login
                   user={user}
                   title={'Dashboard'}
                   authenticator={authenticator}
-                  successRedirectUri={getUrl(DASHBOARD_ROUTE)}
+                  successRedirectUri={getUrl(DashboardRoute)}
                 />
               </Route>
               <Route>
-                <Redirect to={LOGIN_ROUTE} />
+                <Redirect to={LoginRoute} />
               </Route>
             </Switch>
           )}
