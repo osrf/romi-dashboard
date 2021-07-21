@@ -1,9 +1,15 @@
+import { Dispenser, Fleet, Ingestor } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { NegotiationConflict } from '../../managers/negotiation-status-manager';
 import { HealthStatus } from '../../managers/rmf-health-state-manager';
 import { Place } from './place';
 import { RmfIngress } from './rmf-ingress';
+
+export const BuildingMapContext = React.createContext<RmfModels.BuildingMap | null>(null);
+export const PlacesContext = React.createContext<Place[]>([]);
+export const FleetsContext = React.createContext<Fleet[]>([]);
+export const DispensersContext = React.createContext<Dispenser[]>([]);
+export const IngestorsContext = React.createContext<Ingestor[]>([]);
 
 const itemSummary = () => {
   return {
@@ -14,20 +20,6 @@ const itemSummary = () => {
 
 const initializeItemSummary = itemSummary();
 
-export const DispenserStateContext = React.createContext<Record<string, RmfModels.DispenserState>>(
-  {},
-);
-export const IngestorStateContext = React.createContext<Record<string, RmfModels.IngestorState>>(
-  {},
-);
-export const DoorStateContext = React.createContext<Record<string, RmfModels.DoorState>>({});
-export const FleetStateContext = React.createContext<Record<string, RmfModels.FleetState>>({});
-export const LiftStateContext = React.createContext<Record<string, RmfModels.LiftState>>({});
-export const NegotiationStatusContext = React.createContext<Record<number, NegotiationConflict>>(
-  {},
-);
-export const TasksContext = React.createContext<Record<string, RmfModels.TaskSummary>>({});
-export const BuildingMapContext = React.createContext<RmfModels.BuildingMap | null>(null);
 export const RmfHealthContext = React.createContext<HealthStatus>({
   door: { ...initializeItemSummary },
   lift: { ...initializeItemSummary },
@@ -39,6 +31,5 @@ export const RmfHealthContext = React.createContext<HealthStatus>({
     spoiltRobots: [],
   },
 });
-export const PlacesContext = React.createContext<Place[]>([]);
 
 export const RmfIngressContext = React.createContext<RmfIngress | undefined>(undefined);

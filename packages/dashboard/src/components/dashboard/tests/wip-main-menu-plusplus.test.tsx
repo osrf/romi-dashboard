@@ -1,10 +1,10 @@
-import React from 'react';
-import MainMenu from '../wip-main-menu-plusplus';
 import { render, screen } from '@testing-library/react';
-import RmfHealthStateManager from '../../../managers/rmf-health-state-manager';
-import { RmfHealthContext } from '../../rmf-app/contexts';
-import { door, lift, fakeFleets } from './items';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
+import RmfHealthStateManager from '../../../managers/rmf-health-state-manager';
+import { RmfHealthContext } from '../../rmf-app';
+import MainMenu from '../wip-main-menu-plusplus';
+import { door, fakeFleets, lift } from './items';
 
 const fleet = fakeFleets();
 
