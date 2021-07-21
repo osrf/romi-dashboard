@@ -6,6 +6,7 @@
     "test": "tests"
   },
   "scripts": {
+    "start": "node scripts/start.js",
     "start:keycloak": "docker/keycloak/dockert docker-compose -f docker/docker-compose.yml -p rmf-web up keycloak",
     "start:rmf-server": "scripts/start-rmf-server.sh",
     "test": "node scripts/test-e2e.js",

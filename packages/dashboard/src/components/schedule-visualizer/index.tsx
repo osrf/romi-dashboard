@@ -5,6 +5,7 @@ import React from 'react';
 import { ColorContext, robotHash } from 'react-components';
 import { AttributionControl, ImageOverlay, LayersControl, Map as LMap, Pane } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
+import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import {
   Conflict,
@@ -12,7 +13,6 @@ import {
   Trajectory,
   TrajectoryResponse,
 } from '../../managers/robot-trajectory-manager';
-import { AppConfigContext } from '../app-contexts';
 import { RmfIngressContext } from '../rmf-app';
 import DispensersOverlay from './dispensers-overlay';
 import DoorsOverlay from './doors-overlay';
@@ -82,7 +82,8 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
   } = props;
   const negotiationColors = React.useMemo(() => new NegotiationColors(), []);
 
-  const authenticator = React.useContext(AppConfigContext).authenticator;
+  // FIXME: trajectory manager should handle the tokens
+  const authenticator = appConfig.authenticator;
 
   const mapFloorLayerSorted = React.useMemo(
     () =>

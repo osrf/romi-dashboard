@@ -1,5 +1,4 @@
 import React from 'react';
-import appConfig, { AppConfig } from '../app-config';
 import ResourceManager from '../managers/resource-manager';
 import { defaultSettings, Settings } from '../settings';
 
@@ -49,8 +48,6 @@ export const AppControllerContext = React.createContext<AppController>({
   showTooltips: () => {},
   toggleTooltips: () => {},
 });
-
-export const AppConfigContext = React.createContext<AppConfig>(appConfig);
 
 export interface AppContent {
   tabNames: string[];

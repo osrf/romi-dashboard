@@ -8,6 +8,7 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import TreeView from '@material-ui/lab/TreeView';
 import Debug from 'debug';
 import React from 'react';
+import appConfig from '../../app-config';
 import {
   NegotiationConflict,
   NegotiationStatus,
@@ -17,7 +18,6 @@ import {
 } from '../../managers/negotiation-status-manager';
 import { colorPalette } from '../../util/css-utils';
 import { SpotlightValue } from '../spotlight-value';
-import { AppConfigContext } from '../app-contexts';
 
 const debug = Debug('OmniPanel:NegotiationsPanel');
 
@@ -95,7 +95,8 @@ export const NegotiationsPanel = React.memo((props: NegotiationsPanelProps) => {
   const [selected, setSelected] = React.useState<string>('');
   const [conflictIds, setConflictIds] = React.useState<string[]>([]);
 
-  const authenticator = React.useContext(AppConfigContext).authenticator;
+  // FIXME: negotiation manager should handle the tokens
+  const authenticator = appConfig.authenticator;
 
   React.useEffect(() => {
     if (!spotlight) {

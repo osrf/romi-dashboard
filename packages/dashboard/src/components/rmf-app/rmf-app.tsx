@@ -160,9 +160,7 @@ function UserProvider(props: React.PropsWithChildren<{}>) {
     (async () => {
       const getUserResp = await rmfIngress.defaultApi.getUserUserGet();
       const getPermResp = await rmfIngress.defaultApi.getEffectivePermissionsPermissionsGet();
-      if (cancel) {
-        return;
-      }
+      if (cancel || getUserResp.status !== 200 || getPermResp.status !== 200) return;
       setUser({
         profile: getUserResp.data,
         permissions: getPermResp.data,

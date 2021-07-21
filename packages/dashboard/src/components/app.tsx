@@ -4,14 +4,13 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import React from 'react';
-import { NotFoundPage } from 'react-components';
-import { BrowserRouter, Link, Redirect, Route, Switch, useLocation } from 'react-router-dom';
+import { BrowserRouter, Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import { getUrl, LoginHOC, PrivateRouteHOC } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
 import { ADMIN_ROUTE, DASHBOARD_ROUTE, LOGIN_ROUTE, ROBOTS_ROUTE, TASKS_ROUTE } from '../util/url';
 import { AppBase } from './app-base';
-import { AppConfigContext, ResourcesContext } from './app-contexts';
+import { ResourcesContext } from './app-contexts';
 import './app.css';
 import { TabValue } from './appbar';
 import Dashboard from './dashboard/dashboard';
@@ -32,7 +31,7 @@ const theme = createMuiTheme({
   },
 });
 
-function locationToTabValue(pathname: string): TabValue | null {
+function locationToTabValue(pathname: string): TabValue | undefined {
   switch (pathname) {
     case DASHBOARD_ROUTE:
       return 'building';
@@ -43,16 +42,15 @@ function locationToTabValue(pathname: string): TabValue | null {
     case ADMIN_ROUTE:
       return 'admin';
     default:
-      return null;
+      return undefined;
   }
 }
 
 export default function App(): JSX.Element | null {
+  const authenticator = appConfig.authenticator;
   const [authInitialized, setAuthInitialized] = React.useState(!!appConfig.authenticator.user);
-  const [authenticator, setAuthenticator] = React.useState(appConfig.authenticator);
   const [user, setUser] = React.useState<string | null>(null);
-  const appRoutes = [DASHBOARD_ROUTE, TASKS_ROUTE, ROBOTS_ROUTE, ADMIN_ROUTE];
-  const [tabValue, setTabValue] = React.useState<TabValue | null>(() =>
+  const [tabValue, setTabValue] = React.useState<TabValue | undefined>(() =>
     locationToTabValue(window.location.pathname),
   );
 
@@ -60,9 +58,6 @@ export default function App(): JSX.Element | null {
     (_ev: React.ChangeEvent<unknown>, newValue: TabValue) => setTabValue(newValue),
     [],
   );
-
-  const onTokenExpired = () => setAuthenticator(appConfig.authenticator);
-  authenticator.on('tokenRefresh', onTokenExpired);
 
   React.useEffect(() => {
     let cancel = false;
@@ -101,10 +96,35 @@ export default function App(): JSX.Element | null {
   }, []);
 
   return authInitialized && appReady ? (
-    <AppConfigContext.Provider value={appConfig}>
-      <ResourcesContext.Provider value={resourceManager.current}>
-        <ThemeProvider theme={theme}>
-          <BrowserRouter>
+    <ResourcesContext.Provider value={resourceManager.current}>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          {user ? (
+            <RmfApp>
+              <AppBase appbarProps={{ tabValue, onTabChange }}>
+                <Switch>
+                  <Route exact path={LOGIN_ROUTE}>
+                    <Redirect to={DASHBOARD_ROUTE} />
+                  </Route>
+                  <PrivateRoute exact path={DASHBOARD_ROUTE} redirectPath={LOGIN_ROUTE} user={user}>
+                    <Dashboard />
+                  </PrivateRoute>
+                  <PrivateRoute exact path={ROBOTS_ROUTE} redirectPath={LOGIN_ROUTE} user={user}>
+                    <RobotPage />
+                  </PrivateRoute>
+                  <PrivateRoute exact path={TASKS_ROUTE} redirectPath={LOGIN_ROUTE} user={user}>
+                    <TaskPage />
+                  </PrivateRoute>
+                  <PrivateRoute redirectPath={LOGIN_ROUTE} user={user}>
+                    <Redirect to={DASHBOARD_ROUTE} />
+                  </PrivateRoute>
+                </Switch>
+                {tabValue === 'building' && <Redirect to={DASHBOARD_ROUTE} />}
+                {tabValue === 'robots' && <Redirect to={ROBOTS_ROUTE} />}
+                {tabValue === 'tasks' && <Redirect to={TASKS_ROUTE} />}
+              </AppBase>
+            </RmfApp>
+          ) : (
             <Switch>
               <Route exact path={LOGIN_ROUTE}>
                 <Login
@@ -114,56 +134,13 @@ export default function App(): JSX.Element | null {
                   successRedirectUri={getUrl(DASHBOARD_ROUTE)}
                 />
               </Route>
-              {/* FIXME: Might not need this anymore after we changed to let each page control
-                  which topics to subscribe instead of a global context subscribing to everything.
-
-                  we need this because we don't want to re-mount `AppIntrinsics` when just moving
-                  from one route to another, but we want to unmount it when going "outside" the app. */}
-              {tabValue ? (
-                <PrivateRoute exact path={appRoutes} redirectPath={LOGIN_ROUTE} user={user}>
-                  <RmfApp>
-                    <AppBase appbarProps={{ tabValue, onTabChange }}>
-                      <Switch>
-                        <PrivateRoute
-                          exact
-                          path={DASHBOARD_ROUTE}
-                          redirectPath={LOGIN_ROUTE}
-                          user={user}
-                        >
-                          <Dashboard />
-                        </PrivateRoute>
-                        <PrivateRoute
-                          exact
-                          path={ROBOTS_ROUTE}
-                          redirectPath={LOGIN_ROUTE}
-                          user={user}
-                        >
-                          <RobotPage />
-                        </PrivateRoute>
-                        <PrivateRoute
-                          exact
-                          path={TASKS_ROUTE}
-                          redirectPath={LOGIN_ROUTE}
-                          user={user}
-                        >
-                          <TaskPage />
-                        </PrivateRoute>
-                      </Switch>
-                      {tabValue === 'building' && <Redirect to={DASHBOARD_ROUTE} />}
-                      {tabValue === 'robots' && <Redirect to={ROBOTS_ROUTE} />}
-                      {tabValue === 'tasks' && <Redirect to={TASKS_ROUTE} />}
-                    </AppBase>
-                  </RmfApp>
-                </PrivateRoute>
-              ) : (
-                <Route>
-                  <NotFoundPage routeLinkComponent={<Link to={LOGIN_ROUTE}>Go to Login</Link>} />
-                </Route>
-              )}
+              <Route>
+                <Redirect to={LOGIN_ROUTE} />
+              </Route>
             </Switch>
-          </BrowserRouter>
-        </ThemeProvider>
-      </ResourcesContext.Provider>
-    </AppConfigContext.Provider>
+          )}
+        </BrowserRouter>
+      </ThemeProvider>
+    </ResourcesContext.Provider>
   ) : null;
 }

@@ -29,7 +29,7 @@ const useStyles = makeStyles(() =>
 export type TabValue = 'building' | 'robots' | 'tasks' | 'admin';
 
 export interface AppBarProps {
-  tabValue: TabValue;
+  tabValue?: TabValue;
   onTabChange?(event: React.ChangeEvent<unknown>, newValue: TabValue): void;
   // TODO: change the alarm status to required when we have an alarm
   // service working properly in the backend
