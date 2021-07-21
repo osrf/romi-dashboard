@@ -27,4 +27,3 @@ RUN pip3 install $(ls -1 | grep '.*.whl')[postgres]
 RUN rm -rf /var/lib/apt/lists  
 
 CMD ["reporting_server"]
-

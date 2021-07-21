@@ -87,6 +87,22 @@ kubectl create configmap reporting-server-config --from-file=reporting_server_co
 echo 'deploying reporting-server...'
 kubectl apply -f k8s/reporting-server.yaml
 
+echo 'building reporting-server migrations...'
+docker build -t rmf-web/reporting-server-migrations -f docker/reporting-server-migrations.dockerfile $rmf_web_ws
+echo 'publishing reporting-server-migrations image...'
+docker save rmf-web/reporting-server-migrations | bash -c 'eval $(.bin/minikube docker-env) && docker load'
+
+
+# Checks if the reporting-server and the reporting-server-db are ready
+while [ "$(kubectl get pods -l=app='reporting-server' -o jsonpath='{.items[*].status.containerStatuses[0].ready}')" != "true true" ]; do
+   sleep 5
+   echo "Waiting for the reporting-server to be ready."
+done
+
+# run migration job
+echo 'running reporting-server-migrations-job...'
+.bin/minikube kubectl -- apply -f k8s/jobs/reporting-server-migrations-job.yaml
+
 
 echo 'building reporting image...'
 docker build -t rmf-web/reporting -f docker/reporting.dockerfile $rmf_web_ws
@@ -95,10 +111,11 @@ docker save rmf-web/reporting | bash -c 'eval $(.bin/minikube docker-env) && doc
 echo 'deploying reporting-server...'
 kubectl apply -f k8s/reporting.yaml
 
+
 echo 'Applying FluentD configmap ...'
 .bin/minikube kubectl -- apply -f k8s/fluentd-configmap.yaml
 echo 'deploying FluentD daemonset...'
 .bin/minikube kubectl -- apply -f k8s/fluentd.yaml
 
 echo 'deploying cronjobs ...'
-.bin/minikube kubectl -- apply -f k8s/cronjobs.yaml
+.bin/minikube kubectl -- apply -f k8s/jobs/cronjobs.yaml

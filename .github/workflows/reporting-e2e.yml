@@ -10,6 +10,32 @@ on:
 env:
   CI: true
 jobs:
+  build-docker-images:
+    name: Push Docker images to GitHub Packages
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Push reporting-server image to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/reporting-server
+          tags: latest
+          dockerfile: packages/reporting-e2e/docker/reporting-server/Dockerfile
+      
+      - name: Push reporting-server-migration image to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/reporting-server-migration
+          tags: latest
+          build_args: BASE_IMAGE=docker.pkg.github.com/open-rmf/rmf-web/reporting-server:latest
+          dockerfile: packages/reporting-e2e/docker/reporting-server-migrations/Dockerfile
   e2e-tests:
     name: End-to-End Tests
     runs-on: ubuntu-latest

@@ -35,10 +35,10 @@ When you run this command, two instances of the reporting server will run. One o
 For development we recommend running this command:
 
 ```bash
-uvicorn --reload rest_server.app:get_app
+npm run start:dev
 ```
 
-This would only create one instance of the reporting-server and it'll serve on the default port.
+This would only create one instance of the reporting-server and it'll serve on the default port. Before the server start it'll check for unapplied migrations and it'll ask you for running those migrations.
 
 ## Configuration
 
@@ -61,7 +61,7 @@ RMF_REPORT_REST_SERVER_CONFIG='my_config.py' reporting_server
 * MySQL
 * MariaDB
 
-by default it uses a in-memory sqlite instance, to use other databases, install rmf-server with the relevalent extras
+by default it uses a PostgreSQL instance, to use other databases, install reporting-server with the relevant extras
 
 * PostgreSQL - postgres
 * MySQL - mysql
@@ -73,7 +73,7 @@ by default it uses a in-memory sqlite instance, to use other databases, install 
 pip3 install reporting-server[postgres]
 ```
 
-Then in your config, set the `db_url` accordingly, the url should be in the form
+Create the database instance on the engine that you chose. Then in your config, set the `db_url` accordingly, the url should be in the form
 
 ```
 DB_TYPE://USERNAME:PASSWORD@HOST:PORT/DB_NAME?PARAM1=value&PARAM2=value
@@ -88,7 +88,147 @@ postgres://<user>:<password>@<host>/<database>
 for more information, see https://tortoise-orm.readthedocs.io/en/latest/databases.html.
 
 
+## Install PostgreSQL (Optional step if you use a different database)
+
+Instructions for ubuntu 20.04:
+
+Open a terminal and run:
+
+```bash
+sudo apt update && sudo apt install postgresql postgresql-contrib
+```
+
+### Create a database
+
+You can run the following command to create a database:
+
+``` bash
+sudo -u postgres createdb <database>
+# E.g: sudo -u postgres createdb reporting
+```
+
+### Set PostgreSQL user (skip this step if you wish to use the default postgres user)
+
+By default, Postgres uses a concept called “roles” to handle authentication and authorization.
+
+Upon installation, Postgres is set up to use ident authentication, meaning that it associates Postgres roles with a matching Unix/Linux system account. If a role exists within Postgres, a Unix/Linux username with the same name is able to sign in as that role.
+
+The installation procedure created a user account called postgres that is associated with the default Postgres role. There are a few ways to utilize this account to access Postgres. One way is to switch over to the postgres account on your server by typing
+
+``` bash
+sudo -i -u postgres
+```
+
+Then you can access the Postgres prompt by typing:
+
+``` bash
+psql
+```
+
+This will log you into the PostgreSQL prompt, and from here you are free to interact with the database management system right away.
+
+We can create new user with the following command
+
+``` bash
+create user <youruser> with encrypted password <yourpassword>;
+
+# E.G: create user myuser with encrypted password 'mypassword';
+```
+
+After the user is created we need to assign the db roles to the user:
+
+``` bash
+grant all privileges on database <yourdatabase> to <youruser>;
+
+# E.G: grant all privileges on database reporting to myuser;
+```
+
+### Set/change user PostgreSQL password
+
+``` bash
+sudo -i -u postgres
+```
+
+Then you can access the Postgres prompt by typing:
+
+``` bash
+psql
+```
+
+To change your password you run the following command:
+
+``` bash
+\password <user>
+# E.g: \password postgres
+```
+
+To exit out of the PostgreSQL prompt, run the following:
+
+``` bash
+\q
+```
+
+
+
+### PostgresSQL URL
+
+Once the above steps are finished you can build your bd_url:
+
+``` 
+postgres://<user>:<password>@<host>/<database>
+```
+
+For more information you can check [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart)
+
+
+## Run the application
+
+Now that you have already elected, configured and created a database and set you configurations. You need to run the migrations to create the database tables. We can proceed to apply migrations to create the database tables by running
+
+```bash
+aerich upgrade
+```
+
+After running this command your database should have all the tables defined in the code. Now you can run the application
+
+```bash
+reporting_server
+```
+
+If you want to run the migrations and start the server you could also run:
+
+```bash
+npm run start:dev
+```
+
 # Developers
+
+## Migration
+We are using [aerich](https://github.com/tortoise/aerich) as our database migration tool. That means that the changes to made to the model will not be reflected in the database automatically. You must run the aerich migration command to create a new migration with the changes:
+
+``` bash
+npm run migrate
+```
+
+If there are some changes in the Tortoise models, the previous command will create a migration (sql) file that has your changes. To apply these changes to the database you need to run
+
+``` bash
+npm run apply:migrations 
+```
+
+![aerich](https://user-images.githubusercontent.com/11761240/122826198-d97f2e80-d2b0-11eb-813f-384f4ae61d6b.png)
+
+To change the settings for the url, user and password you can open the [default_config file](https://github.com/open-rmf/rmf-web/blob/main/packages/reporting-server/rest_server/default_config.py) and change the value of the `db_url` with the following format (E.g PostgreSQL):
+
+```bash
+postgres://<user>:<password>@<host>/<database>
+```
+
+You can also add new Tortoise's model folders and other databases on the file `rmf-web/packages/reporting-server/rest_server/aerich_config.py`. You can read more about the configuration of Aerich [here](https://tortoise-orm.readthedocs.io/en/latest/migration.html)
+
+## PR migration rules
+
+It should only be one migration file per PR unless is strictly necessary to have multiple migrations for clarity.
 
 ## Running tests
 
@@ -96,6 +236,42 @@ for more information, see https://tortoise-orm.readthedocs.io/en/latest/database
 
 ```bash
 npm run test
+```
+
+### Running migration tests locally
+
+**Short Version:**  
+To test the migrations on your local machine you can run the following command:
+
+```bash
+npm run test:migrations
+```
+
+
+**Long version:**  
+First, you need to build the docker image, this will copy all the migrations to the container.
+
+```bash
+docker build . -t rmf-web/reporting-server-migration-test -f migration-test.dockerfile
+```
+
+Once you have your docker image built, you can run it with the following command
+
+```bash
+docker run -d --name=reporting-server-migration-test rmf-web/
+reporting-server-migration-test:latest
+```
+
+Now you have a container with all the migrations and a PostgreSQL database up and running inside the container. To test the migrations you can run the following command:
+
+```bash
+docker exec -it reporting-server-migration-test ./migrate.sh
+```
+
+Once you're done testing you can stop the container by running the following command:
+
+```bash
+docker stop reporting-server-migration-test
 ```
 
 ### Collecting code coverage
@@ -119,4 +295,4 @@ uvicorn --reload rest_server.app:get_app
 
 *  I have a zombie process running either on port 8002 or 8003?
 
-   The `reporting_server` runs two instances of the app on the same process. So, sometimes when you shut down one of the reporting-server instances, the other stay alive, resulting in a zombie process. You can kill it by running this command `kill -9 <process id>` (on Linux based OS). That's why we recommend using `uvicorn --reload rest_server.app:get_app` for development purposes.
+   The `reporting_server` runs two instances of the app on the same process. So, sometimes when you shut down one of the reporting-server instances, the other stay alive, resulting in a zombie process. You can kill it by running this command `kill -9 <process id>` (on Linux based OS). That's why we recommend using `npm run start:dev` for development purposes.
