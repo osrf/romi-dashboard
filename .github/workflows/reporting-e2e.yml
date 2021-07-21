@@ -10,6 +10,21 @@ on:
 env:
   CI: true
 jobs:
+  build-docker-images:
+    name: Push Docker images to GitHub Packages
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Push reporting image to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/reporting-server
+          tags: nightly
+          path: packages/reporting-e2e/docker/reporting-server
   e2e-tests:
     name: End-to-End Tests
     runs-on: ubuntu-latest
