@@ -25,9 +25,7 @@ jobs:
           repository: ${{ github.repository }}/reporting-server
           tags: nightly
           dockerfile: packages/reporting-e2e/docker/reporting-server/Dockerfile
-          # working-directory: .
-          # directory: .
-          # path: .
+
   # e2e-tests:
   #   name: End-to-End Tests
   #   runs-on: ubuntu-latest
