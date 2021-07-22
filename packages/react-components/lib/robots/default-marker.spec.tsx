@@ -14,6 +14,7 @@ it('smoke test with different variants', () => {
           color="blue"
           name={robot.name}
           model={robot.model}
+          robotMode={robot.mode}
           x={robot.location.x}
           y={robot.location.y}
           yaw={robot.location.yaw}

@@ -1,6 +1,9 @@
+import * as RmfModels from 'rmf-models';
+
 export interface BaseMarkerProps extends Omit<React.SVGAttributes<SVGGElement>, 'onClick'> {
   name: string;
   model: string;
+  robotMode: RmfModels.RobotMode;
   x: number;
   y: number;
   yaw: number;

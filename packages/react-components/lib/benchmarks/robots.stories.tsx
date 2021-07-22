@@ -106,6 +106,7 @@ export const RobotMarkers: Story<RobotMarkerArgs> = ({ count, ...args }) => {
         <RobotMarker
           key={robot.name}
           name={robot.name}
+          robotMode={robot.mode}
           model={robot.model}
           x={robot.location.x}
           y={robot.location.y}

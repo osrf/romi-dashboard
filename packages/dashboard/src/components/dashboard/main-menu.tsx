@@ -60,22 +60,32 @@ export const MainMenu = React.memo((props: MainMenuProps) => {
       </ListItem>
       <Divider />
 
-      <ListItem data-item="Lifts" button={true} onClick={handleMainMenuLiftsClick}>
-        <Typography variant="h5">Lifts</Typography>
-      </ListItem>
-      <Divider />
-
       <ListItem data-item="Robots" button={true} onClick={handleMainMenuRobotsClick}>
         <Typography variant="h5">Robots</Typography>
       </ListItem>
       <Divider />
 
-      <ListItem data-item="Dispensers" button={true} onClick={handleMainMenuDispensersClick}>
+      <ListItem data-item="Lifts" button={true} disabled={true} onClick={handleMainMenuLiftsClick}>
+        <Typography variant="h5">Lifts</Typography>
+      </ListItem>
+      <Divider />
+
+      <ListItem
+        data-item="Dispensers"
+        button={true}
+        disabled={true}
+        onClick={handleMainMenuDispensersClick}
+      >
         <Typography variant="h5">Dispensers</Typography>
       </ListItem>
       <Divider />
 
-      <ListItem data-item="Negotiations" button={true} onClick={handleMainMenuNegotiationsClick}>
+      <ListItem
+        data-item="Negotiations"
+        button={true}
+        disabled={true}
+        onClick={handleMainMenuNegotiationsClick}
+      >
         <Tooltip
           title="This panel shows the negotiations between robots when there are conflicts in trajectories"
           id="negotiations-tooltip"

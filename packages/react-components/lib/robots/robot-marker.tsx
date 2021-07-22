@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, Tooltip } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
 import { ColorContext, SvgText } from '..';
@@ -6,6 +6,7 @@ import { fromRmfCoords, fromRmfYaw } from '../geometry-utils';
 import { BaseMarkerProps } from './base-marker';
 import { DefaultMarker } from './default-marker';
 import { ImageMarker } from './image-marker';
+import { robotModeToString } from './utils';
 
 const debug = Debug('Robots:RobotMarker');
 
@@ -40,6 +41,7 @@ export const RobotMarker = React.forwardRef(
     const {
       name,
       model,
+      robotMode,
       x,
       y,
       yaw: rmfYaw,
@@ -80,22 +82,31 @@ export const RobotMarker = React.forwardRef(
     }, [name, model, colorManager, fleetName, useImageMarker]);
 
     return (
-      <g ref={ref} onClick={(ev) => onClick && onClick(ev, fleetName, name)} {...otherProps}>
-        <g transform={translateTransform}>
-          <g className={classes.clickable} aria-label={name} transform={`rotate(${yaw})`}>
-            {useImageMarker && iconPath ? (
-              <ImageMarker
-                {...props}
-                iconPath={iconPath}
-                onError={() => setUseImageMarker(false)}
-              />
-            ) : robotColor ? (
-              <DefaultMarker color={robotColor} {...props} />
-            ) : null}
+      <Tooltip
+        title={
+          <React.Fragment>
+            <div>Name - {name}</div>
+            <div>State - {robotModeToString(robotMode)}</div>
+          </React.Fragment>
+        }
+      >
+        <g ref={ref} onClick={(ev) => onClick && onClick(ev, fleetName, name)} {...otherProps}>
+          <g transform={translateTransform}>
+            <g className={classes.clickable} aria-label={name} transform={`rotate(${yaw})`}>
+              {useImageMarker && iconPath ? (
+                <ImageMarker
+                  {...props}
+                  iconPath={iconPath}
+                  onError={() => setUseImageMarker(false)}
+                />
+              ) : robotColor ? (
+                <DefaultMarker color={robotColor} {...props} />
+              ) : null}
+            </g>
+            <SvgText text={name} targetWidth={footprint * 1.9} className={classes.text} />
           </g>
-          <SvgText text={name} targetWidth={footprint * 1.9} className={classes.text} />
         </g>
-      </g>
+      </Tooltip>
     );
   },
 );

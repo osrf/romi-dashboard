@@ -35,6 +35,7 @@ describe('robot-markers', () => {
         <RobotMarker
           name={robot.name}
           model={robot.model}
+          robotMode={robot.mode}
           x={robot.location.x}
           y={robot.location.y}
           yaw={robot.location.yaw}
@@ -53,6 +54,7 @@ describe('robot-markers', () => {
       <RobotMarker
         name={robot.name}
         model={robot.model}
+        robotMode={robot.mode}
         x={robot.location.x}
         y={robot.location.y}
         yaw={robot.location.yaw}
@@ -72,6 +74,7 @@ describe('robot-markers', () => {
       <RobotMarker
         name={robot.name}
         model={robot.model}
+        robotMode={robot.mode}
         x={robot.location.x}
         y={robot.location.y}
         yaw={robot.location.yaw}

@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, Tooltip } from '@material-ui/core';
 import Debug from 'debug';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
@@ -50,6 +50,19 @@ function useDoorStyle(doorMode?: number): string {
       return classes.close;
     default:
       return classes.unknown;
+  }
+}
+
+function doorStateToString(doorMode?: number): string {
+  switch (doorMode) {
+    case RmfModels.DoorMode.MODE_OPEN:
+      return 'Open';
+    case RmfModels.DoorMode.MODE_MOVING:
+      return 'Moving';
+    case RmfModels.DoorMode.MODE_CLOSED:
+      return 'Closed';
+    default:
+      return 'Unknown';
   }
 }
 
@@ -248,14 +261,23 @@ export const DoorMarker = React.forwardRef(
     try {
       const center = getDoorCenter(door);
       return (
-        <g ref={ref} onClick={(ev) => onClick && onClick(ev, door)} {...otherProps}>
-          <g
-            className={onClick ? classes.marker : undefined}
-            transform={!translate ? `translate(${-center[0]} ${center[1]})` : undefined}
-          >
-            {renderDoor()}
+        <Tooltip
+          title={
+            <React.Fragment>
+              <div>Name - {door.name}</div>
+              <div>State - {doorStateToString(doorMode)}</div>
+            </React.Fragment>
+          }
+        >
+          <g ref={ref} onClick={(ev) => onClick && onClick(ev, door)} {...otherProps}>
+            <g
+              className={onClick ? classes.marker : undefined}
+              transform={!translate ? `translate(${-center[0]} ${center[1]})` : undefined}
+            >
+              {renderDoor()}
+            </g>
           </g>
-        </g>
+        </Tooltip>
       );
     } catch (e) {
       console.error((e as Error).message);
