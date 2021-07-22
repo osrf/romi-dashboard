@@ -25,5 +25,8 @@ npm-debug.log*
 web_server.log
 yarn-debug.log*
 yarn-error.log*
+.rmf_schedule_node.yaml
+log.css
 
 /.rmf
+

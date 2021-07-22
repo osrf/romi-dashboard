@@ -61,6 +61,8 @@ export function calcMaxBounds(
   return bounds.pad(0.2);
 }
 
+export let windowMap = new window.Map();
+
 export default function ScheduleVisualizer(props: ScheduleVisualizerProps): React.ReactElement {
   debug('render');
   const { buildingMap, negotiationTrajStore, mapFloorSort, showTrajectories } = props;
@@ -241,6 +243,9 @@ export default function ScheduleVisualizer(props: ScheduleVisualizerProps): Reac
 
   if (ref.current) {
     ref.current.leafletElement.setZIndex(0);
+    if (mapRef.current && !windowMap.get('lmap')) {
+      windowMap.set('lmap', mapRef);
+    }
   }
 
   React.useEffect(() => {

@@ -31,7 +31,7 @@ import {
   NegotiationStatusContext,
   RmfIngressContext,
 } from '../rmf-app';
-import ScheduleVisualizer, { ScheduleVisualizerProps } from '../schedule-visualizer';
+import ScheduleVisualizer, { ScheduleVisualizerProps, windowMap } from '../schedule-visualizer';
 import { RobotsOverlayProps } from '../schedule-visualizer/robots-overlay';
 import { SpotlightValue } from '../spotlight-value';
 import MainMenu from './main-menu';
@@ -326,6 +326,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   doorState={doorStates[door.name]}
                   onDoorControlClick={handleOnDoorControlClick}
                   data-name={door.name}
+                  mapRef={windowMap.get('lmap')}
                 />
               ) : null;
             })}
@@ -357,6 +358,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                     robot={robot}
                     fleetName={fleet.name}
                     data-component="RobotAccordion"
+                    mapRef={windowMap.get('lmap')}
                   />
                 ) : null;
               }),

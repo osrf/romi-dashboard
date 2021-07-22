@@ -12,6 +12,7 @@ export interface ItemAccordionSummaryProps {
     title?: string;
   };
   statusProps?: StatusLabelProps;
+  onAccordianClick?: () => void;
 }
 
 const useStyles = makeStyles({
@@ -29,10 +30,14 @@ const useStyles = makeStyles({
 
 export const ItemAccordionSummary = (props: ItemAccordionSummaryProps): JSX.Element => {
   const classes_ = useStyles();
-  const { title, classes, statusProps } = props;
+  const { title, classes, statusProps, onAccordianClick } = props;
 
   return (
-    <AccordionSummary classes={{ content: classes_.content }} expandIcon={<ExpandMoreIcon />}>
+    <AccordionSummary
+      onClick={onAccordianClick}
+      classes={{ content: classes_.content }}
+      expandIcon={<ExpandMoreIcon />}
+    >
       <Typography variant="h6" className={joinClasses(classes_.hideText, classes?.title)}>
         {title}
       </Typography>
